@@ -298,6 +298,7 @@ function GameState:update(dt)
             weapon1Cooldown = 0
             damageBuff = 1
             commonBuff = 1
+            targetBuff = 1
             rareBuff = 1
             scarceBuff = 1
             weapon2Cooldown = 0
@@ -319,6 +320,7 @@ function GameState:update(dt)
             damageBuff = 1
             commonBuff = 1
             rareBuff = 1
+            targetBuff = 1
             weapon2Cooldown = 0
             scarceBuff = 1
             weapon3Cooldown = 0
@@ -881,7 +883,7 @@ function GameState:resetStats(i,j)
         commonBuff = commonBuff / 0.75
     end
     if alienStats[i][j].name == 'Protected' then
-        targetBuff = tartgetBuff /.5
+        targetBuff = targetBuff /.5
     end
     if alienStats[i][j].name == 'Rare' then
         rareBuff = rareBuff / 0.8
@@ -979,7 +981,7 @@ end
 
 function GameState:starBlast(row,lane)
     if alienAlive[row][lane] and not alienStats[row][lane].immmunity  then
-        alienStats[row][lane].health = alienStats[row][lane].health - (attacker.damage * damageBuff * commonBuff * tartgetBuff)
+        alienStats[row][lane].health = alienStats[row][lane].health - (attacker.damage * damageBuff * commonBuff * targetBuff)
         if alienStats[row][lane].name == 'OldGranny' and not alienAlive[row+1][lane] then
             GameState:changeStats(row+1,lane,row,lane)
         end
@@ -987,7 +989,7 @@ function GameState:starBlast(row,lane)
     end
     if lane -1 > 0 and not alienStats[row][lane].immmunity then
         if alienAlive[row][lane-1] then
-            alienStats[row][lane-1].health = alienStats[row][lane-1].health -  (attacker.damage * damageBuff * commonBuff * tartgetBuff)
+            alienStats[row][lane-1].health = alienStats[row][lane-1].health -  (attacker.damage * damageBuff * commonBuff * targetBuff)
             if alienStats[row][lane-1].name == 'OldGranny' and not alienAlive[row+1][lane-1] then
                 GameState:changeStats(row+1,lane-1,row,lane-1)
             end
@@ -996,7 +998,7 @@ function GameState:starBlast(row,lane)
     end
     if lane +1 < 6 and not alienStats[row][lane].immmunity then
         if alienAlive[row][lane+1] then
-            alienStats[row][lane+1].health = alienStats[row][lane+1].health -  (attacker.damage * damageBuff * commonBuff * tartgetBuff)
+            alienStats[row][lane+1].health = alienStats[row][lane+1].health -  (attacker.damage * damageBuff * commonBuff * targetBuff)
             if alienStats[row][lane+1].name == 'OldGranny' and not alienAlive[row+1][lane+1] then
                 GameState:changeStats(row+1,lane+1,row,lane+1)
             end
@@ -1005,7 +1007,7 @@ function GameState:starBlast(row,lane)
     end
     if row +1 < 11 and not alienStats[row][lane].immmunity then
         if alienAlive[row+1][lane] then
-            alienStats[row+1][lane].health = alienStats[row+1][lane].health -  (attacker.damage * damageBuff * commonBuff * tartgetBuff)
+            alienStats[row+1][lane].health = alienStats[row+1][lane].health -  (attacker.damage * damageBuff * commonBuff * targetBuff)
             if alienStats[row+1][lane].name == 'OldGranny' and not alienAlive[row+2][lane] then
                 GameState:changeStats(row+2,lane,row+1,lane)
             end
@@ -1014,7 +1016,7 @@ function GameState:starBlast(row,lane)
     end
     if row +2 < 11 and not alienStats[row][lane].immmunity then
         if alienAlive[row+2][lane] then
-            alienStats[row+2][lane].health = alienStats[row+2][lane].health - (attacker.damage * damageBuff * commonBuff * tartgetBuff)
+            alienStats[row+2][lane].health = alienStats[row+2][lane].health - (attacker.damage * damageBuff * commonBuff * targetBuff)
             if alienStats[row+2][lane].name == 'OldGranny' and not alienAlive[row+3][lane] then
                 GameState:changeStats(row+3,lane,row+2,lane)
             end
@@ -1023,7 +1025,7 @@ function GameState:starBlast(row,lane)
     end
     if row -1 > 0 and not alienStats[row][lane].immmunity then
         if alienAlive[row-1][lane] then
-            alienStats[row-1][lane].health = alienStats[row-1][lane].health - (attacker.damage * damageBuff * commonBuff * tartgetBuff)
+            alienStats[row-1][lane].health = alienStats[row-1][lane].health - (attacker.damage * damageBuff * commonBuff * targetBuff)
             if alienStats[row-1][lane].name == 'OldGranny' and not alienAlive[row][lane] then
                 GameState:changeStats(row,lane,row-1,lane)
             end
@@ -1032,7 +1034,7 @@ function GameState:starBlast(row,lane)
     end
     if row -2 > 0 and not alienStats[row][lane].immmunity then
         if alienAlive[row-2][lane] then
-            alienStats[row-2][lane].health = alienStats[row-2][lane].health - (attacker.damage * damageBuff * commonBuff * tartgetBuff)
+            alienStats[row-2][lane].health = alienStats[row-2][lane].health - (attacker.damage * damageBuff * commonBuff * targetBuff)
             if alienStats[row-2][lane].name == 'OldGranny' and not alienAlive[row-1][lane] then
                 GameState:changeStats(row-1,lane,row-2,lane)
             end
@@ -1311,7 +1313,7 @@ function GameState:CometStrike(row,lane)
                 for j = 1, 2 do
                     local preHealth = alienStats[i][j].health
                     if alienAlive[i][j] and not alienStats[i][j].immmunity then
-                        alienStats[i][j].health = alienStats[i][j].health - (attacker.damage * damageBuff * tartgetBuff)
+                        alienStats[i][j].health = alienStats[i][j].health - (attacker.damage * damageBuff * targetBuff)
                     end
                     if alienStats[i][j].name == 'OldGranny' and not alienAlive[i][j] and preHealth ~= alienStats[i][j].health then
                         GameState:changeStats(i+1,j,i,j)
@@ -1324,7 +1326,7 @@ function GameState:CometStrike(row,lane)
                 for j = 1, 2 do
                     local preHealth = alienStats[i][j].health
                     if alienAlive[i][j]  and not alienStats[i][j].immmunity then
-                        alienStats[i][j].health = alienStats[i][j].health - (attacker.damage * damageBuff * tartgetBuff)
+                        alienStats[i][j].health = alienStats[i][j].health - (attacker.damage * damageBuff * targetBuff)
                     end
                     if alienStats[i][j].name == 'OldGranny' and not alienAlive[i][j] and preHealth ~= alienStats[i][j].health then
                         GameState:changeStats(i+1,j,i,j)
@@ -1337,7 +1339,7 @@ function GameState:CometStrike(row,lane)
                 for j = 1, 2 do
                     local preHealth = alienStats[i][j].health
                     if alienAlive[i][j] and not alienStats[i][j].immmunity  then
-                        alienStats[i][j].health = alienStats[i][j].health - (attacker.damage * damageBuff * tartgetBuff)
+                        alienStats[i][j].health = alienStats[i][j].health - (attacker.damage * damageBuff * targetBuff)
                     end
                     if alienStats[i][j].name == 'OldGranny' and not alienAlive[i][j] and preHealth ~= alienStats[i][j].health then
                         GameState:changeStats(i+1,j,i,j)
@@ -1352,7 +1354,7 @@ function GameState:CometStrike(row,lane)
                 for j = 4, 5 do
                     local preHealth = alienStats[i][j].health
                     if alienAlive[i][j]  and not alienStats[i][j].immmunity then
-                        alienStats[i][j].health = alienStats[i][j].health - (attacker.damage * damageBuff * tartgetBuff)
+                        alienStats[i][j].health = alienStats[i][j].health - (attacker.damage * damageBuff * targetBuff)
                     end
                     if alienStats[i][j].name == 'OldGranny' and not alienAlive[i][j] and preHealth ~= alienStats[i][j].health then
                         GameState:changeStats(i+1,j,i,j)
@@ -1365,7 +1367,7 @@ function GameState:CometStrike(row,lane)
                 for j = 4, 5 do
                     local preHealth = alienStats[i][j].health
                     if alienAlive[i][j]   and not alienStats[i][j].immmunity then
-                        alienStats[i][j].health = alienStats[i][j].health - (attacker.damage * damageBuff * tartgetBuff)
+                        alienStats[i][j].health = alienStats[i][j].health - (attacker.damage * damageBuff * targetBuff)
                     end
                     if alienStats[i][j].name == 'OldGranny' and not alienAlive[i][j] and preHealth ~= alienStats[i][j].health then
                         GameState:changeStats(i+1,j,i,j)
@@ -1378,7 +1380,7 @@ function GameState:CometStrike(row,lane)
                 for j = 4, 5 do
                     local preHealth = alienStats[i][j].health
                     if alienAlive[i][j]  and not alienStats[i][j].immmunity then
-                        alienStats[i][j].health = alienStats[i][j].health - (attacker.damage * damageBuff * tartgetBuff)
+                        alienStats[i][j].health = alienStats[i][j].health - (attacker.damage * damageBuff * targetBuff)
                     end
                     if alienStats[i][j].name == 'OldGranny' and not alienAlive[i][j] and preHealth ~= alienStats[i][j].health then
                         GameState:changeStats(i+1,j,i,j)
@@ -1393,7 +1395,7 @@ function GameState:CometStrike(row,lane)
                 for j = lane-1, lane+1 do
                     local preHealth = alienStats[i][j].health
                     if alienAlive[i][j]  and not alienStats[i][j].immmunity then
-                        alienStats[i][j].health = alienStats[i][j].health - (attacker.damage * damageBuff * tartgetBuff)
+                        alienStats[i][j].health = alienStats[i][j].health - (attacker.damage * damageBuff * targetBuff)
                     end
                     if alienStats[i][j].name == 'OldGranny' and not alienAlive[i][j] and preHealth ~= alienStats[i][j].health then
                         GameState:changeStats(i+1,j,i,j)
@@ -1406,7 +1408,7 @@ function GameState:CometStrike(row,lane)
                 for j = lane-1, lane+1 do
                     local preHealth = alienStats[i][j].health
                     if alienAlive[i][j]  and not alienStats[i][j].immmunity then
-                        alienStats[i][j].health = alienStats[i][j].health - (attacker.damage * damageBuff * tartgetBuff)
+                        alienStats[i][j].health = alienStats[i][j].health - (attacker.damage * damageBuff * targetBuff)
                     end
                     if alienStats[i][j].name == 'OldGranny' and not alienAlive[i][j] and preHealth ~= alienStats[i][j].health then
                         GameState:changeStats(i+1,j,i,j)
@@ -1419,7 +1421,7 @@ function GameState:CometStrike(row,lane)
                 for j = lane-1, lane+1 do
                     local preHealth = alienStats[i][j].health
                     if alienAlive[i][j]  and not alienStats[i][j].immmunity then
-                        alienStats[i][j].health = alienStats[i][j].health - (attacker.damage * damageBuff * tartgetBuff)
+                        alienStats[i][j].health = alienStats[i][j].health - (attacker.damage * damageBuff * targetBuff)
                     end
                     if alienStats[i][j].name == 'OldGranny' and not alienAlive[i][j] and preHealth ~= alienStats[i][j].health then
                         GameState:changeStats(i+1,j,i,j)
@@ -1563,7 +1565,7 @@ function GameState:makeAlien(row,n,health,hevalten,name)
         commonBuff = commonBuff * 0.75
     end
     if alienStats[row][n].name == 'Protected' then
-        targetBuff = tartgetBuff * .5
+        targetBuff = targetBuff * .5
     end
     if alienStats[row][n].name == 'Rare' then
         rareBuff = rareBuff * 0.8
