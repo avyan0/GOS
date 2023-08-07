@@ -28,7 +28,6 @@ local rareBuff = 1
 local scarceBuff = 1
 local targetBuff = 1
 
-
 for i = 1, 13 do
     spotTaken[i] = {}
  for j = 1, 5 do
@@ -413,7 +412,7 @@ function GameState:spawnAliens()
             elseif alien > Levels[data.currentLevel].president and alien <= Levels[data.currentLevel].king then
                 alien1 = Aliens['King']
             elseif alien >  Levels[data.currentLevel].king then
-                alien1 = Aliens['DarkArts']
+                alien1 = Aliens['Virus']
             end
 
             local lane = 1
@@ -641,6 +640,11 @@ function GameState:moveLane(n, thingy)
     end
     if thingy.name == 'DarkArts' then
         GameState:upgrade()
+    end
+    if thingy.name == 'Virus' then
+        weapon1Cooldown = weapon1Cooldown - 1
+        weapon2Cooldown = weapon2Cooldown -1
+        weapon3Cooldown = weapon3Cooldown -1
     end
     GameState:makeAlien(1,n,thingy.health,thingy.hevalten,thingy.name)
 
@@ -1608,7 +1612,10 @@ function GameState:upgrade()
             for j = 1, 5 do
 
                 if alienAlive[i][j] and alienStats[i][j].name == Aliensrand[num].name then
-                    GameState:makeAlien(i,j,(alienStats[i][j].health/(Aliens[alienStats[i][j].name].health))*Aliensrand[num+1].health,Aliensrand[num+1].hevalten,Aliensrand[num+1].name)
+                    local health = alienStats[i][j].health
+                    local name = alienStats[i][j].name
+                    GameState:resetStats(i,j)
+                    GameState:makeAlien(i,j,(health/(Aliens[name].health))*Aliensrand[num+1].health,Aliensrand[num+1].hevalten,Aliensrand[num+1].name)
                 end
             end
         end
