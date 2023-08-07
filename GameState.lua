@@ -413,7 +413,7 @@ function GameState:spawnAliens()
             elseif alien > Levels[data.currentLevel].president and alien <= Levels[data.currentLevel].king then
                 alien1 = Aliens['King']
             elseif alien >  Levels[data.currentLevel].king then
-                alien1 = Aliens['Protected']
+                alien1 = Aliens['DarkArts']
             end
 
             local lane = 1
@@ -638,6 +638,9 @@ function GameState:moveLane(n, thingy)
 
     while alienAlive[1][n] do
         n = math.random(1, 5)
+    end
+    if thingy.name == 'DarkArts' then
+        GameState:upgrade()
     end
     GameState:makeAlien(1,n,thingy.health,thingy.hevalten,thingy.name)
 
@@ -1595,6 +1598,18 @@ function GameState:spawnRand(alien,preHealth)
                     randLane = math.random(1,5)
                 end
                 GameState:makeAlien(randRow,randLane,Aliensrand[k].health,Aliensrand[k].hevalten,Aliensrand[k].name)
+            end
+        end
+    end
+end
+function GameState:upgrade()
+    for num = 26,1,-1 do
+        for i = 1, 10 do
+            for j = 1, 5 do
+
+                if alienAlive[i][j] and alienStats[i][j].name == Aliensrand[num].name then
+                    GameState:makeAlien(i,j,(alienStats[i][j].health/(Aliens[alienStats[i][j].name].health))*Aliensrand[num+1].health,Aliensrand[num+1].hevalten,Aliensrand[num+1].name)
+                end
             end
         end
     end
