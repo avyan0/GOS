@@ -1817,3 +1817,26 @@ function GameState:godRand(thingy)
         end
     end
 end
+function GameState:enter(ok)
+    if ok then
+            alienCounter = 0
+            stage = 'first'
+            weapon1Clicked = false
+            weapon2Clicked = false
+            weapon3Clicked = false
+            mousePressed = true
+            weapon1Cooldown = 0
+            weapon2Cooldown = 0
+            weapon3Cooldown = 0
+            chooseLane = false
+            damageBuff = 1
+            scarceBuff = 1
+            rareBuff = 1
+            commonBuff = 1
+            targetBuff = 1
+            chooseTile = false
+            GameState:killAllAliens()
+            gStateMachine:change('home')
+    end
+end
+        
