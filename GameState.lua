@@ -86,32 +86,34 @@ function GameState:render()
     love.graphics.line(1024,0,1024,650)
     setColor(54/255,54/255,54/255,.8)
     if weapon1Clicked then
-        love.graphics.rectangle('fill',0,650,377,130)
+        love.graphics.rectangle('fill',0,650,350,130)
     end
     if weapon2Clicked then
-        love.graphics.rectangle('fill',378,650,377,130)
+        love.graphics.rectangle('fill',350,650,350,130)
     end
     if weapon3Clicked then
-        love.graphics.rectangle('fill',754,650,376,130)
+        love.graphics.rectangle('fill',700,650,350,130)
     end
     setColor(179/255, 25/255, 21/255)
 
 
     love.graphics.setLineWidth(5)
-    love.graphics.rectangle('line',0,650,1130,130)
+    love.graphics.rectangle('line',0,650,1050,130)
     setColor(0,172/255,102/255)
-    love.graphics.rectangle('line',1135,650,150,130)
+    love.graphics.rectangle('line',1055,650,150,130)
+    setColor(102/255,51/255,153/255)
+    love.graphics.rectangle('line',1210,650,70,130)
     setColor(179/255, 25/255, 21/255)
 
 
 
-    love.graphics.line(377,650,377,780)
-    love.graphics.line(754,650,754,780)
+    love.graphics.line(350,650,350,780)
+    love.graphics.line(700,650,700,780)
     
     love.graphics.setFont(gFonts['game25'])
-    love.graphics.printf(data.weaponChoose1,0,680,377,'center')
-    love.graphics.printf(data.weaponChoose2,377,680,377,'center')
-    love.graphics.printf(data.weaponChoose3,754,680,376,'center')
+    love.graphics.printf(data.weaponChoose1,0,680,350,'center')
+    love.graphics.printf(data.weaponChoose2,350,680,350,'center')
+    love.graphics.printf(data.weaponChoose3,700,680,350,'center')
     love.graphics.setFont(gFonts['game70'])
     setColor(79/255, 125/255, 221/255)
     if chooseLane then
@@ -123,7 +125,7 @@ function GameState:render()
     end
     setColor(0,172/255,102/255)
     love.graphics.setFont(gFonts['game25'])
-    love.graphics.printf(targetBuff,1130,680,150,'center')
+    love.graphics.printf('End Turn',1055,680,150,'center')
 
     
     setColor(1,1,1)
@@ -160,6 +162,10 @@ function GameState:render()
             end
         end
     end
+    setColor(102/255,51/255,153/255)
+    love.graphics.setFont(gFonts['game18'])
+    love.graphics.printf('Pause',1210,680,70,'center')
+
     love.setBright()
     push:apply('end')
 end
@@ -262,6 +268,8 @@ function GameState:update(dt)
                 GameState:attack(data.weaponChoose3)
                 weapon3Clicked = true
             end
+        elseif love.keyboard.wasPressed('p') then
+            gStateMachine:change('pause')
         elseif love.keyboard.wasPressed('enter') or love.keyboard.wasPressed('return') then
             mousePressed = true  
                 if weapon1Cooldown >= Weapons[data.weaponChoose1].cooldown then
@@ -701,22 +709,22 @@ end
 
 function GameState:mousePressed(x, y)
     if not chooseLane and not chooseTile then
-        if love.clicked(x,y,0,377,630,780) then
+        if love.clicked(x,y,0,350,630,780) then
             if not weapon1Clicked then
                 GameState:attack(data.weaponChoose1)
                 weapon1Clicked = true
             end
-        elseif love.clicked(x,y,378,754,630,780) then
+        elseif love.clicked(x,y,350,700,630,780) then
             if not weapon2Clicked then
                 GameState:attack(data.weaponChoose2)
                 weapon2Clicked = true
             end
-        elseif love.clicked(x,y,755,1130,630,780) then
+        elseif love.clicked(x,y,700,1050,630,780) then
             if not weapon3Clicked then
                 GameState:attack(data.weaponChoose3)
                 weapon3Clicked = true
             end
-        elseif love.clicked(x,y,1131,1280,630,780) then
+        elseif love.clicked(x,y,1050,1210,630,780) then
             mousePressed = true  
             if weapon1Cooldown >= Weapons[data.weaponChoose1].cooldown then
                 weapon1Clicked = false
@@ -736,7 +744,10 @@ function GameState:mousePressed(x, y)
                 weapon2Cooldown = weapon2Cooldown + 1 end
             if weapon3Clicked then
                 weapon3Cooldown = weapon3Cooldown + 1 end
+        elseif love.clicked(x,y,1010,1280,630,780) then
+            gStateMachine:change('pause')
         end
+
     end
 end
 
@@ -1722,6 +1733,9 @@ function GameState:makeAlien(row,n,health,hevalten,name)
     end
     if alienStats[row][n].name == 'Scarce' then
         scarceBuff = scarceBuff * 0.85
+    end
+    if alienStats[row][n].name == 'GodOfSpace' then
+        allGood = true
     end
 end
 function GameState:spawnRand(alien,preHealth)
