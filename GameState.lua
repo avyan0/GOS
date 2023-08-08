@@ -406,13 +406,13 @@ function GameState:spawnAliens()
             if alien <= Levels[data.currentLevel].joe then
                 alien1 = Aliens['Joe']
             elseif alien > Levels[data.currentLevel].joe and alien <= Levels[data.currentLevel].gen57 then
-                alien1 = Aliens['Gen57']
+                alien1 = Aliens['Joe']
             elseif alien > Levels[data.currentLevel].gen57 and alien <= Levels[data.currentLevel].president then
-                alien1 = Aliens['DJ']
+                alien1 = Aliens['Joe']
             elseif alien > Levels[data.currentLevel].president and alien <= Levels[data.currentLevel].king then
-                alien1 = Aliens['King']
+                alien1 = Aliens['Joe']
             elseif alien >  Levels[data.currentLevel].king then
-                alien1 = Aliens['Guardian']
+                alien1 = Aliens['Joe']
             end
 
             local lane = 1
@@ -548,15 +548,15 @@ function GameState:moveLane(n, thingy)
 
                 alienStats[i-1][j].health =  alienStats[i-1][j].health - alienStats[i][j].health
                 alienStats[i][j].health =  alienStats[i][j].health - temp
-                if alienStats[i][j].health > 0 and alienStats[i-1][j].health <= 0 then
+                if alienStats[i][j].health >= 0 and alienStats[i-1][j].health <= 0 then
                     win = true
                 end
 
-                if alienStats[i][j].health > 0 and alienStats[i-1][j].health <= 0 and not moveThenKill then
+                if alienStats[i][j].health >= 0 and alienStats[i-1][j].health <= 0 and not moveThenKill then
                     hypnoDone = false
                     GameState:changeStats(i-1,j,i,j)
                     GameState:resetStats(i,j)
-                elseif alienStats[i-1][j].health > 0 and alienStats[i][j].health <= 0  then
+                elseif alienStats[i-1][j].health >= 0 and alienStats[i][j].health <= 0  then
                     hypnoDone = false
                     spotTaken[i][j] = false
                     moveThenKill = false
@@ -580,6 +580,9 @@ function GameState:moveLane(n, thingy)
         if  alienStats[i][j].flyCounter > 2 and not alienStats[i][j].fly then
             alienStats[i][j].fly = true
             alienStats[i][j].flyCounter = 0
+        end
+        if alienStats[i][j].health <= 0 then
+            GameState:reset(i,j)
         end
     end
     end
@@ -634,7 +637,6 @@ function GameState:moveLane(n, thingy)
             end
         end
     end
-
     while alienAlive[1][n] do
         n = math.random(1, 5)
     end
@@ -928,9 +930,9 @@ function GameState:resetStats(i,j)
 end
 
 function GameState:applyPoison()
-    for i = 1, 11 do
+    for i = 1, 10 do
         for j = 1, 5 do
-            if spotTaken[i][j] and alienAlive[i][j] and alienStats[i][j].poisoned and not alienStats[i][lane].immmunity and not GameState:checkGuardian(j) then
+            if alienAlive[i][j] and alienStats[i][j].poisoned and not alienStats[i][j].immmunity and not(GameState:checkGuardian(j)) then
                 alienStats[i][j].health = alienStats[i][j].health - alienStats[i][j].poisonDamage
                 if alienStats[i][j].health <= 0 then
                     GameState:resetStats(i, j)
