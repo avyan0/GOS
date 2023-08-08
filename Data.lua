@@ -182,7 +182,7 @@ function weaponDictionary()
 	Weapons['WallBuilder'] = makeWeapon()
 	Weapons['Hypnosis'] =  makeWeapon(10000,'scarce',0,0,3,0,0,0,0,0,'Hypnosis','all',0,0,'Hypnotises the first alien in all lanes',gWeapons['MindControl']) -- record
 
-	Weapons['GalacticBeam'] =  makeWeapon(14500,'god',0,8000,0,0,0,0,0,0,'Galactic Beam','row',8000,0,'Does 8000 damage a lane',gWeapons['RazorBlade']) -- record
+	Weapons['GalacticBeam'] =  makeWeapon(14500,'god',0,8000,0,0,0,0,0,0,'Galactic Beam','lane',8000,0,'Does 8000 damage a lane',gWeapons['RazorBlade']) -- record
 	Weapons['SolarFlare'] =  makeWeapon(14500,'god',3000,0,0,0,0,0,0,0,'Solar Flare','all',3000,0,'Does 3000 damage to all aliens',gWeapons['Fireball']) -- record
 	Weapons['CometStrike'] = makeWeapon(14500,'god',0,0,0,0,0,0,0,0,'Comet Strike','tile',8000,1,'Does 8000 damage to all aliens in a 3x3 box',gWeapons['Fireball']) -- record
 	Weapons['DeathVirus'] = makeWeapon(14500,'god',0,0,3,0,0,0,0,0,'Death Virus','Random Lane',0,0,'Kills all aliens in a random lane',gWeapons['DeathVirus']) -- record
