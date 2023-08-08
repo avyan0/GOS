@@ -92,6 +92,65 @@ function PauseState:render()
 	love.graphics.draw(gTextures['keyboard'],165,330,20/w2,30/h2)
 	love.graphics.draw(gTextures['keyboard'],195,330,20/w2,30/h2)
 
+    love.graphics.setFont(gFonts['game18'])
+    if data.walls > 0 then
+        love.graphics.printf('Walls',170,500,60,'center')
+        setColor(1,1,1)
+        love.graphics.circle('fill',200,550,30)
+        setColor(0,0,0)
+        love.graphics.printf(data.walls,170,542,60,'center')
+    end
+    if data.teleporter > 0 then
+        love.graphics.print('Teleporter',285,500)
+        setColor(1,1,1)
+        love.graphics.circle('fill',330,550,30)
+        setColor(0,0,0)
+        love.graphics.printf(data.teleporter,300,542,60,'center')
+    end
+    if data.retreat > 0 then
+        love.graphics.printf('Retreat',420,500,80,'center')
+        setColor(1,1,1)
+        love.graphics.circle('fill',460,550,30)
+        setColor(0,0,0)
+        love.graphics.printf(data.retreat,430,542,60,'center')
+    end
+    if data.protection > 0 then
+        love.graphics.printf('Protection',535,500,110,'center')
+        setColor(1,1,1)
+        love.graphics.circle('fill',590,550,30)
+        setColor(0,0,0)
+        love.graphics.printf(data.protection,560,542,60,'center')
+    end
+    if data.electricity > 0 then
+        love.graphics.printf('Electricity',665,500,110,'center')
+        setColor(1,1,1)
+        love.graphics.circle('fill',720,550,30)
+        setColor(0,0,0)
+        love.graphics.printf(data.electricity,690,542,60,'center')
+    end
+    if data.doubleGold > 0 then
+        love.graphics.printf('Double Gold',795,500,110,'center')
+        setColor(1,1,1)
+        love.graphics.circle('fill',850,550,30)
+        setColor(0,0,0)
+        love.graphics.printf(data.doubleGold,820,542,60,'center')
+    end
+    if data.zap > 0 then
+        love.graphics.printf('Zap',925,500,110,'center')
+        setColor(1,1,1)
+        love.graphics.circle('fill',980,550,30)
+        setColor(0,0,0)
+        love.graphics.printf(data.zap,950,542,60,'center')
+    end
+    if data.bomb > 0 then
+        love.graphics.printf('Bomb',1055,500,110,'center')
+        setColor(1,1,1)
+        love.graphics.circle('fill',1110,550,30)
+        setColor(0,0,0)
+        love.graphics.printf(data.bomb,1080,542,60,'center')
+    end
+    
+
 	PauseState:draw()
 	love.graphics.setColor(0,0,0,1-(data.brightness/100))
 	love.graphics.rectangle('fill', 0,0,VIRTUAL_WIDTH,VIRTUAL_HEIGHT)
@@ -103,7 +162,48 @@ function PauseState:mousePressed(x,y)
     	gStateMachine:change('game')
 	end
     if love.clicked(x,y,1000,1220,300,390) then
-        gStateMachine:change('game',true)
+        gStateMachine:change('game','quit')
+    end
+    if data.walls > 0 then
+        if love.clicked(x,y,170,230,520,580) then
+            data.walls = data.walls - 1
+        end
+    end
+    if data.teleporter > 0 then
+        if love.clicked(x,y,300,360,520,580) then
+            data.teleporter = data.teleporter - 1
+        end
+    end
+    if data.retreat > 0 then
+        if love.clicked(x,y,430,490,520,580) then
+            data.retreat = data.retreat - 1
+        end
+    end
+    if data.protection > 0 then
+        if love.clicked(x,y,560,620,520,580) then
+            data.protection = data.protection - 1
+        end
+    end
+    if data.electricity > 0 then
+        if love.clicked(x,y,690,750,520,580) then
+            data.electricity = data.electricity - 1
+        end
+    end
+    if data.doubleGold > 0 then
+        if love.clicked(x,y,820,880,520,580) then
+            data.doubleGold = data.doubleGold - 1
+        end
+    end
+    if data.zap > 0 then
+        if love.clicked(x,y,950,1010,520,580) then
+            data.zap = data.zap - 1
+        end
+    end
+    if data.bomb > 0 then
+        if love.clicked(x,y,1080,1140,520,580) then
+            data.bomb = data.bomb - 1
+            gStateMachine:change('game','bomb')
+        end
     end
 end
 
