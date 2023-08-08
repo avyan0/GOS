@@ -220,9 +220,9 @@ function alienDictionary()
 	Aliens['Morpher'] = makeAlien(5700,1,false,true,'Morpher') -- record
 	Aliens['Fusion'] = makeAlien(10000,1,false,true,'Fusion') -- record
 	Aliens['CommonCrippler'] = makeAlien(13300,1,false,true,'CommonCrippler') -- record
-	Aliens['Splashfest'] = makeAlien(14900,1,false,false,'Splashfest') -- all aliens around it are immune to spalsh damage
+	Aliens['Splashfest'] = makeAlien(15500,1,false,false,'Splashfest') -- done
 	Aliens['Virus'] = makeAlien(17600,1,false,true,'Virus') -- record
-	Aliens['Guardian'] = makeAlien(28800,1,true,false,'Guardian') -- immune to poison damage and knockback and hypnosis, takes all the damage in the lane
+	Aliens['Guardian'] = makeAlien(28800,1,true,false,'Guardian') -- record
 	Aliens['DarkArts'] = makeAlien(20000,1,true,false,'DarkArts') -- record
 	Aliens['Rare'] = makeAlien(23000,1,false,false,'Rare') -- record
 	Aliens['Protected'] = makeAlien(26000,1,false,false,'Protected') -- record
