@@ -27,6 +27,7 @@ local commonBuff = 1
 local rareBuff = 1
 local scarceBuff = 1
 local targetBuff = 1
+local allGood = false
 
 for i = 1, 13 do
     spotTaken[i] = {}
@@ -164,14 +165,21 @@ function GameState:render()
 end
 
 function GameState:update(dt)
-
+    local god = false
     for i = 10,2,-1 do
         for j = 1,5 do
             if alienStats[i][j].immmunity then
                 alienStats[i][j].immmunity = false
             end
+            if alienStats[i][j].name == 'GodOfSpace' then
+                god = true
+            end
         end
     end
+    if god then 
+        allGood = true
+    end
+    god = false
 
     if chooseTile and attacker.aoe == 'tile' then
         if love.keyboard.wasPressed('q') then
@@ -408,7 +416,7 @@ function GameState:spawnAliens()
             elseif alien > Levels[data.currentLevel].joe and alien <= Levels[data.currentLevel].gen57 then
                 alien1 = Aliens['Joe']
             elseif alien > Levels[data.currentLevel].gen57 and alien <= Levels[data.currentLevel].president then
-                alien1 = Aliens['Splashfest']
+                alien1 = Aliens['GodOfSpace']
             elseif alien > Levels[data.currentLevel].president and alien <= Levels[data.currentLevel].king then
                 alien1 = Aliens['Joe']
             elseif alien >  Levels[data.currentLevel].king then
@@ -648,6 +656,12 @@ function GameState:moveLane(n, thingy)
         weapon2Cooldown = weapon2Cooldown -1
         weapon3Cooldown = weapon3Cooldown -1
     end
+    if thingy.name == 'GodOfSpace' then
+        GameState:godRand(thingy)
+        GameState:godRand(thingy)
+        GameState:godRand(thingy)
+    end
+        
     GameState:makeAlien(1,n,thingy.health,thingy.hevalten,thingy.name)
 
     for x = 1,10 do
@@ -849,7 +863,7 @@ function GameState:attackLane(weapon, lane)
                     alien.health = alien.health - (weaponTemp.damageLane * damageBuff)
                 end
             end
-            if weaponTemp.poison > 0 and not GameState:checkGuardian(lane) then
+            if weaponTemp.poison > 0 and not GameState:checkGuardian(lane) and not(allGood) then
                 GameState:checkPoison(weaponTemp.poison,lane)
             end
             if alien.health <= 0 then
@@ -889,7 +903,7 @@ end
 
 function GameState:checkPoison(damage, lane)
     for i = 1, 11 do
-        if spotTaken[i][lane] and alienAlive[i][lane] then
+        if spotTaken[i][lane] and alienAlive[i][lane] and not(allGood) then
             alienStats[i][lane].poisonDamage = damage
             alienStats[i][lane].poisoned = true
         end
@@ -923,7 +937,7 @@ function GameState:resetStats(i,j)
     end
     if alienStats[i][j].name == 'Scarce' then
         scarceBuff = scarceBuff / 0.85
-    end
+    end         
     alienStats[i][j].name = ''
     alienStats[i][j].fly = false
     alienStats[i][j].flyCounter = -1
@@ -936,7 +950,7 @@ end
 function GameState:applyPoison()
     for i = 1, 10 do
         for j = 1, 5 do
-            if alienAlive[i][j] and alienStats[i][j].poisoned and not alienStats[i][j].immmunity and not(GameState:checkGuardian(j)) then
+            if alienAlive[i][j] and alienStats[i][j].poisoned and not alienStats[i][j].immmunity and not(GameState:checkGuardian(j))  and not(allGood) then
                 alienStats[i][j].health = alienStats[i][j].health - alienStats[i][j].poisonDamage
                 if alienStats[i][j].health <= 0 then
                     GameState:resetStats(i, j)
@@ -1012,7 +1026,7 @@ end
 function GameState:stun(weapon, lane)
    local stunCounter = 0
     for i = 10, 1, -1 do
-        if stunCounter < attacker.stun then
+        if stunCounter < attacker.stun and not(allGood) then
             if alienAlive[i][lane] and not alienStats[i][lane].stunned and not alienStats[i][lane].immmunity  then
                 stunCounter = stunCounter + 1
                 alienStats[i][lane].stunned = true
@@ -1150,7 +1164,7 @@ function GameState:knockback(weapon, lane)
     local first = true
     local fixed = false
     for i = 10, 2, -1 do
-        if alienAlive[i][lane] and done and not alienStats[i][lane].immmunity and not GameState:checkGuardian(lane) then
+        if alienAlive[i][lane] and done and not alienStats[i][lane].immmunity and not GameState:checkGuardian(lane) and not(allGood) then
                 done = false
 
             if not(alienAlive[i-1]) then
@@ -1195,27 +1209,31 @@ function GameState:attackFirst(lane)
                 else
                     alienStats[i][lane].health = alienStats[i][lane].health - attacker.damage*(damageBuff*scarceBuff)
                 end
-                if not GameState:checkGuardian(lane) then
-                    if alienStats[i][lane].health > 0 then
-                        alienStats[i][lane].hypno = true
+                if not(allGood) then
+                    if not GameState:checkGuardian(lane) then
+                        if alienStats[i][lane].health > 0 then
+                            alienStats[i][lane].hypno = true
+                        end
                     end
                 end
             elseif attacker.name == 'Hypnosis' then
-                if not GameState:checkGuardian(lane) then
-                    alienStats[i][lane].hypno = true
-                    alienStats[i][lane].health = alienStats[i][lane].health + 1
-                else
-                    alienStats[GameState:findGuardian(j)][j].health = alienStats[GameState:findGuardian(j)][j].health +1
+                if not(allGood) then
+                    if not GameState:checkGuardian(lane) then
+                        alienStats[i][lane].hypno = true
+                        alienStats[i][lane].health = alienStats[i][lane].health + 1
+                    else
+                        alienStats[GameState:findGuardian(lane)][lane].health = alienStats[GameState:findGuardian(lane)][lane].health +1
+                    end
                 end
             elseif GameState:checkGuardian(lane) then
                 if attacker.rarity == 'common' then
-                    alienStats[GameState:findGuardian(j)][j].health = alienStats[GameState:findGuardian(j)][j].health - (attacker.damage * damageBuff * commonBuff)
+                    alienStats[GameState:findGuardian(lane)][lane].health = alienStats[GameState:findGuardian(lane)][lane].health - (attacker.damage * damageBuff * commonBuff)
                 elseif attacker.rarity == 'rare' then
-                    alienStats[GameState:findGuardian(j)][j].health = alienStats[GameState:findGuardian(j)][j].health - (attacker.damage * damageBuff * rareBuff)
+                    alienStats[GameState:findGuardian(lane)][lane].health = alienStats[GameState:findGuardian(lane)][lane].health - (attacker.damage * damageBuff * rareBuff)
                 elseif attacker.rarity == 'scarce' then
-                    alienStats[GameState:findGuardian(j)][j].health = alienStats[GameState:findGuardian(j)][j].health - (attacker.damage * damageBuff * scarceBuff)
+                    alienStats[GameState:findGuardian(lane)][lane].health = alienStats[GameState:findGuardian(lane)][lane].health - (attacker.damage * damageBuff * scarceBuff)
                 else
-                    alienStats[GameState:findGuardian(j)][j].health = alienStats[GameState:findGuardian(j)][j].health - (attacker.damage * damageBuff)
+                    alienStats[GameState:findGuardian(lane)][lane].health = alienStats[GameState:findGuardian(lane)][lane].health - (attacker.damage * damageBuff)
                 end
             elseif attacker.rarity == 'common' then
                 alienStats[i][lane].health = alienStats[i][lane].health - attacker.damage*(damageBuff * commonBuff)
@@ -1240,7 +1258,7 @@ function GameState:Dueltroid(lane)
     local secondCount = 0
     if which == 1 then
         for i = 10, 1, -1 do
-            if alienAlive[i][lane] and first and not alienStats[i][lane].immmunity and not alienStats[i][lane].fly then
+            if alienAlive[i][lane] and first and not alienStats[i][lane].immmunity and not alienStats[i][lane].fly and not(allGood) then
                 first = false
                 alienStats[i][lane].stunned = true
                 alienStats[i][lane].stunDuration = 5
@@ -1248,7 +1266,7 @@ function GameState:Dueltroid(lane)
         end
     else
         for i = 10, 1, -1 do
-            if alienAlive[i][lane] and second and not alienStats[i][lane].immmunity and not alienStats[i][lane].fly then
+            if alienAlive[i][lane] and second and not alienStats[i][lane].immmunity and not alienStats[i][lane].fly and not(allGood) then
                 secondCount = secondCount +1
                 if secondCount >= 2 then second = false end
                 alienStats[i][lane].stunned = true
@@ -1396,7 +1414,7 @@ end
 function GameState:Offguard()
      for i = 10, 1,-1 do
         for j = 1,5 do
-            if alienAlive[i][j] and not alienStats[i][j].stunned and not alienStats[i][j].immmunity then
+            if alienAlive[i][j] and not alienStats[i][j].stunned and not alienStats[i][j].immmunity and not(allGood) then
                 alienStats[i][j].stunned = true
                 alienStats[i][j].stunDuration = 2
             end
@@ -1659,7 +1677,6 @@ function GameState:morph(i,j)
             if stats.name == 'Spaceship' then stats.flyCounter = 0 end
         end
     end
-    print('morphed '..stats.name)
     return stats
 end
 function GameState:makeAlien(row,n,health,hevalten,name)
@@ -1759,6 +1776,30 @@ function GameState:findGuardian(j)
     for i = 10,1,-1 do
         if alienStats[i][j].name == 'Guardian' then
             return i
+        end
+    end
+end
+function GameState:godRand(thingy)
+    local alive3 = false
+    for i = 1,3 do
+        for j = 1,5 do
+            if not alienAlive[i][j] then 
+                alive3 = true 
+            end
+        end
+    end
+    local temp2 = math.random(1,data.aliensUnlocked)
+    if thingy.name == 'GodOfSpace' and alive3 then
+        for k = 1,data.aliensUnlocked do
+            if temp2 == k then
+                local randRow = math.random(1,3)
+                local randLane = math.random(1,5)
+                while alienAlive[randRow][randLane] do
+                    randRow = math.random(1,3)
+                    randLane = math.random(1,5)
+                end
+                GameState:makeAlien(randRow,randLane,Aliensrand[k].health,Aliensrand[k].hevalten,Aliensrand[k].name)
+            end
         end
     end
 end
