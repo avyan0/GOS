@@ -64,6 +64,7 @@ function createNewSave(saveNumber)
 	data.electricity = 7
 	data.protection = 8
 	data.aliensUnlocked = 16
+	data.goldBuff = 1
 	--data.profile = image
 	data.items = {}
 	data.items['Wall'] = true
@@ -229,7 +230,7 @@ function alienDictionary()
 	Aliens['Interdimentional'] = makeAlien(34200,1,false,false,'Interdimentional') -- record
 	Aliens['Scarce'] = makeAlien(40000,1,true,false,'Scarce') -- record
 	Aliens['TheHevalGod'] = makeAlien(46700,1,true,true,'TheHevalGod') -- record
-	Aliens['GodOfSpace'] = makeAlien(50000,1,true,true,'GodOfSpace') -- all aliens are immune to every special effect, when spawned spawn 3 more aliens in the first 3 rows
+	Aliens['GodOfSpace'] = makeAlien(50000,1,true,true,'GodOfSpace') -- done
 	
 	Aliensrand = {}
 	Aliensrand[1] = Aliens['Joe']
