@@ -424,7 +424,7 @@ function GameState:spawnAliens()
             elseif alien > Levels[data.currentLevel].joe and alien <= Levels[data.currentLevel].gen57 then
                 alien1 = Aliens['Joe']
             elseif alien > Levels[data.currentLevel].gen57 and alien <= Levels[data.currentLevel].president then
-                alien1 = Aliens['GodOfSpace']
+                alien1 = Aliens['Joe']
             elseif alien > Levels[data.currentLevel].president and alien <= Levels[data.currentLevel].king then
                 alien1 = Aliens['Joe']
             elseif alien >  Levels[data.currentLevel].king then
@@ -1835,6 +1835,27 @@ function GameState:enter(item)
         elseif stage == 'first' then
             stage = 'third'
             GameState:switchStage()
+        end
+    elseif item == 'zap' then
+        local rand = math.random(1,5)
+        for i = 10, 1, -1 do
+            if not(allGood) then
+                if alienAlive[i][rand] and not alienStats[i][rand].stunned and not alienStats[i][rand].immmunity  then
+                    alienStats[i][rand].stunned = true
+                    alienStats[i][rand].stunDuration = 3
+                end
+            end
+        end
+    elseif item == 'electricity' then
+        for i = 10, 1, -1 do
+            for j = 1,5 do
+                if not(allGood) then
+                    if alienAlive[i][j] and not alienStats[i][j].stunned and not alienStats[i][j].immmunity  then
+                        alienStats[i][j].stunned = true
+                        alienStats[i][j].stunDuration = 2
+                    end
+                end
+            end
         end
     end
 end
