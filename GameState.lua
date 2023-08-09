@@ -52,12 +52,21 @@ for i = 1, 13 do
         alienStats[i][j] = {speed = 1, health = 0, hevalten = false, poisoned = false,poisonDamage = 0, stunned = false, stunDuration = 0, hypno = false,immmunity = false,fly = false,flyCounter = -1,name = '',giant = 0,morph = false}
     end
 end
+walls = {}
+for i = 1,10 do
+    walls[i]= {}
+    for j = 1,5 do
+        walls[i][j] = false
+    end
+end
 
   
 function GameState:render()
     love.graphics.clear()
     local alienW = gTextures['alien']:getWidth()
     local alienH = gTextures['alien']:getHeight()
+    local wallW = gTextures['walls']:getWidth()
+    local wallH = gTextures['walls']:getHeight()
     local alienW1 = gTextures['flyingAlien']:getWidth()
     local alienH1 = gTextures['flyingAlien']:getHeight()
     push:apply('start')
@@ -159,6 +168,9 @@ function GameState:render()
                     love.graphics.print('i',(j*256 - 123),((i-1)*65 + 6))
                     setColor(1,1,1)
                 end
+            end
+            if walls[i][j] then
+                love.graphics.draw(gTextures['walls'],j*256 - 130,(i-1)*65 + 16,0,30 / (wallW - 1), 45 / (wallH - 1))
             end
         end
     end
@@ -420,15 +432,15 @@ function GameState:spawnAliens()
             local alien = math.random(1,100)
              alien1 = nil
             if alien <= Levels[data.currentLevel].joe then
-                alien1 = Aliens['Joe']
+                alien1 = Aliens['Gardener']
             elseif alien > Levels[data.currentLevel].joe and alien <= Levels[data.currentLevel].gen57 then
-                alien1 = Aliens['Joe']
+                alien1 = Aliens['Gardener']
             elseif alien > Levels[data.currentLevel].gen57 and alien <= Levels[data.currentLevel].president then
-                alien1 = Aliens['Joe']
+                alien1 = Aliens['Gardener']
             elseif alien > Levels[data.currentLevel].president and alien <= Levels[data.currentLevel].king then
-                alien1 = Aliens['Joe']
+                alien1 = Aliens['Gardener']
             elseif alien >  Levels[data.currentLevel].king then
-                alien1 = Aliens['Joe']
+                alien1 = Aliens['Gardener']
             end
 
             local lane = 1
@@ -643,9 +655,13 @@ function GameState:moveLane(n, thingy)
                         end
                     end
 
-                    if canMove and not alienStats[i][j].hypno and not alienAlive[destRow][j] then
-                        GameState:changeStats(destRow,j,i,j)
-                        GameState:reset(i,j)
+                    if canMove and not alienStats[i][j].hypno and not alienAlive[destRow][j]then
+                        if not walls[destRow][j] then
+                            GameState:changeStats(destRow,j,i,j)
+                            GameState:reset(i,j)
+                        else
+                            walls[destRow][j] = false
+                        end
                     end
                 end
             else
@@ -896,6 +912,7 @@ function GameState:killAllAliens() -- kills all aliens
             if spotTaken[i][j] and alienAlive[i][j] then
                 GameState:reset(i,j)
             end
+            walls[i][j] = false
         end
     end
 end
@@ -1890,6 +1907,10 @@ function GameState:enter(item)
         data.goldBuff = 2
     elseif item == 'protection' then
         damageBuff = damageBuff * 1.5
+    elseif item == 'walls' then
+        local lane = math.random(1,5)
+        local row = math.random(2,10)
+        walls[row][lane] = true
     end
                 
 end
