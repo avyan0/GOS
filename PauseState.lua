@@ -184,6 +184,7 @@ function PauseState:mousePressed(x,y)
     if data.protection > 0 then
         if love.clicked(x,y,560,620,520,580) then
             data.protection = data.protection - 1
+            gStateMachine:change('game','protection')
         end
     end
     if data.electricity > 0 then
