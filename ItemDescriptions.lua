@@ -4,7 +4,7 @@ function ItemDescriptions:render()
 	if hi == 'The item places a wall on any tile of your choosing. This wall blocks the movement of almost all aliens for a single turn, which means that if an alien is on the tile before the wall, it will be prevented from moving on that space for one turn.' then
 		var = data.walls
 	end
-	if hi == 'When used, you place down 1 teleporter, this teleporter will send aliens back 3 spaces, the alien will no longer be affected by the teleporter. 10 turns after placing the 1st teleporter, you will get a second teleporter to place. Now, when an alien steps on either teleporter, they will be teleported to the other' then
+	if hi == 'Kills one random alien on screen' then
 		var = data.teleporter
 	end
 	if hi == 'This item allows the user to skip a stage in a level. When activated, the user is instantly transported to the next stage, or if activated at the third stage, then finishes the level.' then
@@ -19,7 +19,7 @@ function ItemDescriptions:render()
 	if hi == 'This item doubles the gold gained for the level it is activated on. This item has to be used during the level.' then
 		var = data.doubleGold
 	end
-	if hi == 'This item stuns every alien in any lane of your choosing for 2 turns. Other aliens could spawn in that lane and move. When an alien is stunned, it cannot move for a specific amount of time, in this case 2 turns.' then
+	if hi == 'This item stuns every alien in a random lane for 3 turns. Other aliens could spawn in that lane and move. When an alien is stunned, it cannot move for a specific amount of time, in this case 3 turns.' then
 		var = data.zap
 	end
 	if hi == '“This item allows the user to skip 2 stages in a level. When activated, the user is instantly transported to the 3rd stage, or if activated at 2cd or 3rd then finishes the level.' then
