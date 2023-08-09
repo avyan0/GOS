@@ -55,7 +55,8 @@ function love.load()
         ['p6Background'] = love.graphics.newImage('Pictures/Level Select Screen/P6Background.png'),
         ['gameBackground1'] = love.graphics.newImage('states/homeState/game/things/gameBackground1.png'),
         ['alien'] = love.graphics.newImage('states/homeState/game/things/alien.jpg'),
-        ['flyingAlien'] = love.graphics.newImage('states/homeState/game/things/flyingAlien.jpg')
+        ['flyingAlien'] = love.graphics.newImage('states/homeState/game/things/flyingAlien.jpg'),
+        ['walls'] = love.graphics.newImage('states/homeState/game/things/walls.png') 
 	}
 
     gWeapons = {
@@ -131,7 +132,7 @@ function love.load()
         
     }
     makeLevel()
-    gStateMachine:change('pause')
+    gStateMachine:change('game')
 
 
     love.keyboard.keysPressed = {}
