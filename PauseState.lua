@@ -187,16 +187,19 @@ function PauseState:mousePressed(x,y)
     if data.electricity > 0 then
         if love.clicked(x,y,690,750,520,580) then
             data.electricity = data.electricity - 1
+            gStateMachine:change('game','electricity')
         end
     end
     if data.doubleGold > 0 then
         if love.clicked(x,y,820,880,520,580) then
             data.doubleGold = data.doubleGold - 1
+            
         end
     end
     if data.zap > 0 then
         if love.clicked(x,y,950,1010,520,580) then
             data.zap = data.zap - 1
+            gStateMachine:change('game','zap')
         end
     end
     if data.bomb > 0 then
