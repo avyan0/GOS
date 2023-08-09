@@ -1888,6 +1888,8 @@ function GameState:enter(item)
         GameState:resetStats(i,j)
     elseif item == 'gold' then
         data.goldBuff = 2
+    elseif item == 'protection' then
+        damageBuff = damageBuff * 1.5
     end
                 
 end
