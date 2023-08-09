@@ -167,6 +167,7 @@ function PauseState:mousePressed(x,y)
     if data.walls > 0 then
         if love.clicked(x,y,170,230,520,580) then
             data.walls = data.walls - 1
+            gStateMachine:change('game','walls')
         end
     end
     if data.teleporter > 0 then
