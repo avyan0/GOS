@@ -15,17 +15,20 @@ function WinState:render()
     local planet = tonumber(string.match(data.currentLevel,'%d+'))
     local gold = 0
     if planet == 1 then
-        gold = 10
+        gold = 10 * data.goldBuff
     elseif planet == 2 then
-        gold = 15
+        gold = 15* data.goldBuff
     elseif planet == 3 then
-        gold = 22
+        gold = 22* data.goldBuff
     elseif planet == 4 then
-        gold = 30
+        gold = 30* data.goldBuff
     elseif planet ==5 then
-        gold = 38
+        gold = 38* data.goldBuff
     elseif planet == 6 then
-        gold = 48
+        gold = 48* data.goldBuff
+    end
+    if data.goldBuff ~= 1 then
+        data.goldBuff = 1
     end
     data.gold = data.gold + gold
 
