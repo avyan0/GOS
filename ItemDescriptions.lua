@@ -10,7 +10,7 @@ function ItemDescriptions:render()
 	if hi == 'This item allows the user to skip a stage in a level. When activated, the user is instantly transported to the next stage, or if activated at the third stage, then finishes the level.' then
 		var = data.retreat
 	end
-	if hi == 'This item helps walls on the field by making them impossible to avoid. This makes some aliens unable to fly or jump over it. This item also prevents alien abilities from destroying walls. In addition, when aliens try to break walls that are on the field right now, they take 2 extra turns.' then
+	if hi == 'All damage is boosted by 50% for the rest of the stage' then
 		var = data.protection
 	end
 	if hi == 'This item stuns every alien in the entire battlefield for 1 turn. Other aliens could spawn and move. When an alien is stunned, it cannot move for a specific amount of turns, for this item,it is 1.' then
