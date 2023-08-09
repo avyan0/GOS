@@ -1886,6 +1886,8 @@ function GameState:enter(item)
             j = math.random(1,5)
         end
         GameState:resetStats(i,j)
+    elseif item == 'gold' then
+        data.goldBuff = 2
     end
                 
 end
