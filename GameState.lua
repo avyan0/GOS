@@ -1857,7 +1857,37 @@ function GameState:enter(item)
                 end
             end
         end
+    elseif item == 'retreat' then
+        if stage == 'second' then
+            stage = 'third'
+            GameState:switchStage()
+        elseif stage == 'third' then
+            stage = 'first'
+            GameState:switchStage()
+            gStateMachine:change('win')
+        elseif stage == 'first' then
+            stage = 'second'
+            GameState:switchStage()
+        end
+    elseif item == 'teleporter' then
+        local done = false
+        local i = math.random(1,10)
+        local j = math.random(1,5)
+        local alive = false
+        for a = 1,10 do
+            for b =1,5 do
+                if alienAlive[a][b] then
+                    alive = true
+                end
+            end
+        end
+        while not alienAlive[i][j] and alive do
+            i = math.random(1,10)
+            j = math.random(1,5)
+        end
+        GameState:resetStats(i,j)
     end
+                
 end
 function GameState:switchStage()
     weapon1Clicked = false
