@@ -195,7 +195,7 @@ function PauseState:mousePressed(x,y)
     if data.doubleGold > 0 then
         if love.clicked(x,y,820,880,520,580) then
             data.doubleGold = data.doubleGold - 1
-            
+            gStateMachine:change('game','gold')
         end
     end
     if data.zap > 0 then
