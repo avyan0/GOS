@@ -172,11 +172,13 @@ function PauseState:mousePressed(x,y)
     if data.teleporter > 0 then
         if love.clicked(x,y,300,360,520,580) then
             data.teleporter = data.teleporter - 1
+            gStateMachine:change('game','teleporter')
         end
     end
     if data.retreat > 0 then
         if love.clicked(x,y,430,490,520,580) then
             data.retreat = data.retreat - 1
+            gStateMachine:change('game','retreat')
         end
     end
     if data.protection > 0 then
