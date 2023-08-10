@@ -134,7 +134,7 @@ function GameState:render()
     end
     setColor(0,172/255,102/255)
     love.graphics.setFont(gFonts['game25'])
-    love.graphics.printf(stage,1055,680,150,'center')
+    love.graphics.printf(damageBuff,1055,680,150,'center')
 
     
     setColor(1,1,1)
@@ -487,10 +487,11 @@ function GameState:moveLane(n, thingy)
     local allAliensDone = false
     stellar = stellar -1
     local counter = 0
-    if stellar == 1 or stellar == 2 then        
-        damageBuff = 1.1
-    else
-        damageBuff = 1
+    if stellar == 2 then        
+        damageBuff = damageBuff /1.2
+        damageBuff = damageBuff*1.1
+    elseif stellar == 0 then
+        damageBuff = damageBuff/1.1
     end
     
     for a = 10,1,-1 do
@@ -784,6 +785,9 @@ function GameState:attack(weapon)
     if attacker.aoe == 'buff' then
         GameState:StellarBoost()
         stellar = 3
+    end
+    if attacker.name == 'Protected' then
+        GameState:protected()
     end
     if attacker.name == 'Grenade Launcher' then
         GameState:GrenadeLancher()
@@ -1175,7 +1179,7 @@ function GameState:LaserKill(lane)
 end
 
 function GameState:StellarBoost()
-    damageBuff = 1.2
+    damageBuff = damageBuff * 1.2
 end
 
 function GameState:ThunderStrike(lane)
@@ -1934,7 +1938,6 @@ function GameState:enter(item)
         end
     end
 end
-
 function checkAllLanesFull()
     for j = 1, 5 do
         if goodLane(j) then
@@ -1943,7 +1946,6 @@ function checkAllLanesFull()
     end
     return false
 end
-
 function goodLane(j)
     return checkLane(j) and checkWall(j)
 end
@@ -1980,4 +1982,7 @@ function checkWall(j)
         end
     end
     return false
+end
+function GameState:protected()
+    damageBuff = damageBuff * 1.0125
 end
