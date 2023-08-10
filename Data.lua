@@ -180,7 +180,7 @@ function weaponDictionary()
 	Weapons['LaserBeam'] = makeWeapon(10000,'scarce',0,0,0,0,0,0,0,0,'Laser Beam','lane',6000,0,'Kills all aliens in a lane who have less than 6000 health',gWeapons['LaserDeath']) -- Record
 	Weapons['MindBlast'] = makeWeapon(10000,'scarce',0,0,2,0,0,0,0,0,'Mind Blast','lane',7001,0,'Does 7001 damage to the first alien in a lane, if it survives then it will hypnotise that alien',gWeapons['MagicGun']) -- record
 	Weapons['GrenadeLauncher'] =  makeWeapon(10000,'scarce',0,0,0,0,0,0,0,0,'Grenade Launcher','row',3950,0,'Does 3950 damage to the first and last row of aliens',gWeapons['Grenade']) -- record
-	Weapons['WallBuilder'] = makeWeapon()
+	Weapons['Protected'] = makeWeapon(10000,'scarce',0,400,2,0,0,0,0,0,'Protected','lane',400,0,'Buffs all damage by 1.25% for the rest of the stage and does 400 damage to a lane',gWeapons['Walls']) -- Record
 	Weapons['Hypnosis'] =  makeWeapon(10000,'scarce',0,0,3,0,0,0,0,0,'Hypnosis','all',0,0,'Hypnotises the first alien in all lanes',gWeapons['MindControl']) -- record
 
 	Weapons['GalacticBeam'] =  makeWeapon(14500,'god',0,8000,0,0,0,0,0,0,'Galactic Beam','lane',8000,0,'Does 8000 damage a lane',gWeapons['RazorBlade']) -- record
@@ -214,9 +214,9 @@ function alienDictionary()
 	Aliens['VRWorkout'] = makeAlien(3500,1,false,false,'VRWorkout') -- record
 	Aliens['OldGranny'] = makeAlien(3700,1,false,true,'OldGranny') -- record
 	Aliens['Albot'] = makeAlien(3000,1,true,false,'Albot') -- record
-	Aliens['Jumper'] = makeAlien(4900,1,false,true,'Jumper') -- WALLS
-	Aliens['Giant'] = makeAlien(12700,1,false,false,'Giant') -- recrd
-	Aliens['Gardener'] = makeAlien(8200,1,false,false,'Gardener') -- walls can not be placed in the lane the gardener is in
+	Aliens['Jumper'] = makeAlien(4900,1,false,true,'Jumper') -- DONENENENE
+	Aliens['Giant'] = makeAlien(12700,1,false,false,'Giant') -- done
+	Aliens['Gardener'] = makeAlien(8200,1,false,false,'Gardener') -- DONE
 	Aliens['Army'] = makeAlien(9400,1,true,false,'Army') -- record
 	Aliens['Morpher'] = makeAlien(5700,1,false,true,'Morpher') -- record
 	Aliens['Fusion'] = makeAlien(10000,1,false,true,'Fusion') -- record
