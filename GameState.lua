@@ -53,7 +53,7 @@ for i = 1, 13 do
     end
 end
 walls = {}
-for i = 1,10 do
+for i = 1,12 do
     walls[i]= {}
     for j = 1,5 do
         walls[i][j] = false
@@ -434,13 +434,13 @@ function GameState:spawnAliens()
             if alien <= Levels[data.currentLevel].joe then
                 alien1 = Aliens['Gardener']
             elseif alien > Levels[data.currentLevel].joe and alien <= Levels[data.currentLevel].gen57 then
-                alien1 = Aliens['Gardener']
+                alien1 = Aliens['Jumper']
             elseif alien > Levels[data.currentLevel].gen57 and alien <= Levels[data.currentLevel].president then
-                alien1 = Aliens['Gardener']
+                alien1 = Aliens['Jumper']
             elseif alien > Levels[data.currentLevel].president and alien <= Levels[data.currentLevel].king then
-                alien1 = Aliens['Gardener']
+                alien1 = Aliens['Jumper']
             elseif alien >  Levels[data.currentLevel].king then
-                alien1 = Aliens['Gardener']
+                alien1 = Aliens['Jumper']
             end
 
             local lane = 1
@@ -655,12 +655,21 @@ function GameState:moveLane(n, thingy)
                         end
                     end
 
-                    if canMove and not alienStats[i][j].hypno and not alienAlive[destRow][j]then
+                    if canMove and not alienStats[i][j].hypno and not alienAlive[destRow][j] then
                         if not walls[destRow][j] then
-                            GameState:changeStats(destRow,j,i,j)
-                            GameState:reset(i,j)
+                                GameState:changeStats(destRow,j,i,j)
+                                GameState:reset(i,j)
                         else
-                            walls[destRow][j] = false
+                            if alienStats[i][j].name == 'Jumper' then
+                                local temp = 1
+                                while walls[destRow + temp][j] do
+                                    temp = temp +1
+                                end
+                                GameState:changeStats(destRow + temp,j,i,j)
+                                GameState:reset(i,j)
+                            else
+                                walls[destRow][j] = false
+                            end
                         end
                     end
                 end
@@ -1910,6 +1919,10 @@ function GameState:enter(item)
     elseif item == 'walls' then
         local lane = math.random(1,5)
         local row = math.random(2,10)
+        while walls[row][lane] do
+            lane=  math.random(1,5)
+            row = math.random(2,10)
+        end
         walls[row][lane] = true
     end
                 
