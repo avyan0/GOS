@@ -434,13 +434,13 @@ function GameState:spawnAliens()
             if alien <= Levels[data.currentLevel].joe then
                 alien1 = Aliens['Gardener']
             elseif alien > Levels[data.currentLevel].joe and alien <= Levels[data.currentLevel].gen57 then
-                alien1 = Aliens['Jumper']
+                alien1 = Aliens['Gardener']
             elseif alien > Levels[data.currentLevel].gen57 and alien <= Levels[data.currentLevel].president then
-                alien1 = Aliens['Jumper']
+                alien1 = Aliens['Gardener']
             elseif alien > Levels[data.currentLevel].president and alien <= Levels[data.currentLevel].king then
-                alien1 = Aliens['Jumper']
+                alien1 = Aliens['Gardener']
             elseif alien >  Levels[data.currentLevel].king then
-                alien1 = Aliens['Jumper']
+                alien1 = Aliens['Gardener']
             end
 
             local lane = 1
@@ -1917,15 +1917,35 @@ function GameState:enter(item)
     elseif item == 'protection' then
         damageBuff = damageBuff * 1.5
     elseif item == 'walls' then
-        local lane = math.random(1,5)
-        local row = math.random(2,10)
-        while walls[row][lane] do
-            lane=  math.random(1,5)
-            row = math.random(2,10)
+        local allLanesFull = checkAllLanesFull()
+
+        if not allLanesFull then
+            data.walls = data.walls + 1
+        else
+            local lane = math.random(1, 5)
+            while not goodLane(lane) do
+                lane = math.random(1, 5)
+            end
+            local row = math.random(2,10)
+            while walls[row][lane] do
+                row = math.random(2,10)
+            end
+            walls[row][lane] = true
         end
-        walls[row][lane] = true
     end
-                
+end
+
+function checkAllLanesFull()
+    for j = 1, 5 do
+        if goodLane(j) then
+            return true
+        end
+    end
+    return false
+end
+
+function goodLane(j)
+    return checkLane(j) and checkWall(j)
 end
 function GameState:switchStage()
     weapon1Clicked = false
@@ -1944,4 +1964,20 @@ function GameState:switchStage()
     targetBuff = 1
     chooseTile = false
     GameState:killAllAliens()
+end
+function checkLane(j)
+    for i = 1,10 do
+        if alienStats[i][j].name == 'Gardener' then
+            return false
+        end
+    end
+    return true
+end
+function checkWall(j)
+    for i = 2,10 do
+        if not walls[i][j] then
+            return true
+        end
+    end
+    return false
 end
