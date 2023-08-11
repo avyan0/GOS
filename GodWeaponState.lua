@@ -30,7 +30,7 @@ function GodWeaponState.render()
 	love.graphics.setColor(235/255,73/255,152/255)
 	love.graphics.rectangle('fill',980,120,280,180)
 	love.graphics.setColor(1,222/255,222/255)
-	love.graphics.printf('Death virus',980,285,280,'center')
+	love.graphics.printf('Death Virus',980,285,280,'center')
 	end
 	if data.weapons['VoidBurst'] then
 	love.graphics.setColor(235/255,73/255,152/255)
@@ -132,5 +132,26 @@ end
 function GodWeaponState:mousePressed(x,y)
 	if love.clicked(x,y,0,320,0,90) then
     	gStateMachine:change('weapons')
+	end
+	if love.clicked(x,y,20,300,120,300) then
+		gStateMachine:change('weaponInfo',Weapons['GalacticBeam'])
+	end
+	if love.clicked(x,y,340,620,120,300) then
+		gStateMachine:change('weaponInfo',Weapons['SolarFlare'])
+	end
+	if love.clicked(x,y,640,920,120,300) then
+		gStateMachine:change('weaponInfo',Weapons['CometStrike'])
+	end
+	if love.clicked(x,y,980,980 + 280,120,300) then
+		gStateMachine:change('weaponInfo',Weapons['DeathVirus'])
+	end
+	if love.clicked(x,y,20,300,330,510) then
+		gStateMachine:change('weaponInfo',Weapons['VoidBurst'])
+	end
+	if love.clicked(x,y,340,340 + 280,330,510) then
+		gStateMachine:change('weaponInfo',Weapons['CelestialDisruption'])
+	end
+	if love.clicked(x,y,660,660 + 280,330,510) then
+		gStateMachine:change('weaponInfo',Weapons['QuantumFlux'])
 	end
 end
