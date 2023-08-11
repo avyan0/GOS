@@ -134,7 +134,7 @@ function GameState:render()
     end
     setColor(0,172/255,102/255)
     love.graphics.setFont(gFonts['game25'])
-    love.graphics.printf(damageBuff,1055,680,150,'center')
+    love.graphics.printf(alienCounter,1055,680,150,'center')
 
     
     setColor(1,1,1)
@@ -440,7 +440,7 @@ function GameState:spawnAliens()
             elseif alien > Levels[data.currentLevel].president and alien <= Levels[data.currentLevel].king then
                 alien1 = Aliens['Gardener']
             elseif alien >  Levels[data.currentLevel].king then
-                alien1 = Aliens['Gardener']
+                alien1 = Aliens['Fusion']
             end
 
             local lane = 1
@@ -589,10 +589,10 @@ function GameState:moveLane(n, thingy)
                     hypnoDone = false
                     spotTaken[i][j] = false
                     moveThenKill = false
-                    GameState:resetStats(i,j)
+                    GameState:reset(i,j)
                 end
                 if moveThenKill and win then
-                    GameState:reset(i-1,j)
+                    GameState:resetStats(i-1,j)
                 end
                 moveThenKill = false
 
@@ -714,8 +714,8 @@ function GameState:moveLane(n, thingy)
                     end
                     local tempHold = (alienStats[tempRow][tempLane].health + alienStats[tempRow1][tempLane1].health)*1.5
                     local tempAlien = nil
-                    GameState:resetStats(tempRow,tempLane)
-                    GameState:resetStats(tempRow1,tempLane1)
+                    GameState:reset(tempRow,tempLane)
+                    GameState:reset(tempRow1,tempLane1)
                     for l = 1,27 do
                         if Aliensrand[l].health >= tempHold then
                             tempAlien = Aliensrand[l]
@@ -911,7 +911,7 @@ function GameState:attackLane(weapon, lane)
             end
             if alien.name == 'OldGranny' and alien.health ~= preHealth and not alienAlive[i+1][lane] and not GameState:checkGuardian(lane)then
                 GameState:changeStats(i+1,lane,i,lane)
-                GameState:resetStats(i,lane)
+                GameState:reset(i,lane)
             end
             GameState:spawnRand(alien,preHealth)
         end
@@ -1437,7 +1437,7 @@ function GameState:DeathVirus()
     for i = 10,1,-1 do
         if alienAlive[i][lane] and not alienStats[i][lane].immmunity and not alienStats[i][lane].fly  then
             alienAlive[i][lane] = false
-            GameState:reset(i,lane)
+            GameState:resetStats(i,lane)
 
         end
     end
@@ -1638,7 +1638,7 @@ function GameState:makeDead()
     for i = 10,1,-1 do
         for j = 1,5 do
             if alienStats[i][j].health <= 0 then
-                GameState:reset(i,j)
+                GameState:resetStats(i,j)
 
             end
         end
@@ -1801,7 +1801,7 @@ function GameState:upgrade()
                 if alienAlive[i][j] and alienStats[i][j].name == Aliensrand[num].name then
                     local health = alienStats[i][j].health
                     local name = alienStats[i][j].name
-                    GameState:resetStats(i,j)
+                    GameState:reset(i,j)
                     GameState:makeAlien(i,j,(health/(Aliens[name].health))*Aliensrand[num+1].health,Aliensrand[num+1].hevalten,Aliensrand[num+1].name)
                 end
             end
