@@ -1089,7 +1089,7 @@ function GameState:starBlast(row,lane)
         end
         GameState:spawnRand(alienStats[row][lane])
     end
-    if lane -1 > 0 and not alienStats[row][lane-1].immmunity and not(alienStats[row][lane-1].name == 'Splashfest') then
+    if lane -1 > 0 and not alienStats[row][lane-1].immmunity and not(alienStats[row][lane-1].name == 'Splashfest') and alienAlive[row][lane-1] then
         if alienAlive[row][lane-1] then
             if GameState:checkGuardian(lane) then
                 alienStats[GameState:findGuardian(lane-1)][lane-1].health = alienStats[GameState:findGuardian(lane-1)][lane-1].health - (attacker.damageLane * damageBuff * commonBuff)
@@ -1102,7 +1102,7 @@ function GameState:starBlast(row,lane)
             GameState:spawnRand(alienStats[row][lane-1])
         end
     end
-    if lane +1 < 6 and not alienStats[row][lane+1].immmunity and not(alienStats[row][lane+1].name == 'Splashfest') then
+    if lane +1 < 6 and not alienStats[row][lane+1].immmunity and not(alienStats[row][lane+1].name == 'Splashfest') and alienAlive[row][lane+1] then
         if alienAlive[row][lane+1] then
             if GameState:checkGuardian(lane) then
                 alienStats[GameState:findGuardian(lane+1)][lane+1].health = alienStats[GameState:findGuardian(lane+1)][lane+1].health - (attacker.damageLane * damageBuff * commonBuff)
@@ -1115,7 +1115,7 @@ function GameState:starBlast(row,lane)
             GameState:spawnRand(alienStats[row][lane+1])
         end
     end
-    if row +1 < 11 and not alienStats[row+1][lane].immmunity and not(alienStats[row+1][lane].name == 'Splashfest') then
+    if row +1 < 11 and not alienStats[row+1][lane].immmunity and not(alienStats[row+1][lane].name == 'Splashfest') and alienAlive[row+1][lane] then
         if alienAlive[row+1][lane] then
             if GameState:checkGuardian(lane) then
                 alienStats[GameState:findGuardian(lane)][lane].health = alienStats[GameState:findGuardian(lane)][lane].health - (attacker.damageLane * damageBuff * commonBuff)
@@ -1128,7 +1128,7 @@ function GameState:starBlast(row,lane)
             GameState:spawnRand(alienStats[row+1][lane])
         end
     end
-    if row +2 < 11 and not alienStats[row+2][lane].immmunity and not(alienStats[row+2][lane].name == 'Splashfest') then
+    if row +2 < 11 and not alienStats[row+2][lane].immmunity and not(alienStats[row+2][lane].name == 'Splashfest') and alienAlive[row+2][lane] then
         if alienAlive[row+2][lane] then
             if GameState:checkGuardian(lane) then
                 alienStats[GameState:findGuardian(lane)][lane].health = alienStats[GameState:findGuardian(lane)][lane].health - (attacker.damageLane * damageBuff * commonBuff)
@@ -1141,7 +1141,7 @@ function GameState:starBlast(row,lane)
             GameState:spawnRand(alienStats[row+2][lane])
         end
     end
-    if row -1 > 0 and not alienStats[row-1][lane].immmunity and not(alienStats[row-1][lane].name == 'Splashfest') then
+    if row -1 > 0 and not alienStats[row-1][lane].immmunity and not(alienStats[row-1][lane].name == 'Splashfest') and alienAlive[row-1][lane] then
         if alienAlive[row-1][lane] then
             if GameState:checkGuardian(lane) then
                 alienStats[GameState:findGuardian(lane)][lane].health = alienStats[GameState:findGuardian(lane)][lane].health - (attacker.damageLane * damageBuff * commonBuff)
@@ -1154,7 +1154,7 @@ function GameState:starBlast(row,lane)
             GameState:spawnRand(alienStats[row-1][lane])
         end
     end
-    if row -2 > 0 and not alienStats[row-2][lane].immmunity and not(alienStats[row-2][lane].name == 'Splashfest') then
+    if row -2 > 0 and not alienStats[row-2][lane].immmunity and not(alienStats[row-2][lane].name == 'Splashfest') and alienAlive[row-2][lane] then
         if alienAlive[row-2][lane] then
             if GameState:checkGuardian(lane) then
                 alienStats[GameState:findGuardian(lane)][lane].health = alienStats[GameState:findGuardian(lane)][lane].health - (attacker.damageLane * damageBuff * commonBuff)
@@ -1637,7 +1637,7 @@ end
 function GameState:makeDead()
     for i = 10,1,-1 do
         for j = 1,5 do
-            if alienStats[i][j].health <= 0 then
+            if alienStats[i][j].health <= 0 and alienAlive[i][j] then
                 GameState:resetStats(i,j)
 
             end
