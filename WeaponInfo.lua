@@ -18,7 +18,7 @@ function WeaponInfo:render()
 	love.graphics.setColor(1,1,1)
 	local w = self.weapon1.image:getWidth()
 	local h = self.weapon1.image:getWidth()
-	love.graphics.draw(self.weapon1.image,VIRTUAL_WIDTH/2 - 135,150,0,240/(w-1),200/(h-1))
+	love.graphics.draw(self.weapon1.image,VIRTUAL_WIDTH/2 - 135,150,0,180/(w-1),150/(h-1))
 	love.graphics.setColor(0,0,0,1-(data.brightness/100))
 	love.graphics.rectangle('fill', 0,0,VIRTUAL_WIDTH,VIRTUAL_HEIGHT)
 
