@@ -152,16 +152,16 @@ function CommonWeaponState:mousePressed(x,y)
 		gStateMachine:change('weaponInfo',Weapons['AstroidRain'])
 	end
 	if love.clicked(x,y,340,620,120,300) then
-		gStateMachine:change('weaponInfo',Weapons['PoisonDart'])
+		gStateMachine:change('weaponInfo',Weapons['PoisonArrow'])
 	end
 	if love.clicked(x,y,640,920,120,300) then
-		gStateMachine:change('weaponInfo',Weapons['Targeted'])
+		gStateMachine:change('weaponInfo',Weapons['TripleThreat'])
 	end
 	if love.clicked(x,y,980,980 + 280,120,300) then
-		gStateMachine:change('weaponInfo',Weapons['RazorThrower'])
+		gStateMachine:change('weaponInfo',Weapons['CosmicFire'])
 	end
 	if love.clicked(x,y,20,300,330,510) then
-		gStateMachine:change('weaponInfo',Weapons['Lightning'])
+		gStateMachine:change('weaponInfo',Weapons['Astrobolt'])
 	end
 	if love.clicked(x,y,340,340 + 280,330,510) then
 		gStateMachine:change('weaponInfo',Weapons['StarBlast'])
@@ -170,6 +170,6 @@ function CommonWeaponState:mousePressed(x,y)
 		gStateMachine:change('weaponInfo',Weapons['LaserKill'])
 	end
 	if love.clicked(x,y,980,980 + 280,330,510) then
-		gStateMachine:change('weaponInfo',Weapons['Buffer'])
+		gStateMachine:change('weaponInfo',Weapons['StellarBoost'])
 	end
 end
