@@ -54,6 +54,7 @@ function WinState:render()
     love.graphics.setFont(gFonts['game'])
     love.graphics.printf('Play again',60,527,350,'center')
     love.graphics.printf('Go To Home',870,527,350,'center')
+    data.wins = data.wins + 1
     love.setBright()
 
     push:apply('end')
