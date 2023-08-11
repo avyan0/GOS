@@ -166,7 +166,7 @@ function weaponDictionary()
 	Weapons['StellarBoost'] = makeWeapon(3000,'common',0,0,3,0,0,0,0,0,'Stellar Boost','buff',0,0,'Buffs all your weapons damage by 20 percent this turn and 10 percent for the next 2 turns',gWeapons['Buffer']) -- works
 
 	Weapons['ThunderStrike'] = makeWeapon(6500,'rare',0,700,0,0,0,0,0,0,'Thunder Strike','lane',700,0,'Attacks a lane for 700 damage and has a 33% chance to stun the first alien, if sucsessful, the stun keeps going with the same chance',gWeapons['ElectricBall'])-- doen
-	Weapons['BattleRam'] = makeWeapon(6500,'rare',0,0,0,0,1,0,0,0,'Battle Ram','lane',1050,0,'Attacks the first alien in a lane for 1400 damage and knocks them back 1 tile',gWeapons['SwordShield'])
+	Weapons['BattleRam'] = makeWeapon(6500,'rare',0,0,0,0,1,0,0,0,'Battle Ram','lane',1050,0,'Attacks the first alien in a lane for 1050 damage and knocks them back 1 tile',gWeapons['SwordShield'])
 	Weapons['ElectroJolt'] = makeWeapon(6500,'rare',0,0,2,0,0,0,0,10,'Electric Jolt','lane',0,0,'Stuns the whole lane for 1 turn',gWeapons['ElectroShock'],1) -- record
 	Weapons['DaggerThrow'] =  makeWeapon(6500,'rare',0,900,0,0,0,0,0,0,'Dagger Throw','lane',900,0,'Does 900 damage to the lane',gWeapons['PiercingSword']) -- record
 	Weapons['Hevalstruck'] = makeWeapon(6500,'rare',0,0,0,0,0,0,0,0,'Hevalstruck','lane',1200,0,'Does 1200 to the first alien in the lane, does double the damage if the alien is a hevalten',gWeapons['Hevalstruck']) -- record
