@@ -157,7 +157,7 @@ end
 function weaponDictionary()
 	Weapons = {}
 	Weapons['AstroidRain'] = makeWeapon(3000,'common',250,0,2,0,0,0,0,0,'Astroid Rain','all',250,0,'Attakcs all aliens in all lanes',gWeapons['AsteroidRain']) --works
-	Weapons['PoisonArrow'] = makeWeapon(3000,'common',0,150,1,0,0,75,0,0,'Posion Arrow','lane',150,0,'Attacks a whole lane and poisons all aliens',gWeapons['PoisonDart']) --works
+	Weapons['PoisonArrow'] = makeWeapon(3000,'common',0,150,1,0,0,75,0,0,'Posion Arrow','lane',150,0,'Attacks a whole lane and poisons all aliens for 75 damage',gWeapons['PoisonDart']) --works
 	Weapons['TripleThreat'] = makeWeapon(3000,'common',0,0,0,275,0,0,0,0,'Triple Threat','tile',275,3,'Attacks 3 specifc tiles of your choosing',gWeapons['Targeted']) --works
 	Weapons['CosmicFire'] = makeWeapon(3000,'common',0,250,0,0,0,0,0,0,'Cosmic Fire','lane',250,0,'Attacks all aliens in a lane',gWeapons['RazorThrower']) --works
 	Weapons['Astrobolt'] = makeWeapon(3000,'common',0,100,0,0,0,0,0,2,'Astrobolt','lane',100,0,'Attacks all aliens in a lane and stuns the first two for one turn',gWeapons['Lightning'],1) -- works
@@ -189,7 +189,7 @@ function weaponDictionary()
 	Weapons['DeathVirus'] = makeWeapon(14500,'god',0,0,3,0,0,0,0,0,'Death Virus','Random Lane',0,0,'Kills all aliens in a random lane',gWeapons['DeathVirus']) -- record
 	Weapons['VoidBurst'] = makeWeapon(14500,'god',0,0,0,11000,0,0,0,0,'Void Burst','tile',11000,3,'Does 11000 to 3 tiles of your choice',gWeapons['Cannon']) -- record
 	Weapons['CelestialDisruption'] = makeWeapon(14500,'god',0,0,0,0,0,0,0,0,'Celestial Disruption','lane',0,0,'Makes 4 non-hevaltens go to 1 health in that row',gWeapons['Wipeout']) -- record
-	Weapons['QuantumFlux'] = makeWeapon(14500,'god',0,0,0,0,0,0,0,0,'Solar Flare','all',3000,0,'Does 3000 damage to all aliens',gWeapons['Fireball']) -- record
+	Weapons['QuantumFlux'] = makeWeapon(14500,'god',0,0,0,0,0,0,0,0,'Quantum Flux','all',3000,0,'Does 3000 damage to all aliens',gWeapons['Transformer']) -- record
 end
 
 
