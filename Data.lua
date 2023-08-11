@@ -189,7 +189,7 @@ function weaponDictionary()
 	Weapons['DeathVirus'] = makeWeapon(14500,'god',0,0,3,0,0,0,0,0,'Death Virus','Random Lane',0,0,'Kills all aliens in a random lane',gWeapons['DeathVirus']) -- record
 	Weapons['VoidBurst'] = makeWeapon(14500,'god',0,0,0,11000,0,0,0,0,'Void Burst','tile',11000,3,'Does 11000 to 3 tiles of your choice',gWeapons['Cannon']) -- record
 	Weapons['CelestialDisruption'] = makeWeapon(14500,'god',0,0,0,0,0,0,0,0,'Celestial Disruption','lane',0,0,'Makes 4 non-hevaltens go to 1 health in that row',gWeapons['Wipeout']) -- record
-	Weapons['QuantumFlux'] = makeWeapon(14500,'god',0,0,0,0,0,0,0,0,'Quantum Flux','all',3000,0,'Does 3000 damage to all aliens',gWeapons['Transformer']) -- record
+	Weapons['QuantumFlux'] = makeWeapon(14500,'god',3000,0,0,0,0,0,0,0,'Quantum Flux','all',3000,0,'Does 3000 damage to all aliens',gWeapons['Transformer']) -- record
 end
 
 
