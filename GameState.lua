@@ -992,7 +992,7 @@ function GameState:applyPoison()
     for i = 1, 10 do
         for j = 1, 5 do
             if alienAlive[i][j] and alienStats[i][j].poisoned and not alienStats[i][j].immmunity and not(GameState:checkGuardian(j))  and not(allGood) then
-                alienStats[i][j].health = alienStats[i][j].health - alienStats[i][j].poisonDamage
+                alienStats[i][j].health = alienStats[i][j].health - alienStats[i][j].poisonDamage * damageBuff
                 if alienStats[i][j].health <= 0 then
                     GameState:resetStats(i, j)
                 end
