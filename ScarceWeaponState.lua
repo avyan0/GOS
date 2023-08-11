@@ -26,37 +26,37 @@ function ScarceWeaponState.render()
 	love.graphics.setColor(44/255,218/255,218/255)
 	love.graphics.rectangle('fill',660,120,280,180)
 	love.graphics.setColor(230/255,0,0)
-	love.graphics.printf('offguard',660,285,280,'center')
+	love.graphics.printf('Offguard',660,285,280,'center')
 	end
 	if data.weapons['LaserBeam'] then
 	love.graphics.setColor(44/255,218/255,218/255)
 	love.graphics.rectangle('fill',980,120,280,180)
 	love.graphics.setColor(230/255,0,0)
-	love.graphics.printf('Laser Death',980,285,280,'center')
+	love.graphics.printf('Laser Beam',980,285,280,'center')
 	end
 	if data.weapons['MindBlast'] then
 	love.graphics.setColor(44/255,218/255,218/255)
 	love.graphics.rectangle('fill',20,330,280,180)
 	love.graphics.setColor(230/255,0,0)
-	love.graphics.printf('Magic Gun',20,495,280,'center')
+	love.graphics.printf('Mind Blast',20,495,280,'center')
 	end
 	if data.weapons['GrenadeLauncher'] then
 	love.graphics.setColor(44/255,218/255,218/255)
 	love.graphics.rectangle('fill',340,330,280,180)
 	love.graphics.setColor(230/255,0,0)
-	love.graphics.printf('Grenade',340,495,280,'center')
+	love.graphics.printf('Grenade Launcher',340,495,280,'center')
 	end
 	if data.weapons['Protected'] then
 	love.graphics.setColor(44/255,218/255,218/255)
 	love.graphics.rectangle('fill',660,330,280,180)
 	love.graphics.setColor(230/255,0,0)
-	love.graphics.printf('Walls',660,495,280,'center')
+	love.graphics.printf('Protected',660,495,280,'center')
 	end
 	if data.weapons['Hypnosis'] then
 	love.graphics.setColor(44/255,218/255,218/255)
 	love.graphics.rectangle('fill',980,330,280,180)
 	love.graphics.setColor(230/255,0,0)
-	love.graphics.printf('Mind Control',980,495,280,'center')
+	love.graphics.printf('Hypnosis',980,495,280,'center')
 	end
 
 	love.graphics.setColor(1,1,1)
@@ -142,5 +142,29 @@ end
 function ScarceWeaponState:mousePressed(x,y)
 	if love.clicked(x,y,0,320,0,90) then
     	gStateMachine:change('weapons')
+	end
+	if love.clicked(x,y,20,300,120,300) then
+		gStateMachine:change('weaponInfo',Weapons['SantaAxe'])
+	end
+	if love.clicked(x,y,340,620,120,300) then
+		gStateMachine:change('weaponInfo',Weapons['Respawn'])
+	end
+	if love.clicked(x,y,640,920,120,300) then
+		gStateMachine:change('weaponInfo',Weapons['Offguard'])
+	end
+	if love.clicked(x,y,980,980 + 280,120,300) then
+		gStateMachine:change('weaponInfo',Weapons['LaserBeam'])
+	end
+	if love.clicked(x,y,20,300,330,510) then
+		gStateMachine:change('weaponInfo',Weapons['MindBlast'])
+	end
+	if love.clicked(x,y,340,340 + 280,330,510) then
+		gStateMachine:change('weaponInfo',Weapons['GrenadeLauncher'])
+	end
+	if love.clicked(x,y,660,660 + 280,330,510) then
+		gStateMachine:change('weaponInfo',Weapons['Protected'])
+	end
+	if love.clicked(x,y,980,980 + 280,330,510) then
+		gStateMachine:change('weaponInfo',Weapons['Hypnosis'])
 	end
 end
