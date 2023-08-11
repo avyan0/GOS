@@ -1417,7 +1417,7 @@ end
 function GameState:GrenadeLancher()
     for i = 10, 1, -9 do
         for j = 1, 5 do
-            if alienAlive[i][j] and not alienStats[i][j].immmunity and not(alienStats[row][lane].name == 'Splashfest')  then
+            if alienAlive[i][j] and not alienStats[i][j].immmunity and not(alienStats[i][j].name == 'Splashfest')  then
                 local preHealth = alienStats[i][j].health
                 if GameState:checkGuardian(j) then
                     alienStats[GameState:findGuardian(j)][j].health = alienStats[GameState:findGuardian(j)][j].health - (-3950 * damageBuff*scarceBuff)
