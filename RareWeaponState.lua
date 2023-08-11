@@ -149,4 +149,28 @@ function RareWeaponState:mousePressed(x,y)
 	if love.clicked(x,y,0,320,0,90) then
     	gStateMachine:change('weapons')
 	end
+	if love.clicked(x,y,20,300,120,300) then
+		gStateMachine:change('weaponInfo',Weapons['ThunderStrike'])
+	end
+	if love.clicked(x,y,340,620,120,300) then
+		gStateMachine:change('weaponInfo',Weapons['BattleRam'])
+	end
+	if love.clicked(x,y,640,920,120,300) then
+		gStateMachine:change('weaponInfo',Weapons['ElectroJolt'])
+	end
+	if love.clicked(x,y,980,980 + 280,120,300) then
+		gStateMachine:change('weaponInfo',Weapons['DaggerThrow'])
+	end
+	if love.clicked(x,y,20,300,330,510) then
+		gStateMachine:change('weaponInfo',Weapons['Hevalstruck'])
+	end
+	if love.clicked(x,y,340,340 + 280,330,510) then
+		gStateMachine:change('weaponInfo',Weapons['RecursiveExplosion'])
+	end
+	if love.clicked(x,y,660,660 + 280,330,510) then
+		gStateMachine:change('weaponInfo',Weapons['Dueltroid'])
+	end
+	if love.clicked(x,y,980,980 + 280,330,510) then
+		gStateMachine:change('weaponInfo',Weapons['FreshStart'])
+	end
 end
