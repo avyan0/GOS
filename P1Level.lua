@@ -251,22 +251,22 @@ data.currentLevel = '1-5'
 data.currentLevel = '1-6'
         elseif love.clicked(x,y,121-36,121+36,472-36,472+36) then
             gStateMachine:change('weaponSelect')
-data.currentLevel = '1-7'
+data.currentLevel = '1-12'
         elseif love.clicked(x,y,321-36,321+36,472-36,472+36) then
             gStateMachine:change('weaponSelect')
-data.currentLevel = '1-8'
+data.currentLevel = '1-11'
         elseif love.clicked(x,y,521-36,521+36,472-36,472+36) then
             gStateMachine:change('weaponSelect')
-data.currentLevel = '1-9'
+data.currentLevel = '1-10'
         elseif love.clicked(x,y,721-36,721+36,472-36,472+36) then
             gStateMachine:change('weaponSelect')
-data.currentLevel = '1-10'
+data.currentLevel = '1-9'
         elseif love.clicked(x,y,921-36,921+36,472-36,472+36) then
             gStateMachine:change('weaponSelect')
-data.currentLevel = '1-11'
+data.currentLevel = '1-8'
         elseif love.clicked(x,y,1121-36,1121+36,472-36,472+36) then
             gStateMachine:change('weaponSelect')
-data.currentLevel = '1-12'
+data.currentLevel = '1-7'
         elseif love.clicked(x,y,121-36,121+36,350-36,350+36) then
             gStateMachine:change('weaponSelect')
 data.currentLevel = '1-13'
@@ -287,22 +287,22 @@ data.currentLevel = '1-17'
 data.currentLevel = '1-18'
         elseif love.clicked(x,y,121-36,121+36,228-36,228+36) then
             gStateMachine:change('weaponSelect')
-data.currentLevel = '1-19'
+data.currentLevel = '1-24'
         elseif love.clicked(x,y,321-36,321+36,228-36,228+36) then
             gStateMachine:change('weaponSelect')
-data.currentLevel = '1-20'
+data.currentLevel = '1-23'
         elseif love.clicked(x,y,521-36,521+36,228-36,228+36) then
             gStateMachine:change('weaponSelect')
-data.currentLevel = '1-21'
+data.currentLevel = '1-22'
         elseif love.clicked(x,y,721-36,721+36,228-36,228+36) then
             gStateMachine:change('weaponSelect')
-data.currentLevel = '1-22'
+data.currentLevel = '1-21'
         elseif love.clicked(x,y,921-36,921+36,228-36,228+36) then
             gStateMachine:change('weaponSelect')
-data.currentLevel = '1-23'
+data.currentLevel = '1-20'
         elseif love.clicked(x,y,1121-36,1121+36,228-36,228+36) then
             gStateMachine:change('weaponSelect')
-data.currentLevel = '1-24'
+data.currentLevel = '1-19'
             elseif love.clicked(x,y,121-36,121+36,106-36,106+36) then
             gStateMachine:change('weaponSelect')
 data.currentLevel = '1-25'
