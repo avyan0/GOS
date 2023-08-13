@@ -318,6 +318,7 @@ data.currentLevel = '4-29'
             gStateMachine:change('weaponSelect')
 data.currentLevel = '4-30'
         end
+        saveData()
     elseif data.planet == 4 then
         if love.clicked(x,y,121-36,121+36,594-36,594+36) and data.level >=0 then
             gStateMachine:change('weaponSelect')
@@ -411,4 +412,5 @@ data.currentLevel = '4-29'
 data.currentLevel = '4-30'
         end
     end
+    saveData()
 end
