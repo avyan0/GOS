@@ -167,48 +167,56 @@ function PauseState:mousePressed(x,y)
     if data.walls > 0 then
         if love.clicked(x,y,170,230,520,580) then
             data.walls = data.walls - 1
+            saveData()
             gStateMachine:change('game','walls')
         end
     end
     if data.teleporter > 0 then
         if love.clicked(x,y,300,360,520,580) then
             data.teleporter = data.teleporter - 1
+            saveData()
             gStateMachine:change('game','teleporter')
         end
     end
     if data.retreat > 0 then
         if love.clicked(x,y,430,490,520,580) then
             data.retreat = data.retreat - 1
+            saveData()
             gStateMachine:change('game','retreat')
         end
     end
     if data.protection > 0 then
         if love.clicked(x,y,560,620,520,580) then
             data.protection = data.protection - 1
+            saveData()
             gStateMachine:change('game','protection')
         end
     end
     if data.electricity > 0 then
         if love.clicked(x,y,690,750,520,580) then
             data.electricity = data.electricity - 1
+            saveData()
             gStateMachine:change('game','electricity')
         end
     end
     if data.doubleGold > 0 then
         if love.clicked(x,y,820,880,520,580) then
             data.doubleGold = data.doubleGold - 1
+            saveData()
             gStateMachine:change('game','gold')
         end
     end
     if data.zap > 0 then
         if love.clicked(x,y,950,1010,520,580) then
             data.zap = data.zap - 1
+            saveData()
             gStateMachine:change('game','zap')
         end
     end
     if data.bomb > 0 then
         if love.clicked(x,y,1080,1140,520,580) then
             data.bomb = data.bomb - 1
+            saveData()
             gStateMachine:change('game','bomb')
         end
     end
