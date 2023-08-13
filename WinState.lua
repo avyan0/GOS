@@ -34,6 +34,7 @@ function WinState:init()
             data.planet = data.planet + 1
         end
     end
+    saveData()
 end
 
 function WinState:render()
@@ -61,6 +62,7 @@ function WinState:render()
     love.graphics.printf('Go To Home',870,527,350,'center')
     data.wins = data.wins + 1
     love.setBright()
+    saveData()
 
     push:apply('end')
 end
