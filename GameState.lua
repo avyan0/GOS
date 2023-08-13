@@ -391,6 +391,7 @@ function GameState:update(dt)
             end
         end
         data.turn = true
+        saveData()
     end
 
     if attacker.aoe == 'lane' and chooseLane then -- does lane damage
@@ -415,6 +416,7 @@ function GameState:update(dt)
     for i =1,5 do -- check if lose
         if spotTaken[11][i] then
             data.turn = false
+            saveData()
             for k = 1, 11 do
                 for j = 1, 5 do
                    GameState:reset(k,j)
@@ -440,7 +442,7 @@ function GameState:spawnAliens()
             elseif alien > Levels[data.currentLevel].president and alien <= Levels[data.currentLevel].king then
                 alien1 = Aliens['Gardener']
             elseif alien >  Levels[data.currentLevel].king then
-                alien1 = Aliens['Fusion']
+                alien1 = Aliens['Joe']
             end
 
             local lane = 1
@@ -957,6 +959,7 @@ function GameState:resetStats(i,j)
     spotTaken[i][j] = false
     alienCounter = alienCounter + 1
     data.aliensKilled = data.aliensKilled + 1
+    saveData()
     alienStats[i][j].health = 0 
     alienStats[i][j].hevalten = false 
     alienStats[i][j].immmunity = false 
@@ -1048,7 +1051,7 @@ function GameState:attackTile(weapon, row,lane)
             if alienStats[row][lane].name == 'OldGranny' and preHealth ~= alien.health and not alienAlive[row+1][lane] and not GameState:checkGuardian(lane) then
                 GameState:changeStats(row+1,lane,row,lane)
             end
-            GameState:spawnRand(alienStats[lane][row],preHealth)
+            GameState:spawnRand(alienStats[row][lane],preHealth)
         end
 end
 
@@ -1695,6 +1698,7 @@ function GameState:setMost(a,temp1)
 end
 function GameState:morph(i,j)
     local temp = math.random(1,data.aliensUnlocked)
+    
     local stats = {}
     stats.giant = 0
     stats.morph = true
@@ -1918,6 +1922,7 @@ function GameState:enter(item)
         GameState:resetStats(i,j)
     elseif item == 'gold' then
         data.goldBuff = 2
+        saveData()
     elseif item == 'protection' then
         damageBuff = damageBuff * 1.5
     elseif item == 'walls' then
@@ -1925,6 +1930,7 @@ function GameState:enter(item)
 
         if not allLanesFull then
             data.walls = data.walls + 1
+            saveData()
         else
             local lane = math.random(1, 5)
             while not goodLane(lane) do
