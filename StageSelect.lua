@@ -98,6 +98,7 @@ function StageSelect:mousePressed(x, y)
                     elseif replaceNum == 3 then
                         data.weaponChoose3 = weaponToAdd
                     end
+                    saveData()
                 end 
         end
     end
@@ -121,6 +122,7 @@ function StageSelect:handleWeaponButtonClick(weaponName)
                     elseif data.weaponChoose3 == weaponName then
                         replaceNum = 3
                     end
+                    saveData()
                 end
             else
                 button.highlightedRed = false
