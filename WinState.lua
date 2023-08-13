@@ -1,19 +1,9 @@
 WinState = Class{__includes = BaseState}
+local planet = nil
+local gold = 0
 
-function WinState:render()
-    push:apply('start')
-
-    setColor(245/255,111/255,77/255)
-    love.graphics.rectangle('fill',0,0,VIRTUAL_WIDTH,VIRTUAL_HEIGHT)
-
-    setColor(33/255,156/255,186/255)
-    love.graphics.setFont(gFonts['game80'])
-    love.graphics.printf('You Win!',0,100,1280,'center')
-    love.graphics.setFont(gFonts['game70'])
-    love.graphics.printf('Your Rewards:',0,230,1280,'center')
-    love.graphics.setFont(gFonts['game'])
+function WinState:init()
     local planet = tonumber(string.match(data.currentLevel,'%d+'))
-    local gold = 0
     if planet == 1 then
         gold = 10 * data.goldBuff
     elseif planet == 2 then
@@ -30,7 +20,9 @@ function WinState:render()
     if data.goldBuff ~= 1 then
         data.goldBuff = 1
     end
+    print(data.gold)
     data.gold = data.gold + gold
+    print(data.gold)
 
     if tonumber(string.match(data.currentLevel, '%-(%d+)')) == data.level + 1 and planet == data.planet then
         data.level = data.level + 1
@@ -42,7 +34,20 @@ function WinState:render()
             data.planet = data.planet + 1
         end
     end
+end
 
+function WinState:render()
+    push:apply('start')
+
+    setColor(245/255,111/255,77/255)
+    love.graphics.rectangle('fill',0,0,VIRTUAL_WIDTH,VIRTUAL_HEIGHT)
+
+    setColor(33/255,156/255,186/255)
+    love.graphics.setFont(gFonts['game80'])
+    love.graphics.printf('You Win!',0,100,1280,'center')
+    love.graphics.setFont(gFonts['game70'])
+    love.graphics.printf('Your Rewards:',0,230,1280,'center')
+    love.graphics.setFont(gFonts['game'])
 
     love.graphics.printf('Gold Won: '..tostring(gold),0,330,1280,'center')
     setColor(1,240/255,33/255)
