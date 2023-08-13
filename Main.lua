@@ -132,7 +132,7 @@ function love.load()
         
     }
     makeLevel()
-    gStateMachine:change('game')
+    gStateMachine:change('home')
 
 
     love.keyboard.keysPressed = {}
@@ -148,7 +148,6 @@ function love.resize(w, h)
 end
 
 function love.update(dt)
-    saveData()
     gStateMachine:update(dt)
     love.keyboard.keysPressed = {}
 end
