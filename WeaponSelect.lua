@@ -102,6 +102,7 @@ function WeaponSelect:handleWeaponButtonClick(weaponName)
     if weaponnum == 3 then
         data.weaponChoose3 = weaponName
     end
+    saveData()
     for _, button in ipairs(buttons) do
         if button.name == weaponName then
             clickedButton = button
