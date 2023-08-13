@@ -50,47 +50,56 @@ function SpinState:getChance()
 		if com >= 1 and com<=20 then
 			data.gold = data.gold + 10
 			data.gold = data.gold - priceForSpin
+			saveData()
 			return '10 Gold'
 			
 		end
 		if com >= 21 and com <= 30 then
 			data.weapons['AstroidRain'] = true
 			data.gold = data.gold - priceForSpin
+			saveData()
 			return 'Astroid Rain'
 		end
 		if com >=31 and com <= 40 then
 			data.weapons['TripleThreat'] = true
 			data.gold = data.gold - priceForSpin
+			saveData()
 			return 'Triple Threat'
 		end 
 		if com >=41 and com <= 50 then
 			data.weapons['PoisonArrow'] = true
 			data.gold = data.gold - priceForSpin
+			saveData()
 			return 'Poison Arrow'
 		end 
 		if com >=51 and com <= 60 then
 			data.weapons['CosmicFire'] = true
 			data.gold = data.gold - priceForSpin
+			saveData()
 			return 'Cosmic Fire'
 		end 
 		if com >=61 and com <= 70 then
 			data.weapons['Astrobolt'] = true
 			data.gold = data.gold - priceForSpin
+			saveData()
 			return 'Astrobolt'
 		end 
 		if com >=71 and com <= 80 then
 			data.weapons['StarBlast'] = true
 			data.gold = data.gold - priceForSpin
+			saveData()
 			return 'Star Blast'
 		end
 		if com >=81 and com <= 90 then
 			data.weapons['LaserKill'] = true
 			data.gold = data.gold - priceForSpin
+			saveData()
 			return 'Laser Kill'
 		end
 		if com >=91 and com <= 100 then
 			data.weapons['StellarBoost'] = true
 			data.gold = data.gold - priceForSpin
+			saveData()
 			return 'Stellar Boost'
 		end 
 	end
@@ -99,60 +108,70 @@ function SpinState:getChance()
 		if com >= 1 and com <= 10 then
 		    data.gold = data.gold + 50
 		    data.gold = data.gold - priceForSpin
+			saveData()
 		    return '50 Gold'
 		end
 
 		if com >= 11 and com <= 20 then
 		    data.weapons['ThunderStrike'] = true
 		    data.gold = data.gold - priceForSpin
+			saveData()
 		    return 'Thunder Strike'
 		end
 
 		if com >= 21 and com <= 30 then
 		    data.weapons['Battle am'] = true
 		    data.gold = data.gold - priceForSpin
+			saveData()
 		    return 'Battle Ram'
 		end
 
 		if com >= 31 and com <= 40 then
 		    data.weapons['ElectroJolt'] = true
 		    data.gold = data.gold - priceForSpin
+			saveData()
 		    return 'Electro Jolt'
 		end
 
 		if com >= 41 and com <= 50 then
 		    data.weapons['DaggerThrow'] = true
 		    data.gold = data.gold - priceForSpin
+			saveData()
 		    return 'Dagger Throw'
 		end
 
 		if com >= 51 and com <= 60 then
 		    data.weapons['Hevalstruck'] = true
 		    data.gold = data.gold - priceForSpin
+			saveData()
 		    return 'Hevalstruck'
 		end
 
 		if com >= 61 and com <= 70 then
 		    data.weapons['RecursiveExplosion'] = true
 		    data.gold = data.gold - priceForSpin
+			saveData()
 		    return 'RecursiveExplosion'
 		end
 
 		if com >= 71 and com <= 80 then
 		    data.weapons['Dueltroid'] = true
 		    data.gold = data.gold - priceForSpin
+			saveData()
 		    return 'Dueltroid'
 		end
 
 		if com >= 81 and com <= 90 then
 		    data.weapons['FreshStart'] = true
 		    data.gold = data.gold - priceForSpin
+			saveData()
 		    return 'FreshStart'
 		end
 
 		if com >= 91 and com <= 100 then
 			data.gold = data.gold + 50
 			data.gold = data.gold - priceForSpin
+			saveData()
 			return '50 Gold'
 		end
 	end
@@ -161,60 +180,70 @@ function SpinState:getChance()
 		if com >= 1 and com <= 10 then
 		    data.gold = data.gold + 75
 		    data.gold = data.gold - priceForSpin
+			saveData()
 		    return '75 Gold'
 		end
 
 		if com >= 11 and com <= 20 then
 		    data.weapons['SantaAxe'] = true
 		    data.gold = data.gold - priceForSpin
+			saveData()
 		    return 'Santa Axe'
 		end
 
 		if com >= 21 and com <= 30 then
 		    data.weapons['Respawn'] = true
 		    data.gold = data.gold - priceForSpin
+			saveData()
 		    return 'Respawn'
 		end
 
 		if com >= 31 and com <= 40 then
 		    data.weapons['Offguard'] = true
 		    data.gold = data.gold - priceForSpin
+			saveData()
 		    return 'Offguard'
 		end
 
 		if com >= 41 and com <= 50 then
 		    data.weapons['LaserBeam'] = true
 		    data.gold = data.gold - priceForSpin
+			saveData()
 		    return 'Laser Beam'
 		end
 
 		if com >= 51 and com <= 60 then
 		    data.weapons['MindBlast'] = true
 		    data.gold = data.gold - priceForSpin
+			saveData()
 		    return 'Mind Blast'
 		end
 
 		if com >= 61 and com <= 70 then
 		    data.weapons['GrenadeLauncher'] = true
 		    data.gold = data.gold - priceForSpin
+			saveData()
 		    return 'Grenade Launcher'
 		end
 
 		if com >= 71 and com <= 80 then
 		    data.weapons['Protected'] = true
 		    data.gold = data.gold - priceForSpin
+			saveData()
 		    return 'Protected'
 		end
 
 		if com >= 81 and com <= 90 then
 		    data.weapons['Hypnosis'] = true
 		    data.gold = data.gold - priceForSpin
+			saveData()
 		    return 'Hypnosis'
 		end
 
 		if com >= 91 and com <= 100 then
 		    data.gems = data.gems + 5
 		    data.gold = data.gold - priceForSpin
+			saveData()
 		    return '5 Gems'
 		end
 	end
@@ -223,54 +252,63 @@ function SpinState:getChance()
 		if com >= 1 and com <= 10 then
 		    data.weapons['GalacticBeam'] = true
 		    data.gold = data.gold - priceForSpin
+			saveData()
 		    return 'Galactic Beam'
 		end
 
 		if com >= 11 and com <= 20 then
 		    data.weapons['SolarFlare'] = true
 		    data.gold = data.gold - priceForSpin
+			saveData()
 		    return 'Solar Flare'
 		end
 
 		if com >= 21 and com <= 30 then
 		    data.weapons['CometStrike'] = true
 		    data.gold = data.gold - priceForSpin
+			saveData()
 		    return 'Comet Strike'
 		end
 
 		if com >= 31 and com <= 40 then
 		    data.weapons['DeathVirus'] = true
 		    data.gold = data.gold - priceForSpin
+			saveData()
 		    return 'Death Virus'
 		end
 
 		if com >= 41 and com <= 50 then
 		    data.weapons['VoidBurst'] = true
 		    data.gold = data.gold - priceForSpin
+			saveData()
 		    return 'Void Burst'
 		end
 
 		if com >= 51 and com <= 60 then
 		    data.weapons['CelestialDisruption'] = true
 		    data.gold = data.gold - priceForSpin
+			saveData()
 		    return 'Celestial Disruption'
 		end
 
 		if com >= 61 and com <= 70 then
 		    data.weapons['QuantumFlux'] = true
 		    data.gold = data.gold - priceForSpin
+			saveData()
 		    return 'Quantum Flux'
 		end
 
 		if com >= 71 and com <= 80 then
 		        data.gold = data.gold + 100
 		        data.gold = data.gold - priceForSpin
+				saveData()
 		        return '100 Gold'
 		end
 
 		if com >= 81 and com <= 100 then
 		        data.gems = data.gems + 20
 		        data.gold = data.gold - priceForSpin
+				saveData()
 		        return '20 Gems'
 		end
 	end
@@ -280,6 +318,7 @@ function SpinState:getChance()
 		    data.items['Retreat'] = true
 		    data.gold = data.gold - priceForSpin
 		    data.retreat = data.retreat + 1
+			saveData()
 		    return 'Retreat'
 		end
 
@@ -287,6 +326,7 @@ function SpinState:getChance()
 		    data.items['Wall'] = true
 		    data.gold = data.gold - priceForSpin
 		    data.walls = data.walls + 1
+			saveData()
 		    return 'Wall'
 		end
 
@@ -294,6 +334,7 @@ function SpinState:getChance()
 		    data.items['Zap'] = true
 		    data.gold = data.gold - priceForSpin
 		    data.zap= data.zap + 1
+			saveData()
 		    return 'zap'
 		end
 
@@ -301,6 +342,7 @@ function SpinState:getChance()
 		    data.items['Bomb'] = true
 		    data.gold = data.gold - priceForSpin
 		    data.bomb = data.bomb + 1
+			saveData()
 		    return 'Bomb'
 		end
 
@@ -308,6 +350,7 @@ function SpinState:getChance()
 		    data.items['DoubleGold'] = true
 		    data.gold = data.gold - priceForSpin
 		    data.doubleGold = data.doubleGold + 1
+			saveData()
 		    return 'DoubleGold'
 		end
 
@@ -315,6 +358,7 @@ function SpinState:getChance()
 		    data.items['Teleporter'] = true
 		    data.gold = data.gold - priceForSpin
 		    data.teleporter = data.teleporter + 1
+			saveData()
 		    return 'Teleporter'
 		end
 
@@ -322,6 +366,7 @@ function SpinState:getChance()
 		    data.items['Electricity'] = true
 		    data.gold = data.gold - priceForSpin
 		    data.electricity= data.electricity + 1
+			saveData()
 		    return 'Electricity'
 		end
 
@@ -329,6 +374,7 @@ function SpinState:getChance()
 		    data.items['Protection'] = true
 		    data.gold = data.gold - priceForSpin
 		    data.protection = data.protection + 1
+			saveData()
 		    return 'Protection'
 		end
 	end
