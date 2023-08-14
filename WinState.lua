@@ -1,8 +1,15 @@
 WinState = Class{__includes = BaseState}
 local planet = nil
 local gold = 0
+local spin = ''
 
 function WinState:init()
+    local p = data.planet
+    local l = data.level
+    if  (l == 5 or l == 11 or l == 17 or l == 23 or l == 29) then
+        spin = 'Common'
+    end
+
     local planet = tonumber(string.match(data.currentLevel,'%d+'))
     if planet == 1 then
         gold = 10 * data.goldBuff
@@ -20,9 +27,7 @@ function WinState:init()
     if data.goldBuff ~= 1 then
         data.goldBuff = 1
     end
-    print(data.gold)
     data.gold = data.gold + gold
-    print(data.gold)
 
     if tonumber(string.match(data.currentLevel, '%-(%d+)')) == data.level + 1 and planet == data.planet then
         data.level = data.level + 1
@@ -68,13 +73,20 @@ function WinState:render()
 end
 
 function WinState:mousePressed(x,y)
-
     if love.clicked(x,y,870,870+350,430,430+225) then
-        gStateMachine:change('home')
+        if data.planet == tonumber(data.currentLevel:match("(%d+)")) and (data.level == 5 or data.level == data.level == 11 or data.level == 17 or data.level == 23 or data.level == 29) then
+            gStateMachine:change('levelSpin',spin)
+        else
+            gStateMachine:change('home')
+        end
     end
 
     if love.clicked(x,y,60,60+350,430,430+225) then
-        gStateMachine:change('weaponSelect')
+        if data.planet == tonumber(data.currentLevel:match("(%d+)")) and (data.level == 5 or data.level == data.level == 11 or data.level == 17 or data.level == 23 or data.level == 29) then
+            gStateMachine:change('levelSpin',spin)
+        else
+            gStateMachine:change('weaponSelect')
+        end
     end
 
 end
