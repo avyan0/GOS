@@ -87,9 +87,9 @@ function makeLevel()
 	Levels['1-1'] = newLevelObject({joe = 45,gen57 = 73,president = 100,king = 1001, dj = 10001},{first = 15,second = 20, third = 30})
 	Levels['1-2'] = newLevelObject({joe = 40,gen57 = 70,president = 100,king = 1000, dj = 1000},{first = 20,second = 25, third = 35})
 	Levels['1-3'] = newLevelObject({joe = 30,gen57 = 70,president = 100,king = 1230, dj = 3140},{first = 21,second = 26, third = 36})
-	Levels['1-4'] = newLevelObject({joe = 20,gen57 = 65,president = 95,king = 99, dj = 100},{first = 22,second = 27, third = 37})
-	Levels['1-5'] = newLevelObject({joe = 10,gen57 = 45,president = 90,king = 97, dj = 100},{first = 23,second = 28, third = 38})
-	Levels['1-6'] = newLevelObject({joe = 5,gen57 = 30,president = 75,king = 80, dj = 100},{first = 24,second = 29, third = 39})
+	Levels['1-4'] = newLevelObject({joe = 20,gen57 = 65,president = 95,king = 99, dj = 100},{first = 1,second = 1, third = 1})
+	Levels['1-5'] = newLevelObject({joe = 10,gen57 = 45,president = 90,king = 97, dj = 100},{first = 1,second = 1, third = 1 })
+	Levels['1-6'] = newLevelObject({joe = 5,gen57 = 30,president = 75,king = 80, dj = 100},{first = 4,second = 5, third = 6})
 	Levels['1-7'] = newLevelObject({joe = 3,gen57 = 23,president = 61,king = 84, dj = 100},{first = 25,second = 30, third = 40})
 	Levels['1-8'] = newLevelObject({joe = 2,gen57 = 18,president = 54,king = 83, dj = 100},{first = 26,second = 31, third = 41})
 	Levels['1-9'] = newLevelObject({joe = 1,gen57 = 15,president = 45,king = 80, dj = 100},{first = 27,second = 32, third = 42})
@@ -177,7 +177,7 @@ function weaponDictionary()
 	Weapons['SantaAxe'] = makeWeapon(10000,'scarce',0,2200,0,0,0,0,0,0,'Santa Axe','lane',2200,0,'Does 2200 damage to an entire lane',gWeapons['SantaAxe']) -- record
 	Weapons['Respawn'] =  makeWeapon(10000,'scarce',0,0,2,0,0,0,0,0,'Respawn','lane',0,0,'Stops all aliens except Hevaltens from spawning in the lane you choose for 1 turn',gWeapons['Respawn']) -- record
 	Weapons['Offguard'] =  makeWeapon(10000,'scarce',0,0,3,0,0,0,0,10,'Offguard','all',0,0,'Stuns the whole game for 1 turn',gWeapons['Offguard'],1) -- record
-	Weapons['LaserBeam'] = makeWeapon(10000,'scarce',0,0,0,0,0,0,0,0,'Laser Beam','lane',6000,0,'Kills all aliens in a lane who have less than 6000 health',gWeapons['LaserDeath']) -- Record
+	Weapons['LaserBeam'] = makeWeapon(10000,'scarce',0,0,0,0,0,0,0,0,'Laser Beam','lane',0,0,'Kills all aliens in a lane who have less than 6000 health',gWeapons['LaserDeath']) -- Record
 	Weapons['MindBlast'] = makeWeapon(10000,'scarce',0,0,2,0,0,0,0,0,'Mind Blast','lane',7001,0,'Does 7001 damage to the first alien in a lane, if it survives then it will hypnotise that alien',gWeapons['MagicGun']) -- record
 	Weapons['GrenadeLauncher'] =  makeWeapon(10000,'scarce',0,0,0,0,0,0,0,0,'Grenade Launcher','row',3950,0,'Does 3950 damage to the first and last row of aliens',gWeapons['Grenade']) -- record
 	Weapons['Protected'] = makeWeapon(10000,'scarce',0,400,2,0,0,0,0,0,'Protected','lane',400,0,'Buffs all damage by 1.25% for the rest of the stage and does 400 damage to a lane',gWeapons['Walls']) -- Record
