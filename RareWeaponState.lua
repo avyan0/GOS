@@ -149,28 +149,36 @@ function RareWeaponState:mousePressed(x,y)
 	if love.clicked(x,y,0,320,0,90) then
     	gStateMachine:change('weapons')
 	end
+	if data.weapons['ThunderStrike'] then
 	if love.clicked(x,y,20,300,120,300) then
 		gStateMachine:change('weaponInfo',Weapons['ThunderStrike'])
-	end
+	end end
+	if data.weapons['BattleRam'] then
 	if love.clicked(x,y,340,620,120,300) then
 		gStateMachine:change('weaponInfo',Weapons['BattleRam'])
-	end
+	end end
+	if data.weapons['ElectroJolt'] then
 	if love.clicked(x,y,640,920,120,300) then
 		gStateMachine:change('weaponInfo',Weapons['ElectroJolt'])
-	end
+	end end
+	if data.weapons['DaggerThrow'] then
 	if love.clicked(x,y,980,980 + 280,120,300) then
 		gStateMachine:change('weaponInfo',Weapons['DaggerThrow'])
-	end
+	end end
+	if data.weapons['Hevalstruck'] then
 	if love.clicked(x,y,20,300,330,510) then
 		gStateMachine:change('weaponInfo',Weapons['Hevalstruck'])
-	end
+	end end
+	if data.weapons['RecursiveExplosion'] then
 	if love.clicked(x,y,340,340 + 280,330,510) then
 		gStateMachine:change('weaponInfo',Weapons['RecursiveExplosion'])
-	end
+	end end
+	if data.weapons['Dueltroid'] then
 	if love.clicked(x,y,660,660 + 280,330,510) then
 		gStateMachine:change('weaponInfo',Weapons['Dueltroid'])
-	end
+	end end
+	if data.weapons['FreshStart'] then
 	if love.clicked(x,y,980,980 + 280,330,510) then
 		gStateMachine:change('weaponInfo',Weapons['FreshStart'])
-	end
+	end end
 end
