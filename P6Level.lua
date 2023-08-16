@@ -338,22 +338,22 @@ data.currentLevel = '6-5'
         elseif love.clicked(x,y,1121-36,1121+36,594-36,594+36) and data.level >=5 then
             gStateMachine:change('weaponSelect')
 data.currentLevel = '6-6'
-        elseif love.clicked(x,y,121-36,121+36,472-36,472+36) and data.level >=6 then
+        elseif love.clicked(x,y,121-36,121+36,472-36,472+36) and data.level >=11 then
             gStateMachine:change('weaponSelect')
 data.currentLevel = '6-12'
-        elseif love.clicked(x,y,321-36,321+36,472-36,472+36) and data.level >=7 then
+        elseif love.clicked(x,y,321-36,321+36,472-36,472+36) and data.level >=10 then
             gStateMachine:change('weaponSelect')
 data.currentLevel = '6-11'
-        elseif love.clicked(x,y,521-36,521+36,472-36,472+36) and data.level >=8 then
+        elseif love.clicked(x,y,521-36,521+36,472-36,472+36) and data.level >=9 then
             gStateMachine:change('weaponSelect')
 data.currentLevel = '6-10'
-        elseif love.clicked(x,y,721-36,721+36,472-36,472+36) and data.level >=9 then
+        elseif love.clicked(x,y,721-36,721+36,472-36,472+36) and data.level >=8 then
             gStateMachine:change('weaponSelect')
 data.currentLevel = '6-9'
-        elseif love.clicked(x,y,921-36,921+36,472-36,472+36) and data.level >=10 then
+        elseif love.clicked(x,y,921-36,921+36,472-36,472+36) and data.level >=7 then
             gStateMachine:change('weaponSelect')
 data.currentLevel = '6-8'
-        elseif love.clicked(x,y,1121-36,1121+36,472-36,472+36) and data.level >=11 then
+        elseif love.clicked(x,y,1121-36,1121+36,472-36,472+36) and data.level >=6 then
             gStateMachine:change('weaponSelect')
 data.currentLevel = '6-7'
         elseif love.clicked(x,y,121-36,121+36,350-36,350+36) and data.level >=12 then
@@ -374,22 +374,22 @@ data.currentLevel = '6-17'
         elseif love.clicked(x,y,1121-36,1121+36,350-36,350+36) and data.level >=17 then
             gStateMachine:change('weaponSelect')
 data.currentLevel = '6-18'
-        elseif love.clicked(x,y,121-36,121+36,228-36,228+36) and data.level >=18 then
+        elseif love.clicked(x,y,121-36,121+36,228-36,228+36) and data.level >=23 then
             gStateMachine:change('weaponSelect')
 data.currentLevel = '6-24'
-        elseif love.clicked(x,y,321-36,321+36,228-36,228+36) and data.level >=19 then
+        elseif love.clicked(x,y,321-36,321+36,228-36,228+36) and data.level >=22 then
             gStateMachine:change('weaponSelect')
 data.currentLevel = '6-23'
-        elseif love.clicked(x,y,521-36,521+36,228-36,228+36) and data.level >=20 then
+        elseif love.clicked(x,y,521-36,521+36,228-36,228+36) and data.level >=21 then
             gStateMachine:change('weaponSelect')
 data.currentLevel = '6-22'
-        elseif love.clicked(x,y,721-36,721+36,228-36,228+36) and data.level >=21 then
+        elseif love.clicked(x,y,721-36,721+36,228-36,228+36) and data.level >=20 then
             gStateMachine:change('weaponSelect')
 data.currentLevel = '6-21'
-        elseif love.clicked(x,y,921-36,921+36,228-36,228+36) and data.level >=22 then
+        elseif love.clicked(x,y,921-36,921+36,228-36,228+36) and data.level >=19 then
             gStateMachine:change('weaponSelect')
 data.currentLevel = '6-20'
-        elseif love.clicked(x,y,1121-36,1121+36,228-36,228+36) and data.level >=23 then
+        elseif love.clicked(x,y,1121-36,1121+36,228-36,228+36) and data.level >=18 then
             gStateMachine:change('weaponSelect')
 data.currentLevel = '6-19'
             elseif love.clicked(x,y,121-36,121+36,106-36,106+36) and data.level >=24 then
