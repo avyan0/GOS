@@ -143,28 +143,36 @@ function ScarceWeaponState:mousePressed(x,y)
 	if love.clicked(x,y,0,320,0,90) then
     	gStateMachine:change('weapons')
 	end
+	if data.weapons['SantaAxe'] then
 	if love.clicked(x,y,20,300,120,300) then
 		gStateMachine:change('weaponInfo',Weapons['SantaAxe'])
-	end
+	end end
+	if data.weapons['Respawn'] then
 	if love.clicked(x,y,340,620,120,300) then
 		gStateMachine:change('weaponInfo',Weapons['Respawn'])
-	end
+	end end
+	if data.weapons['Offguard'] then
 	if love.clicked(x,y,640,920,120,300) then
 		gStateMachine:change('weaponInfo',Weapons['Offguard'])
-	end
+	end end
+	if data.weapons['LaserBeam'] then
 	if love.clicked(x,y,980,980 + 280,120,300) then
 		gStateMachine:change('weaponInfo',Weapons['LaserBeam'])
-	end
+	end end
+	if data.weapons['MindBlast'] then
 	if love.clicked(x,y,20,300,330,510) then
 		gStateMachine:change('weaponInfo',Weapons['MindBlast'])
-	end
+	end end
+	if data.weapons['GrenadeLauncher'] then
 	if love.clicked(x,y,340,340 + 280,330,510) then
 		gStateMachine:change('weaponInfo',Weapons['GrenadeLauncher'])
-	end
+	end end
+	if data.weapons['Protected'] then
 	if love.clicked(x,y,660,660 + 280,330,510) then
 		gStateMachine:change('weaponInfo',Weapons['Protected'])
-	end
+	end end
+	if data.weapons['Hypnosis'] then
 	if love.clicked(x,y,980,980 + 280,330,510) then
 		gStateMachine:change('weaponInfo',Weapons['Hypnosis'])
-	end
+	end end
 end
