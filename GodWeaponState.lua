@@ -133,25 +133,32 @@ function GodWeaponState:mousePressed(x,y)
 	if love.clicked(x,y,0,320,0,90) then
     	gStateMachine:change('weapons')
 	end
+	if data.weapons['GalacticBeam'] then
 	if love.clicked(x,y,20,300,120,300) then
 		gStateMachine:change('weaponInfo',Weapons['GalacticBeam'])
-	end
+	end end
+	if data.weapons['SolarFlare'] then
 	if love.clicked(x,y,340,620,120,300) then
 		gStateMachine:change('weaponInfo',Weapons['SolarFlare'])
-	end
+	end end
+	if data.weapons['CometStrike'] then
 	if love.clicked(x,y,640,920,120,300) then
 		gStateMachine:change('weaponInfo',Weapons['CometStrike'])
-	end
+	end end
+	if data.weapons['DeathVirus'] then
 	if love.clicked(x,y,980,980 + 280,120,300) then
 		gStateMachine:change('weaponInfo',Weapons['DeathVirus'])
-	end
+	end end
+	if data.weapons['VoidBurst'] then
 	if love.clicked(x,y,20,300,330,510) then
 		gStateMachine:change('weaponInfo',Weapons['VoidBurst'])
-	end
+	end end
+	if data.weapons['CelestialDisruption'] then
 	if love.clicked(x,y,340,340 + 280,330,510) then
 		gStateMachine:change('weaponInfo',Weapons['CelestialDisruption'])
-	end
+	end end
+	if data.weapons['QuantumFlux'] then
 	if love.clicked(x,y,660,660 + 280,330,510) then
 		gStateMachine:change('weaponInfo',Weapons['QuantumFlux'])
-	end
+	end end
 end
