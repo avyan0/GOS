@@ -1,5 +1,8 @@
 LoseState = Class{__includes = BaseState}
-
+function LoseState:init()
+    data.matchesPlayed = data.matchesPlayed + 1
+    saveData()
+end
 
 function LoseState:render()
     push:apply('start')
