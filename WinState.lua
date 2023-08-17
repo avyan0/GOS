@@ -4,6 +4,8 @@ local gold = 0
 local spin = ''
 
 function WinState:init()
+    data.matchesPlayed = data.matchesPlayed + 1
+    saveData()
     local p = data.planet
     local l = data.level
     if  (l == 5 or l == 11 or l == 17 or l == 23 or l == 29) then
