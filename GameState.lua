@@ -59,7 +59,6 @@ for i = 1,12 do
         walls[i][j] = false
     end
 end
-
   
 function GameState:render()
     love.graphics.clear()
@@ -433,16 +432,11 @@ function GameState:spawnAliens()
         respawnLane = 0
             local alien = math.random(1,100)
              alien1 = nil
-            if alien <= Levels[data.currentLevel].joe then
-                alien1 = Aliens['Gardener']
-            elseif alien > Levels[data.currentLevel].joe and alien <= Levels[data.currentLevel].gen57 then
-                alien1 = Aliens['Gardener']
-            elseif alien > Levels[data.currentLevel].gen57 and alien <= Levels[data.currentLevel].president then
-                alien1 = Aliens['Gardener']
-            elseif alien > Levels[data.currentLevel].president and alien <= Levels[data.currentLevel].king then
-                alien1 = Aliens['Gardener']
-            elseif alien >  Levels[data.currentLevel].king then
-                alien1 = Aliens['Joe']
+             for _, alienName in ipairs(alienNames) do
+                if alien <= Levels[data.currentLevel][alienName] then
+                    alien1 = Aliens[alienName]
+                    break
+                end
             end
 
             local lane = 1
