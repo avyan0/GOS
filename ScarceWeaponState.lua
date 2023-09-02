@@ -9,54 +9,57 @@ function ScarceWeaponState.render()
 	love.graphics.rectangle('fill',0,0,VIRTUAL_WIDTH,VIRTUAL_HEIGHT)
 
 	love.drawBack(44,218,218)
+	love.graphics.setFont(gFonts['commonWeapons'])
 
 	if data.weapons['SantaAxe'] then
 	love.graphics.setColor(44/255,218/255,218/255)
 	love.graphics.rectangle('fill',20,120,280,180)
 	love.graphics.setColor(230/255,0,0)
-	love.graphics.printf('Santa Axe',20,285,280,'center')
+	love.graphics.printf('Santa Axe',20,247,280,'center')
 	end
 	if data.weapons['Respawn'] then
 	love.graphics.setColor(44/255,218/255,218/255)
 	love.graphics.rectangle('fill',340,120,280,180)
 	love.graphics.setColor(230/255,0,0)
-	love.graphics.printf('Respawn',340,285,280,'center')
+	love.graphics.printf('Respawn',340,247,280,'center')
 	end
 	if data.weapons['Offguard'] then
 	love.graphics.setColor(44/255,218/255,218/255)
 	love.graphics.rectangle('fill',660,120,280,180)
 	love.graphics.setColor(230/255,0,0)
-	love.graphics.printf('Offguard',660,285,280,'center')
+	love.graphics.printf('Offguard',660,247,280,'center')
 	end
 	if data.weapons['LaserBeam'] then
 	love.graphics.setColor(44/255,218/255,218/255)
 	love.graphics.rectangle('fill',980,120,280,180)
 	love.graphics.setColor(230/255,0,0)
-	love.graphics.printf('Laser Beam',980,285,280,'center')
+	love.graphics.printf('Laser Beam',980,247,280,'center')
 	end
 	if data.weapons['MindBlast'] then
 	love.graphics.setColor(44/255,218/255,218/255)
 	love.graphics.rectangle('fill',20,330,280,180)
 	love.graphics.setColor(230/255,0,0)
-	love.graphics.printf('Mind Blast',20,495,280,'center')
+	love.graphics.printf('Mind Blast',20,457,280,'center')
 	end
 	if data.weapons['GrenadeLauncher'] then
 	love.graphics.setColor(44/255,218/255,218/255)
 	love.graphics.rectangle('fill',340,330,280,180)
 	love.graphics.setColor(230/255,0,0)
-	love.graphics.printf('Grenade Launcher',340,495,280,'center')
+	love.graphics.setFont(gFonts['commonWeapons1'])
+	love.graphics.printf('Grenade Launcher',340,465,280,'center')
+	love.graphics.setFont(gFonts['commonWeapons'])
 	end
 	if data.weapons['Protected'] then
 	love.graphics.setColor(44/255,218/255,218/255)
 	love.graphics.rectangle('fill',660,330,280,180)
 	love.graphics.setColor(230/255,0,0)
-	love.graphics.printf('Protected',660,495,280,'center')
+	love.graphics.printf('Protected',660,457,280,'center')
 	end
 	if data.weapons['Hypnosis'] then
 	love.graphics.setColor(44/255,218/255,218/255)
 	love.graphics.rectangle('fill',980,330,280,180)
 	love.graphics.setColor(230/255,0,0)
-	love.graphics.printf('Hypnosis',980,495,280,'center')
+	love.graphics.printf('Hypnosis',980,457,280,'center')
 	end
 
 	love.graphics.setColor(1,1,1)
