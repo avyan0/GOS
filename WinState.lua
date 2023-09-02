@@ -39,7 +39,7 @@ function WinState:init()
     local p = data.planet
     local l = data.level
     
-    if p === 1 then
+    if p == 1 then
         if (l == 5 or l == 11 or l == 17 or l == 23 or l == 29) then
             spin = 'Common'
         end
