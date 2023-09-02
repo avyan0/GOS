@@ -8,55 +8,55 @@ function CommonWeaponState:render()
 	love.graphics.rectangle('fill',0,0,VIRTUAL_WIDTH,VIRTUAL_HEIGHT)
 	love.drawBack(170,255,103)
 	love.graphics.setColor(0,0,0)
+	love.graphics.setFont(gFonts['commonWeapons'])
 
 	if data.weapons['AstroidRain'] then
 	love.graphics.setColor(170/255,1,103/255)
 	love.graphics.rectangle('fill',20,120,280,180)
 	love.graphics.setColor(230/255,0,115/255)
-	love.graphics.setFont(gFonts['commonWeapons'])
-	love.graphics.printf('Asteroid Rain',20,255,280,'center')
+	love.graphics.printf('Asteroid Rain',20,245,280,'center')
 	end
 	if data.weapons['PoisonArrow'] then
 	love.graphics.setColor(170/255,1,103/255)
 	love.graphics.rectangle('fill',340,120,280,180)
 	love.graphics.setColor(230/255,0,115/255)
-	love.graphics.printf('Poison Arrow',340,255,280,'center')
+	love.graphics.printf('Poison Arrow',340,245,280,'center')
 	end
 	if data.weapons['TripleThreat'] then
 	love.graphics.setColor(170/255,1,103/255)
 	love.graphics.rectangle('fill',660,120,280,180)
 	love.graphics.setColor(230/255,0,115/255)
-	love.graphics.printf('Triple Threat',660,255,280,'center')
+	love.graphics.printf('Triple Threat',660,245,280,'center')
 	end
 	if data.weapons['CosmicFire'] then
 	love.graphics.setColor(170/255,1,103/255)
 	love.graphics.rectangle('fill',980,120,280,180)
 	love.graphics.setColor(230/255,0,115/255)
-	love.graphics.printf('Cosmic Fire',980,255,280,'center')
+	love.graphics.printf('Cosmic Fire',980,245,280,'center')
 	end
 	if data.weapons['Astrobolt'] then
 	love.graphics.setColor(170/255,1,103/255)
 	love.graphics.rectangle('fill',20,330,280,180)
 	love.graphics.setColor(230/255,0,115/255)
-	love.graphics.printf('Astrobolt',20,465,280,'center')
+	love.graphics.printf('Astrobolt',20,455,280,'center')
 	end
 	if data.weapons['StarBlast'] then
 	love.graphics.setColor(170/255,1,103/255)
 	love.graphics.rectangle('fill',340,330,280,180)
 	love.graphics.setColor(230/255,0,115/255)
-	love.graphics.printf('Star Blast',340,465,280,'center')
+	love.graphics.printf('Star Blast',340,455,280,'center')
 	end
 	if data.weapons['LaserKill'] then
 	love.graphics.setColor(170/255,1,103/255)
 	love.graphics.rectangle('fill',660,330,280,180)
 	love.graphics.setColor(230/255,0,115/255)
-	love.graphics.printf('Laser Kill',660,465,280,'center')
+	love.graphics.printf('Laser Kill',660,455,280,'center')
 	end
 	if data.weapons['StellarBoost'] then
 	love.graphics.setColor(170/255,1,103/255)
 	love.graphics.rectangle('fill',980,330,280,180)
 	love.graphics.setColor(230/255,0,115/255)
-	love.graphics.printf('StellarBoost',980,465,280,'center')
+	love.graphics.printf('StellarBoost',980,455,280,'center')
 	end
 
 	love.graphics.setColor(1,1,1)
