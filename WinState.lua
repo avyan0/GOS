@@ -54,7 +54,7 @@ function WinState:init()
         if (l == 5) then
             spin = 'Common'
         end
-        if (l == 17  or l = 11 or l = 23) then
+        if (l == 17  or l == 11 or l ==23) then
             spin = 'Rare'
         end
         if  l == 29 then
@@ -64,7 +64,7 @@ function WinState:init()
         if (l == 5) then
             spin = 'Common'
         end
-        if (l == 11  or l = 23) then
+        if (l == 11  or l == 23) then
             spin = 'Rare'
         end
         if  (l == 17 or l==29)then
@@ -74,14 +74,14 @@ function WinState:init()
         if (l == 5) then
             spin = 'Rare'
         end
-        if(l == 17  or l = 11 or l = 23) then
+        if(l == 17  or l == 11 or l == 23) then
             spin = 'Scarce'
         end
         if  l == 29 then
             spin = 'God'
         end
     elseif p==6 then
-        if(l == 5 or l = 11 or l = 23) then
+        if(l == 5 or l == 11 or l == 23) then
             spin = 'Scarce'
         end
         if(l==17 or l==29)then
