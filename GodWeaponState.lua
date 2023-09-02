@@ -8,47 +8,51 @@ function GodWeaponState.render()
 
 	love.drawBack(235,73,152)
 
+	love.graphics.setFont(gFonts['commonWeapons'])
+
 	if data.weapons['GalacticBeam'] then
 	love.graphics.setColor(235/255,73/255,152/255)
 	love.graphics.rectangle('fill',20,120,280,180)
 	love.graphics.setColor(1,222/255,222/255)
-	love.graphics.printf('Galactic Beam',20,285,280,'center')
+	love.graphics.printf('Galactic Beam',20,247,280,'center')
 	end
 	if data.weapons['SolarFlare'] then
 	love.graphics.setColor(235/255,73/255,152/255)
 	love.graphics.rectangle('fill',340,120,280,180)
 	love.graphics.setColor(1,222/255,222/255)
-	love.graphics.printf('Solar Flare',340,285,280,'center')
+	love.graphics.printf('Solar Flare',340,247,280,'center')
 	end
 	if data.weapons['CometStrike'] then
 	love.graphics.setColor(235/255,73/255,152/255)
 	love.graphics.rectangle('fill',660,120,280,180)
 	love.graphics.setColor(1,222/255,222/255)
-	love.graphics.printf('Comet Strike',660,285,280,'center')
+	love.graphics.printf('Comet Strike',660,247,280,'center')
 	end
 	if data.weapons['DeathVirus'] then
 	love.graphics.setColor(235/255,73/255,152/255)
 	love.graphics.rectangle('fill',980,120,280,180)
 	love.graphics.setColor(1,222/255,222/255)
-	love.graphics.printf('Death Virus',980,285,280,'center')
+	love.graphics.printf('Death Virus',980,247,280,'center')
 	end
 	if data.weapons['VoidBurst'] then
 	love.graphics.setColor(235/255,73/255,152/255)
 	love.graphics.rectangle('fill',20,330,280,180)
 	love.graphics.setColor(1,222/255,222/255)
-	love.graphics.printf('Void Burst',20,495,280,'center')
+	love.graphics.printf('Void Burst',20,457,280,'center')
 	end
 	if data.weapons['CelestialDisruption'] then
 	love.graphics.setColor(235/255,73/255,152/255)
 	love.graphics.rectangle('fill',340,330,280,180)
 	love.graphics.setColor(1,222/255,222/255)
-	love.graphics.printf('Celestial Disruption',340,495,280,'center')
+	love.graphics.setFont(gFonts['commonWeapons2'])
+	love.graphics.printf('Celestial Disruption',340,457,280,'center')
+	love.graphics.setFont(gFonts['commonWeapons'])
 	end
 	if data.weapons['QuantumFlux'] then
 	love.graphics.setColor(235/255,73/255,152/255)
 	love.graphics.rectangle('fill',660,330,280,180)
 	love.graphics.setColor(1,222/255,222/255)
-	love.graphics.printf('Quantum Flux',660,495,280,'center')
+	love.graphics.printf('Quantum Flux',660,457,280,'center')
 	end
 
 
