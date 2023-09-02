@@ -1,5 +1,7 @@
 LevelSpin = Class{__includes = BaseState}
 local name = nil
+local count = 0
+local what = nil
 function LevelSpin:render()
 	push:apply('start')
 
@@ -16,14 +18,31 @@ function LevelSpin:render()
 	push:apply('end')
 end
 
-function LevelSpin:enter(spin)
-	typeSpin = spin
+function LevelSpin:update(dt)
+	count = count + dt
+	if count >= 4 then
+		LevelSpin:reset()
+		if what == 'home' then
+			gStateMachine:change('home')
+		else
+			gStateMachine:change('weaponSelect')
+		end
+	end
+end
+function LevelSpin:enter(table)
+	typeSpin = table.spin
+	what = table.go
     com = math.random(1,100)
     name = LevelSpin:getChance()
 end
+function LevelSpin:reset()
+	typeSpin = nil
+	com = 0
+	name = nil
+end
 function LevelSpin:getChance()
 	if typeSpin == 'Common' then
-		if com >= 1 and com<=20 then
+		if com >= 1 and com<=20 then 
 			data.gold = data.gold + 10
 			
 			saveData()
