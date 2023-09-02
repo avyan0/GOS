@@ -120,7 +120,7 @@ function SpinState:getChance()
 		end
 
 		if com >= 21 and com <= 30 then
-		    data.weapons['Battle am'] = true
+		    data.weapons['BattleRam'] = true
 		    data.gold = data.gold - priceForSpin
 			saveData()
 		    return 'Battle Ram'
