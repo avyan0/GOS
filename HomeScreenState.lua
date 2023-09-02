@@ -88,9 +88,13 @@ function HomeScreenState:mousePressed(x,y)
 		gStateMachine:change('items')
 	end
 
-	if love.clicked(x,y,880,1280,0,150) then
+	if love.clicked(x,y,1160,1240,30,90) then
+		gStateMachine:change('profileChoose')
+	elseif love.clicked(x,y,880,1280,0,150) then
 		gStateMachine:change('profile')
 	end
+	
+	
 
 	if love.clicked(x,y,0,180,270,400) then
 		gStateMachine:change('p1Level')
