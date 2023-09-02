@@ -16,49 +16,51 @@ function RareWeaponState:render()
 	love.graphics.setColor(20/255,80/255,90/255)
 	love.graphics.rectangle('fill',20,120,280,180)
 	love.graphics.setColor(0,1,0)	
-	love.graphics.printf('Thunder Strike',20,285,280,'center')
+	love.graphics.printf('Thunder Strike',20,245,280,'center')
 	end
 	if data.weapons['BattleRam'] then
 	love.graphics.setColor(20/255,80/255,90/255)
 	love.graphics.rectangle('fill',340,120,280,180)
 	love.graphics.setColor(0,1,0)	
-	love.graphics.printf('Battle Ram',340,285,280,'center')
+	love.graphics.printf('Battle Ram',340,245,280,'center')
 	end
 	if data.weapons['ElectroJolt'] then
 	love.graphics.setColor(20/255,80/255,90/255)
 	love.graphics.rectangle('fill',660,120,280,180)
 	love.graphics.setColor(0,1,0)	
-	love.graphics.printf('Electro Jolt',660,285,280,'center')
+	love.graphics.printf('Electro Jolt',660,245,280,'center')
 	end
 	if data.weapons['DaggerThrow'] then
 	love.graphics.setColor(20/255,80/255,90/255)
 	love.graphics.rectangle('fill',980,120,280,180)
 	love.graphics.setColor(0,1,0)	
-	love.graphics.printf('Dagger Throw',980,285,280,'center')
+	love.graphics.printf('Dagger Throw',980,245,280,'center')
 	end
 	if data.weapons['Hevalstruck'] then
 	love.graphics.setColor(20/255,80/255,90/255)
 	love.graphics.rectangle('fill',20,330,280,180)
 	love.graphics.setColor(0,1,0)
-	love.graphics.printf('Hevalstruck',20,495,280,'center')
+	love.graphics.printf('Hevalstruck',20,455,280,'center')
 	end
 	if data.weapons['RecursiveExplosion'] then
 	love.graphics.setColor(20/255,80/255,90/255)
 	love.graphics.rectangle('fill',340,330,280,180)
 	love.graphics.setColor(0,1,0)
-	love.graphics.printf('Recursive Explosion',340,495,280,'center')
+	love.graphics.setFont(gFonts['commonWeapons1'])
+	love.graphics.printf('Recursive Explosion',340,467,280,'center')
+	love.graphics.setFont(gFonts['commonWeapons'])
 	end
 	if data.weapons['Dueltroid'] then
 	love.graphics.setColor(20/255,80/255,90/255)
 	love.graphics.rectangle('fill',660,330,280,180)
 	love.graphics.setColor(0,1,0)
-	love.graphics.printf('Dueltroid',660,495,280,'center')
+	love.graphics.printf('Dueltroid',660,455,280,'center')
 	end
 	if data.weapons['FreshStart'] then
 	love.graphics.setColor(20/255,80/255,90/255)
 	love.graphics.rectangle('fill',980,330,280,180)
 	love.graphics.setColor(0,1,0)
-	love.graphics.printf('Fresh Start',980,495,280,'center')
+	love.graphics.printf('Fresh Start',980,455,280,'center')
 	end
 
 	love.graphics.setColor(1,1,1)
