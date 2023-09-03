@@ -24,8 +24,8 @@ function HomeScreenState:render()
 
 
 
-	local backgroundWidth = gTextures['playerIcon']:getWidth()
-    local backgroundHeight = gTextures['playerIcon']:getHeight()
+	local backgroundWidth = data.profile:getWidth()
+    local backgroundHeight = data.profile:getHeight()
 	
 
 	love.graphics.setColor(52/255,52/255,52/255,1)
@@ -35,7 +35,7 @@ function HomeScreenState:render()
 	love.graphics.printf(data.name, 880, 30, 400,'center')
 	love.graphics.rectangle('line', 880, 0, 400,150)
 	love.graphics.setColor(52/255,52/255,52/255,1)
-	love.graphics.draw(gTextures['playerIcon'],1160,30,0,80 / (backgroundWidth - 1), 60 / (backgroundHeight - 1))
+	love.graphics.draw(data.profile,1160,30,0,80 / (backgroundWidth - 1), 60 / (backgroundHeight - 1))
 
 	love.graphics.setColor(1,1,1,1)
 
