@@ -59,7 +59,9 @@ function love.load()
         ['gameBackground1'] = love.graphics.newImage('states/homeState/game/things/gameBackground1.png'),
         ['alien'] = love.graphics.newImage('states/homeState/game/things/alien.jpg'),
         ['flyingAlien'] = love.graphics.newImage('states/homeState/game/things/flyingAlien.jpg'),
-        ['walls'] = love.graphics.newImage('states/homeState/game/things/walls.png') 
+        ['walls'] = love.graphics.newImage('states/homeState/game/things/walls.png') ,
+        ['profileChoose'] = function() return ProfileChoose() end
+
 	}
 
     gWeapons = {
@@ -144,6 +146,8 @@ function love.load()
 	weaponDictionary()
     alienDictionary()
     makeLevel()
+    data.profile = gTextures['playerIcon1']
+
 
 
 end
