@@ -341,16 +341,20 @@ function newLevelObject(spawn,stage)
 end
 
 function loadData()
-    if love.filesystem.getInfo("data.txt") then
-        local file = io.open("data.txt", "r")
-        if file then
-            local dataString = file:read("*a")
-            file:close()
-            data = json.decode(dataString)
+    local file = io.open("data.txt", "r")  -- Open the file in read mode
+    if file then
+        local dataString = file:read("*a")  -- Read the entire content of the file
+        file:close()  -- Close the file
+
+        -- Attempt to decode the JSON string
+        local success, decodedData = pcall(json.decode, dataString)
+        if success then
+            data = decodedData
+        else
+            print("Error decoding JSON:", decodedData)  -- Print the error message
         end
     else
-        createNewSave()
-        saveData()
+        print("Error opening file")
     end
 end
 
@@ -421,12 +425,23 @@ end
 
 
 function saveData()
+    local filteredData = filterUserData(data)  -- Filter out userdata
     local file = io.open("data.txt", "w")  -- Open the file in write mode
     if file then
-        local dataString = json.encode(data)  -- Convert the data table to a JSON string
+        local dataString = json.encode(filteredData)  -- Convert the filtered data table to a JSON string
         file:write(dataString)  -- Write the data string to the file
         file:close()  -- Close the file
     end
+end
+
+function filterUserData(data)
+    local filteredData = {}
+    for key, value in pairs(data) do
+        if type(value) ~= "userdata" then
+            filteredData[key] = value
+        end
+    end
+    return filteredData
 end
 
 function alienDictionary()
