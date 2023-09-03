@@ -12,7 +12,9 @@ function love.load()
 		['loadingScreen'] = love.graphics.newFont('loadingScreen/backgroundFont.otf',100),
         ['bottomHome'] = love.graphics.newFont('states/homeState/things/bottomHome.otf', 60),
         ['weapons1'] = love.graphics.newFont('states/homeState/weapons/things/weapons.ttf',85),
-        ['commonWeapons'] = love.graphics.newFont('states/homeState/weapons/things/commonWeaponFont.otf',45),
+        ['commonWeapons'] = love.graphics.newFont('states/homeState/weapons/things/commonWeaponFont.otf',60),
+        ['commonWeapons1'] = love.graphics.newFont('states/homeState/weapons/things/commonWeaponFont.otf',47),
+        ['commonWeapons2'] = love.graphics.newFont('states/homeState/weapons/things/commonWeaponFont.otf',45),
         ['back'] = love.graphics.newFont('states/homeState/weapons/things/backSign.ttf',35),
         ['shop'] = love.graphics.newFont('states/homeState/things/shop.otf',30),
         ['shop2'] = love.graphics.newFont('states/homeState/things/shop.otf',20),
@@ -36,6 +38,7 @@ function love.load()
 	gTextures = {
 		['loadingScreen'] = love.graphics.newImage('loadingScreen/loadBackground.png'),
         ['playerIcon'] = love.graphics.newImage('states/homeState/things/profileIcon.png'),
+        ['playerIcon1'] = love.graphics.newImage('states/homeState/things/profileIcon1.png'),
         ['planet1'] = love.graphics.newImage('states/homeState/things/Planet1.png'),
         ['planet2'] = love.graphics.newImage('states/homeState/things/Planet2.png'),
         ['planet3'] = love.graphics.newImage('states/homeState/things/Planet3.png'),
@@ -128,11 +131,13 @@ function love.load()
         ['lose'] = function() return LoseState() end,
         ['stageSelect'] = function() return StageSelect() end,
         ['win'] = function() return WinState() end,
-        ['pause'] = function() return PauseState() end
-        
+        ['pause'] = function() return PauseState() end,
+        ['levelSpin'] = function() return LevelSpin() end,
+        ['profileChoose'] = function() return ProfileChoose() end
+    
     }
     makeLevel()
-    gStateMachine:change('home')
+    gStateMachine:change('profileChoose')
 
 
     love.keyboard.keysPressed = {}
