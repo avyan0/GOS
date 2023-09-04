@@ -31,37 +31,37 @@ function AlienScreenState:render()
 	setColor(84/255,195/255,51/255)
 	if slide == 0 then
 		love.graphics.printf('Joe',101,200,200,'center')
-		love.graphics.printf('Monster',392,200,200,'center')
+		love.graphics.printf('Gen57',392,200,200,'center')
 		love.graphics.printf('President',683,200,200,'center')
 		love.graphics.printf('King',974,200,200,'center')
-		love.graphics.printf('Bob',101,435,200,'center')
-		love.graphics.printf('Shielder',392,435,200,'center')
-		love.graphics.printf('Spacecraft',683,435,200,'center')
-		love.graphics.printf('Speed',974,435,200,'center')
+		love.graphics.printf('DJ',101,435,200,'center')
+		love.graphics.printf('Space Fence',392,435,200,'center')
+		love.graphics.printf('Spaceship',683,435,200,'center')
+		love.graphics.printf('VR Workout',974,435,200,'center')
 	end
 	if slide == 1 then
-		love.graphics.printf('Grandpa',101,200,200,'center')
-		love.graphics.printf('Spawner',392,200,200,'center')
-		love.graphics.printf('Wall Hopper',683,200,200,'center')
+		love.graphics.printf('Old Granny',101,200,200,'center')
+		love.graphics.printf('Albot',392,200,200,'center')
+		love.graphics.printf('Jumper',683,200,200,'center')
 		love.graphics.printf('Giant',974,200,200,'center')
-		love.graphics.printf('Weed Wacker',101,435,200,'center')
-		love.graphics.printf('Revalutionist',392,435,200,'center')
-		love.graphics.printf('Transmuter',683,435,200,'center')
-		love.graphics.printf('Fusion Master',974,435,200,'center')
+		love.graphics.printf('Gardener',101,435,200,'center')
+		love.graphics.printf('Army',392,435,200,'center')
+		love.graphics.printf('Morpher',683,435,200,'center')
+		love.graphics.printf('Fusion',974,435,200,'center')
 	end
 	if slide == 2 then
 		love.graphics.printf('Common Crippler',101,200,200,'center')
-		love.graphics.printf('Splashscreen',392,200,200,'center')
-		love.graphics.printf('Saboteur',683,200,200,'center')
+		love.graphics.printf('Splashfest',392,200,200,'center')
+		love.graphics.printf('Virus',683,200,200,'center')
 		love.graphics.printf('Guardian',974,200,200,'center')
-		love.graphics.printf('Evolutionist',101,435,200,'center')
-		love.graphics.printf('Blocked',392,435,200,'center')
-		love.graphics.printf('Suppressionist',683,435,200,'center')
-		love.graphics.printf('dimentional',974,435,200,'center')
+		love.graphics.printf('Dark Arts',101,435,200,'center')
+		love.graphics.printf('Rare',392,435,200,'center')
+		love.graphics.printf('Protected',683,435,200,'center')
+		love.graphics.printf('Interdimentional',974,435,200,'center')
 	end
 	if slide == 3 then
-		love.graphics.printf('Faminize',101,200,200,'center')
-		love.graphics.printf('The Hevalgod',392,200,200,'center')
+		love.graphics.printf('Scarce',101,200,200,'center')
+		love.graphics.printf('The Heval God',392,200,200,'center')
 		love.graphics.printf('God of Space',683,200,200,'center')
 	end
 	
@@ -95,6 +95,69 @@ function AlienScreenState:mousePressed(x,y)
 	if slide ~= 0 then
 		if love.clicked(x,y,20,80,480,540) then
 			slide = slide -1
+		end
+	end
+	if slide == 0 then
+		if love.clicked(x,y,101,301,115,235) then
+			gStateMachine:change('alienInfo',Aliens['Joe'])
+		elseif love.clicked(x,y,392,592,115,235) then
+			gStateMachine:change('alienInfo',Aliens['Gen57'])
+		elseif love.clicked(x,y,683,883,115,235) then
+			gStateMachine:change('alienInfo',Aliens['President'])
+		elseif love.clicked(x,y,974,1174,115,235) then
+			gStateMachine:change('alienInfo',Aliens['King'])
+		elseif love.clicked(x,y,101,301,350,470) then
+			gStateMachine:change('alienInfo',Aliens['DJ'])
+		elseif love.clicked(x,y,392,592,350,470) then
+			gStateMachine:change('alienInfo',Aliens['SpaceFence'])
+		elseif love.clicked(x,y,683,883,350,470) then
+			gStateMachine:change('alienInfo',Aliens['Spaceship'])
+		elseif love.clicked(x,y,974,1174,350,470) then
+			gStateMachine:change('alienInfo',Aliens['VRWorkout'])
+		end
+	elseif slide == 1 then
+		if love.clicked(x,y,101,301,115,235) then
+			gStateMachine:change('alienInfo',Aliens['OldGranny'])
+		elseif love.clicked(x,y,392,592,115,235) then
+			gStateMachine:change('alienInfo',Aliens['Albot'])
+		elseif love.clicked(x,y,683,883,115,235) then
+			gStateMachine:change('alienInfo',Aliens['Jumper'])
+		elseif love.clicked(x,y,974,1174,115,235) then
+			gStateMachine:change('alienInfo',Aliens['Giant'])
+		elseif love.clicked(x,y,101,301,350,470) then
+			gStateMachine:change('alienInfo',Aliens['Gardener'])
+		elseif love.clicked(x,y,392,592,350,470) then
+			gStateMachine:change('alienInfo',Aliens['Army'])
+		elseif love.clicked(x,y,683,883,350,470) then
+			gStateMachine:change('alienInfo',Aliens['Morpher'])
+		elseif love.clicked(x,y,974,1174,350,470) then
+			gStateMachine:change('alienInfo',Aliens['Fusion'])
+		end
+	elseif slide == 2 then
+		if love.clicked(x,y,101,301,115,235) then
+			gStateMachine:change('alienInfo',Aliens['CommonCrippler'])
+		elseif love.clicked(x,y,392,592,115,235) then
+			gStateMachine:change('alienInfo',Aliens['Splashfest'])
+		elseif love.clicked(x,y,683,883,115,235) then
+			gStateMachine:change('alienInfo',Aliens['Virus'])
+		elseif love.clicked(x,y,974,1174,115,235) then
+			gStateMachine:change('alienInfo',Aliens['Guardian'])
+		elseif love.clicked(x,y,101,301,350,470) then
+			gStateMachine:change('alienInfo',Aliens['DarkArts'])
+		elseif love.clicked(x,y,392,592,350,470) then
+			gStateMachine:change('alienInfo',Aliens['Rare'])
+		elseif love.clicked(x,y,683,883,350,470) then
+			gStateMachine:change('alienInfo',Aliens['Protected'])
+		elseif love.clicked(x,y,974,1174,350,470) then
+			gStateMachine:change('alienInfo',Aliens['Interdimentional'])
+		end
+	elseif slide == 3 then
+		if love.clicked(x,y,101,301,115,235) then
+			gStateMachine:change('alienInfo',Aliens['Scarce'])
+		elseif love.clicked(x,y,392,592,115,235) then
+			gStateMachine:change('alienInfo',Aliens['TheHevalGod'])
+		elseif love.clicked(x,y,683,883,115,235) then
+			gStateMachine:change('alienInfo',Aliens['GodOfSpace'])
 		end
 	end
 end
