@@ -48,56 +48,89 @@ function SpinState:getChance()
 	com = math.random(1,100)
 	if typeSpin == 'Common' then
 		if com >= 1 and com<=20 then
-			data.gold = data.gold + 10
+			local rand = math.random(15,35)
+			data.gold = data.gold + rand
 			data.gold = data.gold - priceForSpin
 			saveData()
-			return '10 Gold'
+			return (rand..' Gold')
 			
 		end
 		if com >= 21 and com <= 30 then
-			data.weapons['AstroidRain'] = true
+			if data.weapons['AstroidRain'] == true then
+				data.upgrades['Astroid Rain'] = data.upgrades['Astroid Rain'] + 1
+			else
+				data.weapons['AstroidRain'] = true
+			end
 			data.gold = data.gold - priceForSpin
 			saveData()
 			return 'Astroid Rain'
 		end
 		if com >=31 and com <= 40 then
-			data.weapons['TripleThreat'] = true
+			if data.weapons['TripleThreat'] == true then
+				data.upgrades['Triple Threat'] = data.upgrades['Triple Threat'] + 1
+			else
+				data.weapons['TripleThreat'] = true
+			end
 			data.gold = data.gold - priceForSpin
 			saveData()
 			return 'Triple Threat'
 		end 
 		if com >=41 and com <= 50 then
-			data.weapons['PoisonArrow'] = true
+			if data.weapons['PoisonArrow'] == true then
+				data.upgrades['Poison Arrow'] = data.upgrades['Poison Arrow'] + 1
+			else
+				data.weapons['PoisonArrow'] = true
+			end
 			data.gold = data.gold - priceForSpin
 			saveData()
 			return 'Poison Arrow'
 		end 
 		if com >=51 and com <= 60 then
-			data.weapons['CosmicFire'] = true
+			if data.weapons['CosmicFire'] == true then
+				data.upgrades['Cosmic Fire'] = data.upgrades['Cosmic Fire'] + 1
+			else
+				data.weapons['CosmicFire'] = true
+			end
 			data.gold = data.gold - priceForSpin
 			saveData()
 			return 'Cosmic Fire'
 		end 
 		if com >=61 and com <= 70 then
-			data.weapons['Astrobolt'] = true
+			if data.weapons['Astrobolt'] == true then
+				data.upgrades['Astrobolt'] = data.upgrades['Astrobolt'] + 1
+			else
+				data.weapons['Astrobolt'] = true
+			end
 			data.gold = data.gold - priceForSpin
 			saveData()
 			return 'Astrobolt'
 		end 
 		if com >=71 and com <= 80 then
-			data.weapons['StarBlast'] = true
+			if data.weapons['StarBlast'] == true then
+				data.upgrades['Star Blast'] = data.upgrades['Star Blast'] + 1
+			else
+				data.weapons['StarBlast'] = true
+			end
 			data.gold = data.gold - priceForSpin
 			saveData()
 			return 'Star Blast'
 		end
 		if com >=81 and com <= 90 then
-			data.weapons['LaserKill'] = true
+			if data.weapons['LaserKill'] == true then
+				data.upgrades['Laser Kill'] = data.upgrades['Laser Kill'] + 1
+			else
+				data.weapons['LaserKill'] = true
+			end
 			data.gold = data.gold - priceForSpin
 			saveData()
 			return 'Laser Kill'
 		end
 		if com >=91 and com <= 100 then
-			data.weapons['StellarBoost'] = true
+			if data.weapons['StellarBoost'] == true then
+				data.upgrades['Stellar Boost'] = data.upgrades['Stellar Boost'] + 1
+			else
+				data.weapons['StellarBoost'] = true
+			end
 			data.gold = data.gold - priceForSpin
 			saveData()
 			return 'Stellar Boost'
@@ -106,164 +139,246 @@ function SpinState:getChance()
 
 	if typeSpin == 'Rare' then
 		if com >= 1 and com <= 10 then
-		    data.gold = data.gold + 50
+			local rand = math.random(27,63)
+		    data.gold = data.gold + rand
 		    data.gold = data.gold - priceForSpin
 			saveData()
-		    return '50 Gold'
+		    return (rand..' Gold')
 		end
 
 		if com >= 11 and com <= 20 then
-		    data.weapons['ThunderStrike'] = true
+			if data.weapons['ThunderStrike'] == true then
+				data.upgrades['Thunder Strike'] = data.upgrades['Thunder Strike'] + 1
+			else
+				data.weapons['ThunderStrike'] = true
+			end
 		    data.gold = data.gold - priceForSpin
 			saveData()
 		    return 'Thunder Strike'
 		end
 
 		if com >= 21 and com <= 30 then
-		    data.weapons['BattleRam'] = true
+			if data.weapons['BattleRam'] == true then
+				data.upgrades['Battle Ram'] = data.upgrades['Battle Ram'] + 1
+			else
+				data.weapons['BattleRam'] = true
+			end
 		    data.gold = data.gold - priceForSpin
 			saveData()
 		    return 'Battle Ram'
 		end
 
 		if com >= 31 and com <= 40 then
-		    data.weapons['ElectroJolt'] = true
+			if data.weapons['ElectroJolt'] == true then
+				data.upgrades['Electro Jolt'] = data.upgrades['Electro Jolt'] + 1
+			else
+				data.weapons['ElectroJolt'] = true
+			end
 		    data.gold = data.gold - priceForSpin
 			saveData()
 		    return 'Electro Jolt'
 		end
 
 		if com >= 41 and com <= 50 then
-		    data.weapons['DaggerThrow'] = true
+			if data.weapons['DaggerThrow'] == true then
+				data.upgrades['Dagger Throw'] = data.upgrades['Dagger Throw'] + 1
+			else
+				data.weapons['DaggerThrow'] = true
+			end
 		    data.gold = data.gold - priceForSpin
 			saveData()
 		    return 'Dagger Throw'
 		end
 
 		if com >= 51 and com <= 60 then
-		    data.weapons['Hevalstruck'] = true
+			if data.weapons['Hevalstruck'] == true then
+				data.upgrades['Hevalstruck'] = data.upgrades['Hevalstruck'] + 1
+			else
+				data.weapons['Hevalstruck'] = true
+			end
 		    data.gold = data.gold - priceForSpin
 			saveData()
 		    return 'Hevalstruck'
 		end
 
 		if com >= 61 and com <= 70 then
+			if data.weapons['RecursiveExplosion'] == true then
+				data.upgrades['Recursive Explosion'] = data.upgrades['Recursive Explosion'] + 1
+			else
+				data.weapons['RecursiveExplosion'] = true
+			end
 		    data.weapons['RecursiveExplosion'] = true
 		    data.gold = data.gold - priceForSpin
 			saveData()
-		    return 'RecursiveExplosion'
+		    return 'Recursive Explosion'
 		end
 
 		if com >= 71 and com <= 80 then
-		    data.weapons['Dueltroid'] = true
+			if data.weapons['Dueltroid'] == true then
+				data.upgrades['Dueltroid'] = data.upgrades['Dueltroid'] + 1
+			else
+				data.weapons['Dueltroid'] = true
+			end
 		    data.gold = data.gold - priceForSpin
 			saveData()
 		    return 'Dueltroid'
 		end
 
 		if com >= 81 and com <= 90 then
-		    data.weapons['FreshStart'] = true
+			if data.weapons['FreshStart'] == true then
+				data.upgrades['Fresh Start'] = data.upgrades['Fresh Start'] + 1
+			else
+				data.weapons['FreshStart'] = true
+			end
 		    data.gold = data.gold - priceForSpin
 			saveData()
-		    return 'FreshStart'
+		    return 'Fresh Start'
 		end
 
 		if com >= 91 and com <= 100 then
-			data.gold = data.gold + 50
-			data.gold = data.gold - priceForSpin
+			local rand = math.random(27,63)
+		    data.gold = data.gold + rand
+		    data.gold = data.gold - priceForSpin
 			saveData()
-			return '50 Gold'
+		    return (rand..' Gold')
 		end
 	end
 
 	if typeSpin == 'Scarce' then
 		if com >= 1 and com <= 10 then
-		    data.gold = data.gold + 75
+			local rand = math.random(60,140)
+		    data.gold = data.gold + rand
 		    data.gold = data.gold - priceForSpin
 			saveData()
-		    return '75 Gold'
+		    return (rand..' Gold')
 		end
 
 		if com >= 11 and com <= 20 then
-		    data.weapons['SantaAxe'] = true
+			if data.weapons['SantaAxe'] == true then
+				data.upgrades['Santa Axe'] = data.upgrades['Santa Axe'] + 1
+			else
+				data.weapons['SantaAxe'] = true
+			end
 		    data.gold = data.gold - priceForSpin
 			saveData()
 		    return 'Santa Axe'
 		end
 
 		if com >= 21 and com <= 30 then
-		    data.weapons['Respawn'] = true
+			if data.weapons['Respawn'] == true then
+				data.upgrades['Respawn'] = data.upgrades['Respawn'] + 1
+			else
+				data.weapons['Respawn'] = true
+			end
 		    data.gold = data.gold - priceForSpin
 			saveData()
 		    return 'Respawn'
 		end
 
 		if com >= 31 and com <= 40 then
-		    data.weapons['Offguard'] = true
+			if data.weapons['Offguard'] == true then
+				data.upgrades['Offguard'] = data.upgrades['Offguard'] + 1
+			else
+				data.weapons['Offguard'] = true
+			end
 		    data.gold = data.gold - priceForSpin
 			saveData()
 		    return 'Offguard'
 		end
 
 		if com >= 41 and com <= 50 then
-		    data.weapons['LaserBeam'] = true
+			if data.weapons['LaserBeam'] == true then
+				data.upgrades['Laser Beam'] = data.upgrades['Laser Beam'] + 1
+			else
+				data.weapons['LaserBeam'] = true
+			end
 		    data.gold = data.gold - priceForSpin
 			saveData()
 		    return 'Laser Beam'
 		end
 
 		if com >= 51 and com <= 60 then
-		    data.weapons['MindBlast'] = true
+			if data.weapons['MindBlast'] == true then
+				data.upgrades['Mind Blast'] = data.upgrades['Mind Blast'] + 1
+			else
+				data.weapons['MindBlast'] = true
+			end
 		    data.gold = data.gold - priceForSpin
 			saveData()
 		    return 'Mind Blast'
 		end
 
 		if com >= 61 and com <= 70 then
-		    data.weapons['GrenadeLauncher'] = true
+			if data.weapons['GrenadeLauncher'] == true then
+				data.upgrades['Grenade Launcher'] = data.upgrades['Grenade Launcher'] + 1
+			else
+				data.weapons['GrenadeLauncher'] = true
+			end
 		    data.gold = data.gold - priceForSpin
 			saveData()
 		    return 'Grenade Launcher'
 		end
 
 		if com >= 71 and com <= 80 then
-		    data.weapons['Protected'] = true
+			if data.weapons['Protected'] == true then
+				data.upgrades['Protected'] = data.upgrades['Protected'] + 1
+			else
+				data.weapons['Protected'] = true
+			end
 		    data.gold = data.gold - priceForSpin
 			saveData()
 		    return 'Protected'
 		end
 
 		if com >= 81 and com <= 90 then
-		    data.weapons['Hypnosis'] = true
+			if data.weapons['Hypnosis'] == true then
+				data.upgrades['Hypnosis'] = data.upgrades['Hypnosis'] + 1
+			else
+				data.weapons['Hypnosis'] = true
+			end
 		    data.gold = data.gold - priceForSpin
 			saveData()
 		    return 'Hypnosis'
 		end
 
 		if com >= 91 and com <= 100 then
-		    data.gems = data.gems + 5
+			local rand = math.random(3,7)
+		    data.gems = data.gems + rand
 		    data.gold = data.gold - priceForSpin
 			saveData()
-		    return '5 Gems'
+		    return (rand..' Gems')
 		end
 	end
 
 	if typeSpin == 'God' then
 		if com >= 1 and com <= 10 then
-		    data.weapons['GalacticBeam'] = true
+			if data.weapons['GalacticBeam'] == true then
+				data.upgrades['Galactic Beam'] = data.upgrades['Galactic Beam'] + 1
+			else
+				data.weapons['GalacticBeam'] = true
+			end
 		    data.gold = data.gold - priceForSpin
 			saveData()
 		    return 'Galactic Beam'
 		end
 
 		if com >= 11 and com <= 20 then
-		    data.weapons['SolarFlare'] = true
+			if data.weapons['SolarFlare'] == true then
+				data.upgrades['Solar Flare'] = data.upgrades['Solar Flare'] + 1
+			else
+				data.weapons['SolarFlare'] = true
+			end
 		    data.gold = data.gold - priceForSpin
 			saveData()
 		    return 'Solar Flare'
 		end
 
 		if com >= 21 and com <= 30 then
+			if data.weapons['CometStrike'] == true then
+				data.upgrades['Comet Strike'] = data.upgrades['Comet Strike'] + 1
+			else
+				data.weapons['CometStrike'] = true
+			end
 		    data.weapons['CometStrike'] = true
 		    data.gold = data.gold - priceForSpin
 			saveData()
@@ -271,45 +386,63 @@ function SpinState:getChance()
 		end
 
 		if com >= 31 and com <= 40 then
-		    data.weapons['DeathVirus'] = true
+			if data.weapons['DeathVirus'] == true then
+				data.upgrades['Death Virus'] = data.upgrades['Death Virus'] + 1
+			else
+				data.weapons['DeathVirus'] = true
+			end
 		    data.gold = data.gold - priceForSpin
 			saveData()
 		    return 'Death Virus'
 		end
 
 		if com >= 41 and com <= 50 then
-		    data.weapons['VoidBurst'] = true
+			if data.weapons['VoidBurst'] == true then
+				data.upgrades['Void Burst'] = data.upgrades['Void Burst'] + 1
+			else
+				data.weapons['VoidBurst'] = true
+			end
 		    data.gold = data.gold - priceForSpin
 			saveData()
 		    return 'Void Burst'
 		end
 
 		if com >= 51 and com <= 60 then
-		    data.weapons['CelestialDisruption'] = true
+			if data.weapons['CelestialDisruption'] == true then
+				data.upgrades['Celestial Disruption'] = data.upgrades['Celestial Disruption'] + 1
+			else
+				data.weapons['CelestialDisruption'] = true
+			end
 		    data.gold = data.gold - priceForSpin
 			saveData()
 		    return 'Celestial Disruption'
 		end
 
 		if com >= 61 and com <= 70 then
-		    data.weapons['QuantumFlux'] = true
+			if data.weapons['QuantumFlux'] == true then
+				data.upgrades['Quantum Flux'] = data.upgrades['Quantum Flux'] + 1
+			else
+				data.weapons['QuantumFlux'] = true
+			end
 		    data.gold = data.gold - priceForSpin
 			saveData()
 		    return 'Quantum Flux'
 		end
 
 		if com >= 71 and com <= 80 then
-		        data.gold = data.gold + 100
-		        data.gold = data.gold - priceForSpin
-				saveData()
-		        return '100 Gold'
+			local rand = math.random(162,378)
+		    data.gold = data.gold + rand
+		    data.gold = data.gold - priceForSpin
+			saveData()
+		    return (rand..' Gold')
 		end
 
 		if com >= 81 and com <= 100 then
-		        data.gems = data.gems + 20
-		        data.gold = data.gold - priceForSpin
-				saveData()
-		        return '20 Gems'
+			local rand = math.random(12,28)
+		    data.gems = data.gems + rand
+		    data.gold = data.gold - priceForSpin
+			saveData()
+		    return (rand..' Gems')
 		end
 	end
 
