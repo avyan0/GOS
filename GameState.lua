@@ -147,6 +147,7 @@ function GameState:render()
                 end
                 love.graphics.setFont(gFonts['game10'])
                 love.graphics.print(math.round(alienStats[i][j].health),(j*256 - 143),((i-1)*65 + 6))
+                love.graphics.print(alienStats[i][j].name,j*256-112,(i-1)*65 + 33)
                 if alienStats[i][j].poisoned then
                     setColor(0,1,0)
                     love.graphics.print('p',(j*256 - 123),((i-1)*65 + 6))
