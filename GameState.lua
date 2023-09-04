@@ -638,12 +638,6 @@ function GameState:moveLane(n, thingy)
                     damageBuff = damageBuff * .75
                 end
                 if alienAlive[i][j] then
-                    if alienStats[i][j].stunned then
-                        alienStats[i][j].stunDuration = alienStats[i][j].stunDuration -1
-                    end
-                    if alienStats[i][j].stunDuration <= 0 then
-                        alienStats[i][j].stunned = false
-                    end
                     local alien = alienStats[i][j]
                     local speed = thingy.speed
                     if alienStats[i][j].stunned then
@@ -738,7 +732,18 @@ function GameState:moveLane(n, thingy)
             end
         end
     end
-    
+    for i = 1,10 do
+        for j = 1,5 do
+            if alienAlive[i][j] then
+                if alienStats[i][j].stunned then
+                    alienStats[i][j].stunDuration = alienStats[i][j].stunDuration -1
+                end
+                if alienStats[i][j].stunDuration <= 0 then
+                    alienStats[i][j].stunned = false
+                end
+            end
+        end
+    end
 end
 
 function GameState:mousePressed(x, y)
@@ -1093,7 +1098,7 @@ function GameState:stun(weapon, lane)
             if alienAlive[i][lane] and not alienStats[i][lane].stunned and not alienStats[i][lane].immmunity  then
                 stunCounter = stunCounter + 1
                 alienStats[i][lane].stunned = true
-                alienStats[i][lane].stunDuration = weapon.stunDuration +1
+                alienStats[i][lane].stunDuration = weapon.stunDuration
             end
         end
     end
