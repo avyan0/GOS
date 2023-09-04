@@ -34,6 +34,14 @@ function createNewSave(saveNumber)
         file:open("w")  -- Open the file in write mode to create it
         file:close()  -- Close the file
     end
+	local startingWeapon = math.random(1,7)
+	local startingWeapon1 = math.random(1,7)
+	local startingWeapon2 = math.random(1,7)
+	while startingWeapon == startingWeapon1 or startingWeapon ~= startingWeapon2 or startingWeapon2 ~= startingWeapon1 do
+		startingWeapon = math.random(1,7)
+		startingWeapon1 = math.random(1,7)
+		startingWeapon2 = math.random(1,7)
+	end
 	data.gold = 100000
 	data.gems = 10
 	data.time = '00:00'
@@ -46,65 +54,95 @@ function createNewSave(saveNumber)
 	data.weaponChoose3 = ''
 	data.currentLevel = ''
 	data.weapons = {}
-	data.weapons['AstroidRain'] = true
-	data.weapons['PoisonArrow'] = true
+	if startingWeapon ==1 or startingWeapon1 ==1 or startingWeapon2 ==1 then
+		data.weapons['AstroidRain'] = true
+	else
+		data.weapons['AstroidRain'] = false
+	end
+	if startingWeapon ==2 or startingWeapon1 ==2 or startingWeapon2 ==2 then
+		data.weapons['PoisonArrow'] = true
+	else
+		data.weapons['PoisonArrow'] = false
+	end
+	if startingWeapon ==3 or startingWeapon1 ==3 or startingWeapon2 ==3 then
 	data.weapons['TripleThreat'] = true
+	else
+		data.weapons['TripleThreat'] = false
+	end
+	if startingWeapon ==4 or startingWeapon1 ==4 or startingWeapon2 ==4 then
 	data.weapons['CosmicFire'] = true
+	else
+		data.weapons['CosmicFire'] = false
+	end
+	if startingWeapon ==5 or startingWeapon1 ==5 or startingWeapon2 ==5 then
 	data.weapons['Astrobolt'] = true
+	else
+		data.weapons['Astrobolt'] = false
+	end
+	if startingWeapon ==6 or startingWeapon1 ==6 or startingWeapon2 ==6 then
 	data.weapons['StarBlast'] = true
+	else
+		data.weapons['StarBlast'] = false
+	end
+	if startingWeapon ==7 or startingWeapon1 ==7 or startingWeapon2 ==7 then
 	data.weapons['LaserKill'] = true
-	data.weapons['StellarBoost'] = true
-	data.weapons['ThunderStrike'] = true
-	data.weapons['BattleRam'] = true
-	data.weapons['ElectroJolt'] = true
-	data.weapons['DaggerThrow'] = true
-	data.weapons['Hevalstruck'] = true
-	data.weapons['RecursiveExplosion'] = true
-	data.weapons['Dueltroid'] = true
-	data.weapons['FreshStart'] = true
-	data.weapons['SantaAxe'] = true
-	data.weapons['Respawn'] = true
-	data.weapons['Offguard'] = true
-	data.weapons['LaserBeam'] = true
-	data.weapons['MindBlast'] = true
-	data.weapons['GrenadeLauncher'] = true
-	data.weapons['Protected'] = true
-	data.weapons['Hypnosis'] = true
-	data.weapons['ShrinkRay'] = true
-	data.weapons['GalacticBeam'] = true
-	data.weapons['SolarFlare'] = true
-	data.weapons['CometStrike'] = true
-	data.weapons['DeathVirus'] = true
-	data.weapons['VoidBurst'] = true
-	data.weapons['CelestialDisruption'] = true
-	data.weapons['QuantumFlux'] = true
+	else
+		data.weapons['LaserKill'] = false
+	end
+
+
+	data.weapons['StellarBoost'] = false
+	data.weapons['ThunderStrike'] = false
+	data.weapons['BattleRam'] = false
+	data.weapons['ElectroJolt'] = false
+	data.weapons['DaggerThrow'] = false
+	data.weapons['Hevalstruck'] = false
+	data.weapons['RecursiveExplosion'] = false
+	data.weapons['Dueltroid'] = false
+	data.weapons['FreshStart'] = false
+	data.weapons['SantaAxe'] = false
+	data.weapons['Respawn'] = false
+	data.weapons['Offguard'] = false
+	data.weapons['LaserBeam'] = false
+	data.weapons['MindBlast'] = false
+	data.weapons['GrenadeLauncher'] = false
+	data.weapons['Protected'] = false
+	data.weapons['Hypnosis'] = false
+	data.weapons['ShrinkRay'] = false
+	data.weapons['GalacticBeam'] = false
+	data.weapons['SolarFlare'] = false
+	data.weapons['CometStrike'] = false
+	data.weapons['DeathVirus'] = false
+	data.weapons['VoidBurst'] = false
+	data.weapons['CelestialDisruption'] = false
+	data.weapons['QuantumFlux'] = false
 	data.aliensKilled = 0
 	data.wins = 0
 	data.matchesPlayed = 0
-	data.level = 27
+	data.level = 1
 	data.brightness = 100
 	data.volume = 100
 	data.sfx = 100
-	data.walls = 1
-	data.retreat = 2
-	data.zap = 3
-	data.bomb = 4
-	data.doubleGold = 5
-	data.teleporter = 6
-	data.electricity = 7
-	data.protection = 8
-	data.aliensUnlocked = 16
+	data.walls = 0
+	data.retreat = 0
+	data.zap = 
+	data.bomb = 0
+	data.doubleGold = 0
+	data.teleporter = 0
+	data.electricity = 0
+	data.protection = 0
+	data.aliensUnlocked = 2
 	data.goldBuff = 1
-	--data.profile = image
+	data.profile = nil
 	data.items = {}
-	data.items['Wall'] = true
-	data.items['Retreat'] = true
-	data.items['Zap'] = true
-	data.items['Bomb'] = true
-	data.items['DoubleGold'] = true
-	data.items['Teleporter'] = true
-	data.items['Electricity'] = true
-	data.items['Protection'] = true
+	data.items['Wall'] = false
+	data.items['Retreat'] = false
+	data.items['Zap'] = false
+	data.items['Bomb'] = false
+	data.items['DoubleGold'] = false
+	data.items['Teleporter'] = false
+	data.items['Electricity'] = false
+	data.items['Protection'] = false
 
 	if saveNumber == nil then saveNumber = 1 end
 	data.saveNumber = saveNumber
