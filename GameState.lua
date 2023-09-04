@@ -1094,7 +1094,7 @@ function GameState:starBlast(row,lane)
             else
                 alienStats[row][lane-1].health = alienStats[row][lane-1].health - (attacker.damage * damageBuff * commonBuff * targetBuff)
             end
-            if alienStats[row][lane-1].name == 'OldGranny' and not alienAlive[row+1][lane-1] and not GameState:checkGuardian(lane) then
+            if alienStats[row][lane-1].name == 'OldGranny' and not alienAlive[row+1][lane-1] and not GameState:checkGuardian(lane-1) then
                 GameState:changeStats(row+1,lane-1,row,lane-1)
             end
             GameState:spawnRand(alienStats[row][lane-1])
@@ -1102,12 +1102,12 @@ function GameState:starBlast(row,lane)
     end
     if lane +1 < 6 and not alienStats[row][lane+1].immmunity and not(alienStats[row][lane+1].name == 'Splashfest') and alienAlive[row][lane+1] then
         if alienAlive[row][lane+1] then
-            if GameState:checkGuardian(lane) then
+            if GameState:checkGuardian(lane+1) then
                 alienStats[GameState:findGuardian(lane+1)][lane+1].health = alienStats[GameState:findGuardian(lane+1)][lane+1].health - (attacker.damageLane * damageBuff * commonBuff)
             else
                 alienStats[row][lane+1].health = alienStats[row][lane+1].health - (attacker.damage * damageBuff * commonBuff * targetBuff)
             end
-            if alienStats[row][lane+1].name == 'OldGranny' and not alienAlive[row+1][lane+1] and not GameState:checkGuardian(lane) then
+            if alienStats[row][lane+1].name == 'OldGranny' and not alienAlive[row+1][lane+1] and not GameState:checkGuardian(lane+1) then
                 GameState:changeStats(row+1,lane+1,row,lane+1)
             end
             GameState:spawnRand(alienStats[row][lane+1])
@@ -1118,7 +1118,7 @@ function GameState:starBlast(row,lane)
             if GameState:checkGuardian(lane) then
                 alienStats[GameState:findGuardian(lane)][lane].health = alienStats[GameState:findGuardian(lane)][lane].health - (attacker.damageLane * damageBuff * commonBuff)
             else
-                alienStats[row][lane].health = alienStats[row][lane].health - (attacker.damage * damageBuff * commonBuff * targetBuff)
+                alienStats[row+1][lane].health = alienStats[row+1][lane].health - (attacker.damage * damageBuff * commonBuff * targetBuff)
             end
             if alienStats[row+1][lane].name == 'OldGranny' and not alienAlive[row+2][lane] and not GameState:checkGuardian(lane) then
                 GameState:changeStats(row+2,lane,row+1,lane)
@@ -1131,7 +1131,7 @@ function GameState:starBlast(row,lane)
             if GameState:checkGuardian(lane) then
                 alienStats[GameState:findGuardian(lane)][lane].health = alienStats[GameState:findGuardian(lane)][lane].health - (attacker.damageLane * damageBuff * commonBuff)
             else
-                alienStats[row][lane].health = alienStats[row][lane].health - (attacker.damage * damageBuff * commonBuff * targetBuff)
+                alienStats[row+2][lane].health = alienStats[row+2][lane].health - (attacker.damage * damageBuff * commonBuff * targetBuff)
             end
             if alienStats[row+2][lane].name == 'OldGranny' and not alienAlive[row+3][lane] and not GameState:checkGuardian(lane) then
                 GameState:changeStats(row+3,lane,row+2,lane)
@@ -1144,7 +1144,7 @@ function GameState:starBlast(row,lane)
             if GameState:checkGuardian(lane) then
                 alienStats[GameState:findGuardian(lane)][lane].health = alienStats[GameState:findGuardian(lane)][lane].health - (attacker.damageLane * damageBuff * commonBuff)
             else
-                alienStats[row][lane].health = alienStats[row][lane].health - (attacker.damage * damageBuff * commonBuff * targetBuff)
+                alienStats[row-1][lane].health = alienStats[row-1][lane].health - (attacker.damage * damageBuff * commonBuff * targetBuff)
             end
             if alienStats[row-1][lane].name == 'OldGranny' and not alienAlive[row][lane] and not GameState:checkGuardian(lane) then
                 GameState:changeStats(row,lane,row-1,lane)
@@ -1157,7 +1157,7 @@ function GameState:starBlast(row,lane)
             if GameState:checkGuardian(lane) then
                 alienStats[GameState:findGuardian(lane)][lane].health = alienStats[GameState:findGuardian(lane)][lane].health - (attacker.damageLane * damageBuff * commonBuff)
             else
-                alienStats[row][lane].health = alienStats[row][lane].health - (attacker.damage * damageBuff * commonBuff * targetBuff)
+                alienStats[row-2][lane].health = alienStats[row-2][lane].health - (attacker.damage * damageBuff * commonBuff * targetBuff)
             end
             if alienStats[row-2][lane].name == 'OldGranny' and not alienAlive[row-1][lane] and not GameState:checkGuardian(lane) then
                 GameState:changeStats(row-1,lane,row-2,lane)
