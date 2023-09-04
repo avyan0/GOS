@@ -3,6 +3,8 @@ require 'calls'
 
 function love.load()
     loadData()
+    saveTimer = 0
+
     love.timer.step()
 
 	math.randomseed(os.time())
@@ -141,34 +143,33 @@ function love.load()
         ['alienInfo'] = function() return AlienInfo() end
     }
     makeLevel()
-    gStateMachine:change('weaponSelect')
+    gStateMachine:change('loading')
 
 
     love.keyboard.keysPressed = {}
 	weaponDictionary()
     alienDictionary()
     makeLevel()
-    data.profile = gTextures['playerIcon1']
-
-
-
-end
+    data.profile = gTextures['playerIcon']
+    temphours = data.hours
+    tempmins = data.mins
+    end
 
 function love.resize(w, h)
     push:resize(w, h)
 end
 
-local saveTimer = 0
 function love.update(dt)
-    local startTime = 0 
-    local timerActive = true
-    local currentTime = love.timer.getTime() 
-    local elapsedTime = currentTime - startTime
-    data.hours = math.floor(elapsedTime / 3600) + data.hours
-    data.mins = math.floor((elapsedTime % 3600) / 60) + data.mins
-    data.time = string.format("%02d:%02d",data.hours, data.mins)
+    local currentTime = love.timer.getTime()
+    local elapsedTime = currentTime
+
+    data.hours = math.floor(elapsedTime / 4) + temphours
+    data.mins = math.floor((elapsedTime % 4) / 2) + tempmins
+    data.time = string.format("%02d:%02d", data.hours, data.mins)
+
     saveTimer = saveTimer + dt
-    if saveTimer >= 60 then
+    if saveTimer >= 2 then
+        print('done')
         saveData()
         saveTimer = 0
     end
