@@ -17,7 +17,7 @@ alienNames = {
 	"Morpher",
 	"Fusion",
 	"CommonCrippler",
-	"SplashFest",
+	"Splashfest",
 	"Virus",
 	"Guardian",
 	"DarkArts",
@@ -223,38 +223,38 @@ function makeLevel()
 	Levels['4-17'] = newLevelObject({Gardener=9,Army=53,Morpher=76,Fusion=93,CommonCrippler=100},{first = 38,second = 43, third = 53})
 	Levels['4-18'] = newLevelObject({Gardener=3,Army=48,Morpher=73,Fusion=91,CommonCrippler=100},{first = 38,second = 43, third = 53})
 	Levels['4-19'] = newLevelObject({Army=39,Morpher=67,Fusion=88,CommonCrippler=100},{first = 39,second = 44, third = 54})
-	Levels['4-20'] = newLevelObject({Army=33,Morpher=62,Fusion=84,CommonCrippler=97,SplashFest=100},{first = 39,second = 44, third = 54})
-	Levels['4-21'] = newLevelObject({Army=27,Morpher=58,Fusion=81,CommonCrippler=96,SplashFest=100},{first = 40,second = 45, third = 55})
-	Levels['4-22'] = newLevelObject({Army=21,Morpher=55,Fusion=79,CommonCrippler=94,SplashFest=100},{first = 40,second = 45, third = 55})
-	Levels['4-23'] = newLevelObject({Army=15,Morpher=52,Fusion=77,CommonCrippler=93,SplashFest=100},{first = 41,second = 46, third = 56})
-	Levels['4-24'] = newLevelObject({Army=9,Morpher=49,Fusion=75,CommonCrippler=92,SplashFest=100},{first = 41,second = 46, third = 56})
-	Levels['4-25'] = newLevelObject({Army=3,Morpher=48,Fusion=74,CommonCrippler=91,SplashFest=100},{first = 42,second = 47, third = 57})
-	Levels['4-26'] = newLevelObject({Morpher=38,Fusion=67,CommonCrippler=86,SplashFest=97,Virus=100},{first = 42,second = 47, third = 57})
-	Levels['4-27'] = newLevelObject({Morpher=31,Fusion=63,CommonCrippler=83,SplashFest=95,Virus=100},{first = 43,second = 48, third = 58})
-	Levels['4-28'] = newLevelObject({Morpher=25,Fusion=60,CommonCrippler=81,SplashFest=94,Virus=100},{first = 43,second = 48, third = 58})
-	Levels['4-40'] = newLevelObject({Morpher=19,Fusion=57,CommonCrippler=79,SplashFest=93,Virus=100},{first = 44,second = 49, third = 59})
-	Levels['4-30'] = newLevelObject({Morpher=13,Fusion=54,CommonCrippler=77,SplashFest=92,Virus=100},{first = 46,second = 51, third = 61})
+	Levels['4-20'] = newLevelObject({Army=33,Morpher=62,Fusion=84,CommonCrippler=97,Splashfest=100},{first = 39,second = 44, third = 54})
+	Levels['4-21'] = newLevelObject({Army=27,Morpher=58,Fusion=81,CommonCrippler=96,Splashfest=100},{first = 40,second = 45, third = 55})
+	Levels['4-22'] = newLevelObject({Army=21,Morpher=55,Fusion=79,CommonCrippler=94,Splashfest=100},{first = 40,second = 45, third = 55})
+	Levels['4-23'] = newLevelObject({Army=15,Morpher=52,Fusion=77,CommonCrippler=93,Splashfest=100},{first = 41,second = 46, third = 56})
+	Levels['4-24'] = newLevelObject({Army=9,Morpher=49,Fusion=75,CommonCrippler=92,Splashfest=100},{first = 41,second = 46, third = 56})
+	Levels['4-25'] = newLevelObject({Army=3,Morpher=48,Fusion=74,CommonCrippler=91,Splashfest=100},{first = 42,second = 47, third = 57})
+	Levels['4-26'] = newLevelObject({Morpher=38,Fusion=67,CommonCrippler=86,Splashfest=97,Virus=100},{first = 42,second = 47, third = 57})
+	Levels['4-27'] = newLevelObject({Morpher=31,Fusion=63,CommonCrippler=83,Splashfest=95,Virus=100},{first = 43,second = 48, third = 58})
+	Levels['4-28'] = newLevelObject({Morpher=25,Fusion=60,CommonCrippler=81,Splashfest=94,Virus=100},{first = 43,second = 48, third = 58})
+	Levels['4-40'] = newLevelObject({Morpher=19,Fusion=57,CommonCrippler=79,Splashfest=93,Virus=100},{first = 44,second = 49, third = 59})
+	Levels['4-30'] = newLevelObject({Morpher=13,Fusion=54,CommonCrippler=77,Splashfest=92,Virus=100},{first = 46,second = 51, third = 61})
 
-	Levels['5-1'] = newLevelObject({Morpher=7,Fusion=51,CommonCrippler=75,SplashFest=91,Virus=100},{first = 35,second = 40, third = 50})
-	Levels['5-2'] = newLevelObject({Fusion=40,CommonCrippler=67,SplashFest=86,Virus=97,Guardian=100},{first = 35,second = 40, third = 50})
-	Levels['5-3'] = newLevelObject({Fusion=33,CommonCrippler=63,SplashFest=83,Virus=95,Guardian=100},{first = 36,second = 41, third = 51})
-	Levels['5-4'] = newLevelObject({Fusion=26,CommonCrippler=60,SplashFest=81,Virus=94,Guardian=100},{first = 36,second = 41, third = 51})
-	Levels['5-5'] = newLevelObject({Fusion=20,CommonCrippler=57,SplashFest=79,Virus=93,Guardian=100},{first = 37,second = 42, third = 52})
-	Levels['5-6'] = newLevelObject({Fusion=14,CommonCrippler=54,SplashFest=77,Virus=92,Guardian=100},{first = 37,second = 42, third = 52})
-	Levels['5-7'] = newLevelObject({Fusion=8,CommonCrippler=51,SplashFest=75,Virus=91,Guardian=100},{first = 38,second = 43, third = 53})
-	Levels['5-8'] = newLevelObject({CommonCrippler=44,SplashFest=70,Virus=87,Guardian=97,DarkArts=100},{first = 38,second = 43, third = 53})
-	Levels['5-9'] = newLevelObject({CommonCrippler=37,SplashFest=66,Virus=84,Guardian=95,DarkArts=100},{first = 39,second = 44, third = 54})
-	Levels['5-10'] = newLevelObject({CommonCrippler=30,SplashFest=62,Virus=81,Guardian=94,DarkArts=100},{first = 39,second = 44, third = 54})
-	Levels['5-11'] = newLevelObject({CommonCrippler=23,SplashFest=58,Virus=79,Guardian=93,DarkArts=100},{first = 40,second = 45, third = 55})
-	Levels['5-12'] = newLevelObject({CommonCrippler=17,SplashFest=55,Virus=77,Guardian=92,DarkArts=100},{first = 40,second = 45, third = 55})
-	Levels['5-13'] = newLevelObject({CommonCrippler=11,SplashFest=52,Virus=75,Guardian=91,DarkArts=100},{first = 41,second = 46, third = 56})
-	Levels['5-14'] = newLevelObject({CommonCrippler=5,SplashFest=48,Virus=72,Guardian=88,DarkArts=97,Rare=100},{first = 41,second = 46, third = 56})
-	Levels['5-15'] = newLevelObject({SplashFest=39,Virus=66,Guardian=84,DarkArts=95,Rare=100},{first = 42,second = 47, third = 57})
-	Levels['5-16'] = newLevelObject({SplashFest=32,Virus=61,Guardian=81,DarkArts=94,Rare=100},{first = 42,second = 47, third = 57})
-	Levels['5-17'] = newLevelObject({SplashFest=25,Virus=56,Guardian=77,DarkArts=92,Rare=100},{first = 43,second = 48, third = 58})
-	Levels['5-18'] = newLevelObject({SplashFest=18,Virus=51,Guardian=74,DarkArts=90,Rare=100},{first = 43,second = 48, third = 58})
-	Levels['5-19'] = newLevelObject({SplashFest=11,Virus=46,Guardian=71,DarkArts=89,Rare=100},{first = 44,second = 49, third = 59})
-	Levels['5-20'] = newLevelObject({SplashFest=5,Virus=42,Guardian=68,DarkArts=86,Rare=97,Protected=100},{first = 44,second = 49, third = 59})
+	Levels['5-1'] = newLevelObject({Morpher=7,Fusion=51,CommonCrippler=75,Splashfest=91,Virus=100},{first = 35,second = 40, third = 50})
+	Levels['5-2'] = newLevelObject({Fusion=40,CommonCrippler=67,Splashfest=86,Virus=97,Guardian=100},{first = 35,second = 40, third = 50})
+	Levels['5-3'] = newLevelObject({Fusion=33,CommonCrippler=63,Splashfest=83,Virus=95,Guardian=100},{first = 36,second = 41, third = 51})
+	Levels['5-4'] = newLevelObject({Fusion=26,CommonCrippler=60,Splashfest=81,Virus=94,Guardian=100},{first = 36,second = 41, third = 51})
+	Levels['5-5'] = newLevelObject({Fusion=20,CommonCrippler=57,Splashfest=79,Virus=93,Guardian=100},{first = 37,second = 42, third = 52})
+	Levels['5-6'] = newLevelObject({Fusion=14,CommonCrippler=54,Splashfest=77,Virus=92,Guardian=100},{first = 37,second = 42, third = 52})
+	Levels['5-7'] = newLevelObject({Fusion=8,CommonCrippler=51,Splashfest=75,Virus=91,Guardian=100},{first = 38,second = 43, third = 53})
+	Levels['5-8'] = newLevelObject({CommonCrippler=44,Splashfest=70,Virus=87,Guardian=97,DarkArts=100},{first = 38,second = 43, third = 53})
+	Levels['5-9'] = newLevelObject({CommonCrippler=37,Splashfest=66,Virus=84,Guardian=95,DarkArts=100},{first = 39,second = 44, third = 54})
+	Levels['5-10'] = newLevelObject({CommonCrippler=30,Splashfest=62,Virus=81,Guardian=94,DarkArts=100},{first = 39,second = 44, third = 54})
+	Levels['5-11'] = newLevelObject({CommonCrippler=23,Splashfest=58,Virus=79,Guardian=93,DarkArts=100},{first = 40,second = 45, third = 55})
+	Levels['5-12'] = newLevelObject({CommonCrippler=17,Splashfest=55,Virus=77,Guardian=92,DarkArts=100},{first = 40,second = 45, third = 55})
+	Levels['5-13'] = newLevelObject({CommonCrippler=11,Splashfest=52,Virus=75,Guardian=91,DarkArts=100},{first = 41,second = 46, third = 56})
+	Levels['5-14'] = newLevelObject({CommonCrippler=5,Splashfest=48,Virus=72,Guardian=88,DarkArts=97,Rare=100},{first = 41,second = 46, third = 56})
+	Levels['5-15'] = newLevelObject({Splashfest=39,Virus=66,Guardian=84,DarkArts=95,Rare=100},{first = 42,second = 47, third = 57})
+	Levels['5-16'] = newLevelObject({Splashfest=32,Virus=61,Guardian=81,DarkArts=94,Rare=100},{first = 42,second = 47, third = 57})
+	Levels['5-17'] = newLevelObject({Splashfest=25,Virus=56,Guardian=77,DarkArts=92,Rare=100},{first = 43,second = 48, third = 58})
+	Levels['5-18'] = newLevelObject({Splashfest=18,Virus=51,Guardian=74,DarkArts=90,Rare=100},{first = 43,second = 48, third = 58})
+	Levels['5-19'] = newLevelObject({Splashfest=11,Virus=46,Guardian=71,DarkArts=89,Rare=100},{first = 44,second = 49, third = 59})
+	Levels['5-20'] = newLevelObject({Splashfest=5,Virus=42,Guardian=68,DarkArts=86,Rare=97,Protected=100},{first = 44,second = 49, third = 59})
 	Levels['5-21'] = newLevelObject({Virus=40,Guardian=67,DarkArts=86,Rare=97,Protected=100},{first = 45,second = 50, third = 60})
 	Levels['5-22'] = newLevelObject({Virus=43,Guardian=69,DarkArts=87,Rare=97,Protected=100},{first = 45,second = 50, third = 60})
 	Levels['5-23'] = newLevelObject({Virus=36,Guardian=64,DarkArts=84,Rare=96,Protected=100},{first = 46,second = 51, third = 61})
@@ -290,12 +290,12 @@ function makeLevel()
 	Levels['6-22'] = newLevelObject({Interdimentional=27,Scarce=55,TheHevalGod=87,GodOfSpace=100},{first = 50,second = 55, third = 65})
 	Levels['6-23'] = newLevelObject({Interdimentional=20,Scarce=50,TheHevalGod=76,GodOfSpace=100},{first = 51,second = 56, third = 66})
 	Levels['6-24'] = newLevelObject({Interdimentional=16,Scarce=47,TheHevalGod=75,GodOfSpace=100},{first = 51,second = 56, third = 66})
-	Levels['6-25'] = newLevelObject({Joe=1,Gen57=2,President=3,King=4,DJ=5,SpaceFence=7,Spaceship=9,VRWorkout=11,OldGranny=13,Albot=15,Jumper=18,Giant=21,Gardener=24,Army=27,Morpher=30,Fusion=34,CommonCrippler=38,SplashFest=42,Virus=47,Guardian=52,DarkArts=57,Rare=63,Protected=69,Interdimentional=75,Scarce=82,TheHevalGod=90,GodOfSpace=100},{first = 52,second = 57, third = 67})
-	Levels['6-26'] = newLevelObject({Joe=1,Gen57=2,President=3,King=4,DJ=5,SpaceFence=7,Spaceship=9,VRWorkout=11,OldGranny=13,Albot=15,Jumper=18,Giant=21,Gardener=24,Army=27,Morpher=30,Fusion=34,CommonCrippler=38,SplashFest=42,Virus=47,Guardian=52,DarkArts=57,Rare=63,Protected=69,Interdimentional=75,Scarce=82,TheHevalGod=90,GodOfSpace=100},{first = 52,second = 57, third = 67})
-	Levels['6-27'] = newLevelObject({Joe=1,Gen57=2,President=3,King=4,DJ=5,SpaceFence=7,Spaceship=9,VRWorkout=11,OldGranny=13,Albot=15,Jumper=18,Giant=21,Gardener=24,Army=27,Morpher=30,Fusion=34,CommonCrippler=38,SplashFest=42,Virus=47,Guardian=52,DarkArts=57,Rare=63,Protected=69,Interdimentional=75,Scarce=82,TheHevalGod=90,GodOfSpace=100},{first = 53,second = 58, third = 68})
-	Levels['6-28'] = newLevelObject({Joe=1,Gen57=2,President=3,King=4,DJ=5,SpaceFence=7,Spaceship=9,VRWorkout=11,OldGranny=13,Albot=15,Jumper=18,Giant=21,Gardener=24,Army=27,Morpher=30,Fusion=34,CommonCrippler=38,SplashFest=42,Virus=47,Guardian=52,DarkArts=57,Rare=63,Protected=69,Interdimentional=75,Scarce=82,TheHevalGod=90,GodOfSpace=100},{first = 53,second = 58, third = 68})
-	Levels['6-29'] = newLevelObject({Morpher=7,SplashFest=19,Virus=31,Guardian=37,DarkArts=50,Protected=56,Interdimentional=68,Scarce=74,TheHevalGod=87,GodOfSpace=100},{first = 54,second = 59, third = 69})
-	Levels['6-30'] = newLevelObject({Morpher=7,SplashFest=19,Virus=31,Guardian=37,DarkArts=50,Protected=56,Interdimentional=68,Scarce=74,TheHevalGod=87,GodOfSpace=100},{first = 56,second = 61, third = 71})
+	Levels['6-25'] = newLevelObject({Joe=1,Gen57=2,President=3,King=4,DJ=5,SpaceFence=7,Spaceship=9,VRWorkout=11,OldGranny=13,Albot=15,Jumper=18,Giant=21,Gardener=24,Army=27,Morpher=30,Fusion=34,CommonCrippler=38,Splashfest=42,Virus=47,Guardian=52,DarkArts=57,Rare=63,Protected=69,Interdimentional=75,Scarce=82,TheHevalGod=90,GodOfSpace=100},{first = 52,second = 57, third = 67})
+	Levels['6-26'] = newLevelObject({Joe=1,Gen57=2,President=3,King=4,DJ=5,SpaceFence=7,Spaceship=9,VRWorkout=11,OldGranny=13,Albot=15,Jumper=18,Giant=21,Gardener=24,Army=27,Morpher=30,Fusion=34,CommonCrippler=38,Splashfest=42,Virus=47,Guardian=52,DarkArts=57,Rare=63,Protected=69,Interdimentional=75,Scarce=82,TheHevalGod=90,GodOfSpace=100},{first = 52,second = 57, third = 67})
+	Levels['6-27'] = newLevelObject({Joe=1,Gen57=2,President=3,King=4,DJ=5,SpaceFence=7,Spaceship=9,VRWorkout=11,OldGranny=13,Albot=15,Jumper=18,Giant=21,Gardener=24,Army=27,Morpher=30,Fusion=34,CommonCrippler=38,Splashfest=42,Virus=47,Guardian=52,DarkArts=57,Rare=63,Protected=69,Interdimentional=75,Scarce=82,TheHevalGod=90,GodOfSpace=100},{first = 53,second = 58, third = 68})
+	Levels['6-28'] = newLevelObject({Joe=1,Gen57=2,President=3,King=4,DJ=5,SpaceFence=7,Spaceship=9,VRWorkout=11,OldGranny=13,Albot=15,Jumper=18,Giant=21,Gardener=24,Army=27,Morpher=30,Fusion=34,CommonCrippler=38,Splashfest=42,Virus=47,Guardian=52,DarkArts=57,Rare=63,Protected=69,Interdimentional=75,Scarce=82,TheHevalGod=90,GodOfSpace=100},{first = 53,second = 58, third = 68})
+	Levels['6-29'] = newLevelObject({Morpher=7,Splashfest=19,Virus=31,Guardian=37,DarkArts=50,Protected=56,Interdimentional=68,Scarce=74,TheHevalGod=87,GodOfSpace=100},{first = 54,second = 59, third = 69})
+	Levels['6-30'] = newLevelObject({Morpher=7,Splashfest=19,Virus=31,Guardian=37,DarkArts=50,Protected=56,Interdimentional=68,Scarce=74,TheHevalGod=87,GodOfSpace=100},{first = 56,second = 61, third = 71})
 
 
 
@@ -446,33 +446,33 @@ end
 
 function alienDictionary()
 	Aliens = {}
-	Aliens['Joe'] = makeAlien(500,1,false,false,'Joe')
-	Aliens['Gen57'] = makeAlien(700,1,false,false,'Gen57')
-	Aliens['President'] = makeAlien(1100,1,false,false,'President')
-	Aliens['King'] = makeAlien(1550,1,false,false,'King')
-	Aliens['DJ'] = makeAlien(2150,1,false,false,'DJ')
-	Aliens['SpaceFence'] = makeAlien(2950,1,false,true,'SpaceFence') -- record
-	Aliens['Spaceship'] = makeAlien(3000,1,false,true,'Spaceship') -- record
-	Aliens['VRWorkout'] = makeAlien(3500,1,false,false,'VRWorkout') -- record
-	Aliens['OldGranny'] = makeAlien(3700,1,false,true,'OldGranny') -- record
-	Aliens['Albot'] = makeAlien(3000,1,true,false,'Albot') -- record
-	Aliens['Jumper'] = makeAlien(4900,1,false,true,'Jumper') -- DONENENENE
-	Aliens['Giant'] = makeAlien(12700,1,false,false,'Giant') -- done
-	Aliens['Gardener'] = makeAlien(8200,1,false,false,'Gardener') -- DONE
-	Aliens['Army'] = makeAlien(9400,1,true,false,'Army') -- record
-	Aliens['Morpher'] = makeAlien(5700,1,false,true,'Morpher') -- record
-	Aliens['Fusion'] = makeAlien(10000,1,false,true,'Fusion') -- record
-	Aliens['CommonCrippler'] = makeAlien(13300,1,false,true,'CommonCrippler') -- record
-	Aliens['Splashfest'] = makeAlien(15500,1,false,false,'Splashfest') -- done
-	Aliens['Virus'] = makeAlien(17600,1,false,true,'Virus') -- record
-	Aliens['Guardian'] = makeAlien(28800,1,true,false,'Guardian') -- record
-	Aliens['DarkArts'] = makeAlien(20000,1,true,false,'DarkArts') -- record
-	Aliens['Rare'] = makeAlien(23000,1,false,false,'Rare') -- record
-	Aliens['Protected'] = makeAlien(26000,1,false,false,'Protected') -- record
-	Aliens['Interdimentional'] = makeAlien(34200,1,false,false,'Interdimentional') -- record
-	Aliens['Scarce'] = makeAlien(40000,1,true,false,'Scarce') -- record
-	Aliens['TheHevalGod'] = makeAlien(46700,1,true,true,'TheHevalGod') -- record
-	Aliens['GodOfSpace'] = makeAlien(50000,1,true,true,'GodOfSpace') -- done
+	Aliens['Joe'] = makeAlien(500,1,false,false,'Joe','No Ability')
+	Aliens['Gen57'] = makeAlien(700,1,false,false,'Gen57','No Ability')
+	Aliens['President'] = makeAlien(1100,1,false,false,'President','No Ability')
+	Aliens['King'] = makeAlien(1550,1,false,false,'King','No Ability')
+	Aliens['DJ'] = makeAlien(2150,1,false,false,'DJ','No Ability')
+	Aliens['SpaceFence'] = makeAlien(2950,1,false,true,'SpaceFence','Has a 1 turn immunity shield when spawned') -- record
+	Aliens['Spaceship'] = makeAlien(3000,1,false,true,'Spaceship','Flies every 2 turns, when flying, Spaceship is immune to almost all damage') -- record
+	Aliens['VRWorkout'] = makeAlien(3500,1,false,false,'VRWorkout','No Ability') -- record
+	Aliens['OldGranny'] = makeAlien(3700,1,false,true,'OldGranny','When hurt, moves one space forward') -- record
+	Aliens['Albot'] = makeAlien(3000,1,true,false,'Albot','Every turn, Albot spawns a random alien in its row') -- record
+	Aliens['Jumper'] = makeAlien(4900,1,false,true,'Jumper','Jumps over all walls infront of it') -- DONENENENE
+	Aliens['Giant'] = makeAlien(12700,1,false,false,'Giant','Moves every other turn') -- done
+	Aliens['Gardener'] = makeAlien(8200,1,false,false,'Gardener','Walls can not be placed in a lane the gardener is in') -- DONE
+	Aliens['Army'] = makeAlien(9400,1,true,false,'Army','Makes all weapons do 2% less damage of their original damage') -- record
+	Aliens['Morpher'] = makeAlien(5700,1,false,true,'Morpher','Transforms into a random alien every turn and keeps the same percentage of health') -- record
+	Aliens['Fusion'] = makeAlien(10000,1,false,true,'Fusion','When spawned, combines 2 aliens into 1 with atleast 1.5 times the combined health') -- record
+	Aliens['CommonCrippler'] = makeAlien(13300,1,false,true,'CommonCrippler','All common weapons do 25% less damage') -- record
+	Aliens['Splashfest'] = makeAlien(15500,1,false,false,'Splashfest','Immune to all splash damage') -- done
+	Aliens['Virus'] = makeAlien(17600,1,false,true,'Virus','Makes all weapon cooldowns 1 turn longer') -- record
+	Aliens['Guardian'] = makeAlien(28800,1,true,false,'Guardian','Immune to poison damage, knockback, and hypnosis. Takes all the damage in the lane') -- record
+	Aliens['DarkArts'] = makeAlien(20000,1,true,false,'DarkArts','When spawned, transform all aliens into a better alien') -- record
+	Aliens['Rare'] = makeAlien(23000,1,false,false,'Rare','All rare weapons do 20% less damage') -- record
+	Aliens['Protected'] = makeAlien(26000,1,false,false,'Protected','All targeted damage is reduced by 50%') -- record
+	Aliens['Interdimentional'] = makeAlien(34200,1,false,false,'Interdimentional','All damage is reduced by 7.5%') -- record
+	Aliens['Scarce'] = makeAlien(40000,1,true,false,'Scarce','Scarce weapons do 20% less damage') -- record
+	Aliens['TheHevalGod'] = makeAlien(46700,1,true,true,'TheHevalGod','When hurt, spawn a random Hevalten in one of the first 3 rows') -- record
+	Aliens['GodOfSpace'] = makeAlien(50000,1,true,true,'GodOfSpace','When spawned, spawn 3 other random aliens. Immune to all knockback, poison, and hypnosis') -- done
 	Aliensrand = {}
 	Aliensrand[1] = Aliens['Joe']
 	Aliensrand[2] = Aliens['Gen57']
@@ -503,7 +503,7 @@ function alienDictionary()
 	Aliensrand[27] = Aliens['GodOfSpace']
 end
 
-function makeAlien(health,speed, heval,ability,name)
+function makeAlien(health,speed, heval,ability,name,desc)
 
 	local temp = {}
 	temp.health = health
@@ -511,5 +511,6 @@ function makeAlien(health,speed, heval,ability,name)
 	temp.hevalten = heval
 	temp.ability = ability
 	temp.name = name
+	temp.desc = desc
 	return temp
 end
