@@ -163,13 +163,12 @@ function love.update(dt)
     local currentTime = love.timer.getTime()
     local elapsedTime = currentTime
 
-    data.hours = math.floor(elapsedTime / 4) + temphours
-    data.mins = math.floor((elapsedTime % 4) / 2) + tempmins
+    data.hours = math.floor(elapsedTime / 3600) + temphours
+    data.mins = math.floor((elapsedTime % 3600) / 60) + tempmins
     data.time = string.format("%02d:%02d", data.hours, data.mins)
 
     saveTimer = saveTimer + dt
-    if saveTimer >= 2 then
-        print('done')
+    if saveTimer >= 60 then
         saveData()
         saveTimer = 0
     end
