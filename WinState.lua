@@ -8,17 +8,17 @@ function WinState:init()
     saveData()
     local planet = tonumber(string.match(data.currentLevel,'%d+'))
     if planet == 1 then
-        gold = 10 * data.goldBuff
+        gold = math.random(7,13) * data.goldBuff
     elseif planet == 2 then
-        gold = 15* data.goldBuff
+        gold = math.random(10,20)* data.goldBuff
     elseif planet == 3 then
-        gold = 22* data.goldBuff
+        gold = math.random(15,29)* data.goldBuff
     elseif planet == 4 then
-        gold = 30* data.goldBuff
+        gold = math.random(21,39)* data.goldBuff
     elseif planet ==5 then
-        gold = 38* data.goldBuff
+        gold = math.random(27,49)* data.goldBuff
     elseif planet == 6 then
-        gold = 48* data.goldBuff
+        gold = math.random(34,62)* data.goldBuff
     end
     if data.goldBuff ~= 1 then
         data.goldBuff = 1
