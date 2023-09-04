@@ -46,7 +46,7 @@ function WeaponSelect:render()
 
     love.graphics.setFont(gFonts['game18'])
     for i, button in ipairs(buttons) do
-        if (data.weapons[button.name] ~= false) then
+        if (data.weapons[string.gsub(button.name, " ", "")] ~= false) then
             if button.highlighted then
                 setColor(1, 1, 0)
             else
