@@ -2,7 +2,7 @@ WeaponSelect = Class{__includes = BaseState}
 
 local weaponnum = 0
 local buttons = {
-    {name = 'Astroi dRain', x = 0, y = 158, width = 156, height = 38, highlighted = false},
+    {name = 'Astroid Rain', x = 0, y = 158, width = 156, height = 38, highlighted = false},
     {name = 'Poison Arrow', x = 188, y = 158, width = 156, height = 38, highlighted = false},
     {name = 'Triple Threat', x = 376, y = 158, width = 156, height = 38, highlighted = false},
     {name = 'Cosmic Fire', x = 564, y = 158, width = 156, height = 38, highlighted = false},
