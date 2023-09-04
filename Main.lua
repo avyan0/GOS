@@ -3,6 +3,7 @@ require 'calls'
 
 function love.load()
     loadData()
+    love.timer.step()
 
 	math.randomseed(os.time())
 
@@ -26,6 +27,7 @@ function love.load()
         ['game'] = love.graphics.newFont('states/homeState/game/things/WeaponSelect.otf',40),
         ['game25'] = love.graphics.newFont('states/homeState/game/things/WeaponSelect.otf',25),
         ['game18'] = love.graphics.newFont('states/homeState/game/things/WeaponSelect.otf',18),
+        ['game15'] = love.graphics.newFont('states/homeState/game/things/WeaponSelect.otf',15),
         ['game30'] = love.graphics.newFont('states/homeState/game/things/WeaponSelect.otf',30),
         ['game10'] = love.graphics.newFont('states/homeState/game/things/WeaponSelect.otf',10),
         ['game80'] = love.graphics.newFont('states/homeState/game/things/WeaponSelect.otf',80),
@@ -139,7 +141,7 @@ function love.load()
         ['alienInfo'] = function() return AlienInfo() end
     }
     makeLevel()
-    gStateMachine:change('p1Level')
+    gStateMachine:change('weaponSelect')
 
 
     love.keyboard.keysPressed = {}
@@ -156,7 +158,20 @@ function love.resize(w, h)
     push:resize(w, h)
 end
 
+local saveTimer = 0
 function love.update(dt)
+    local startTime = 0 
+    local timerActive = true
+    local currentTime = love.timer.getTime()
+    local elapsedTime = currentTime - startTime
+    data.hours = math.floor(elapsedTime / 3600)
+    data.mins = math.floor((elapsedTime % 3600) / 60)
+    data.time = string.format("%02d:%02d",data.hours, data.mins)
+    saveTimer = saveTimer + dt
+    if saveTimer >= 60 then
+        saveData()
+        saveTimer = 0
+    end
     gStateMachine:update(dt)
     love.keyboard.keysPressed = {}
 end
