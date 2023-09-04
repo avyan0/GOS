@@ -125,7 +125,7 @@ function createNewSave(saveNumber)
 	data.sfx = 100
 	data.walls = 0
 	data.retreat = 0
-	data.zap = 
+	data.zap = 0
 	data.bomb = 0
 	data.doubleGold = 0
 	data.teleporter = 0
