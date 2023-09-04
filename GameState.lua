@@ -776,6 +776,13 @@ end
 
 function GameState:attack(weapon)
     attacker = Weapons[weapon]
+    attacker.damageAll = attacker.damageAll * ((data.upgrades[attacker.name] * 0.1) + 1)
+    attacker.damageLane = attacker.damageLane * ((data.upgrades[attacker.name] * 0.1) + 1)
+    attacker.damageTile = attacker.damageTile * ((data.upgrades[attacker.name] * 0.1) + 1)
+    attacker.poison = attacker.poison * ((data.upgrades[attacker.name] * 0.1) + 1)
+    attacker.damageRandLane = attacker.damageRandLane * ((data.upgrades[attacker.name] * 0.1) + 1)
+    attacker.damage = attacker.damage * ((data.upgrades[attacker.name] * 0.1) + 1)
+
     if attacker.name == 'Death Virus' then
         GameState:DeathVirus()
     end
@@ -1170,7 +1177,7 @@ end
 function GameState:LaserKill(lane)
 
     for i = 10, 1, -1 do
-        if alienAlive[i][lane] and alienStats[i][lane].health <= 375 and not alienStats[i][lane].immmunity and not alienStats[i][lane].fly then
+        if alienAlive[i][lane] and alienStats[i][lane].health <= attacker.damage and not alienStats[i][lane].immmunity and not alienStats[i][lane].fly then
             alienStats[i][lane].health = 0
         end
     end
@@ -1407,7 +1414,7 @@ end
 function GameState:LaserBeam(lane)
 
     for i = 10, 1, -1 do
-        if alienAlive[i][lane] and alienStats[i][lane].health <= 6000 and not alienStats[i][lane].immmunity and not alienStats[i][lane].fly then
+        if alienAlive[i][lane] and alienStats[i][lane].health <= attacker.damage and not alienStats[i][lane].immmunity and not alienStats[i][lane].fly then
             alienStats[i][lane].health = 0
         end
     end
@@ -1418,9 +1425,9 @@ function GameState:GrenadeLancher()
             if alienAlive[i][j] and not alienStats[i][j].immmunity and not(alienStats[i][j].name == 'Splashfest')  then
                 local preHealth = alienStats[i][j].health
                 if GameState:checkGuardian(j) then
-                    alienStats[GameState:findGuardian(j)][j].health = alienStats[GameState:findGuardian(j)][j].health - (-3950 * damageBuff*scarceBuff)
+                    alienStats[GameState:findGuardian(j)][j].health = alienStats[GameState:findGuardian(j)][j].health - (-attacker.damage * damageBuff*scarceBuff)
                 else
-                    alienStats[i][j].health = alienStats[i][j].health - 3950*scarceBuff*damageBuff
+                    alienStats[i][j].health = alienStats[i][j].health - attacker.damage*scarceBuff*damageBuff
                 end
                 if alienStats[i][j].name == 'OldGranny' and not alienAlive[i][j] and preHealth ~= alienStats[i][j].health and not GameState:checkGuardian(lane) then
                     GameState:changeStats(i+1,j,i,j)
