@@ -162,10 +162,10 @@ local saveTimer = 0
 function love.update(dt)
     local startTime = 0 
     local timerActive = true
-    local currentTime = love.timer.getTime()
+    local currentTime = love.timer.getTime() 
     local elapsedTime = currentTime - startTime
-    data.hours = math.floor(elapsedTime / 3600)
-    data.mins = math.floor((elapsedTime % 3600) / 60)
+    data.hours = math.floor(elapsedTime / 3600) + data.hours
+    data.mins = math.floor((elapsedTime % 3600) / 60) + data.mins
     data.time = string.format("%02d:%02d",data.hours, data.mins)
     saveTimer = saveTimer + dt
     if saveTimer >= 60 then
