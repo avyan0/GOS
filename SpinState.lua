@@ -317,7 +317,9 @@ function SpinState:getChance()
 		if com >= 1 and com <= 20 then
 		    data.items['Retreat'] = true
 		    data.gold = data.gold - priceForSpin
-		    data.retreat = data.retreat + 1
+			local temp = math.random(1,3)
+		    data.retreat = data.retreat + temp
+			temp = math.random(1,3)
 			saveData()
 		    return 'Retreat'
 		end
@@ -325,7 +327,9 @@ function SpinState:getChance()
 		if com >= 21 and com <= 50 then
 		    data.items['Wall'] = true
 		    data.gold = data.gold - priceForSpin
-		    data.walls = data.walls + 1
+			local temp = math.random(1,6)
+		    data.walls = data.walls + temp
+			temp = math.random(1,6)
 			saveData()
 		    return 'Wall'
 		end
@@ -333,7 +337,9 @@ function SpinState:getChance()
 		if com >= 51 and com <= 60 then
 		    data.items['Zap'] = true
 		    data.gold = data.gold - priceForSpin
-		    data.zap= data.zap + 1
+			local temp = math.random(1,3)
+		    data.zap= data.zap + temp
+			temp = math.random(1,3)
 			saveData()
 		    return 'zap'
 		end
@@ -341,7 +347,9 @@ function SpinState:getChance()
 		if com >= 61 and com <= 65 then
 		    data.items['Bomb'] = true
 		    data.gold = data.gold - priceForSpin
-		    data.bomb = data.bomb + 1
+			local temp = math.random(1,2)
+		    data.bomb = data.bomb + temp
+			temp = math.random(1,2)
 			saveData()
 		    return 'Bomb'
 		end
@@ -349,7 +357,9 @@ function SpinState:getChance()
 		if com >= 66 and com <= 75 then
 		    data.items['DoubleGold'] = true
 		    data.gold = data.gold - priceForSpin
-		    data.doubleGold = data.doubleGold + 1
+			local temp = math.random(1,3)
+		    data.doubleGold = data.doubleGold + temp
+			temp = math.random(1,3)
 			saveData()
 		    return 'DoubleGold'
 		end
@@ -357,7 +367,9 @@ function SpinState:getChance()
 		if com >= 76 and com <= 80 then
 		    data.items['Teleporter'] = true
 		    data.gold = data.gold - priceForSpin
-		    data.teleporter = data.teleporter + 1
+			local temp = math.random(1,5)
+		    data.teleporter = data.teleporter + temp
+			temp= math.random(1,5)
 			saveData()
 		    return 'Teleporter'
 		end
@@ -365,7 +377,9 @@ function SpinState:getChance()
 		if com >= 81 and com <= 90 then
 		    data.items['Electricity'] = true
 		    data.gold = data.gold - priceForSpin
-		    data.electricity= data.electricity + 1
+			local temp = math.random(1,3)
+		    data.electricity= data.electricity + temp
+			temp = math.random(1,3)
 			saveData()
 		    return 'Electricity'
 		end
@@ -373,7 +387,9 @@ function SpinState:getChance()
 		if com >= 91 and com <= 100 then
 		    data.items['Protection'] = true
 		    data.gold = data.gold - priceForSpin
-		    data.protection = data.protection + 1
+			local temp = math.random(1,2)
+		    data.protection = data.protection + temp
+			temp = math.random(1,2)
 			saveData()
 		    return 'Protection'
 		end
