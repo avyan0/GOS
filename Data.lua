@@ -36,7 +36,9 @@ function createNewSave(saveNumber)
     end
 	data.gold = 100000
 	data.gems = 10
-	data.time = 0 -- work this out
+	data.time = '00:00'
+	data.hours = 0
+	data.mins = 0
 	data.planet = 6
 	data.name = 'testing'
 	data.weaponChoose1 = ''
