@@ -135,11 +135,11 @@ function love.load()
         ['win'] = function() return WinState() end,
         ['pause'] = function() return PauseState() end,
         ['levelSpin'] = function() return LevelSpin() end,
-        ['profileChoose'] = function() return ProfileChoose() end
-    
+        ['profileChoose'] = function() return ProfileChoose() end,
+        ['alienInfo'] = function() return AlienInfo() end
     }
     makeLevel()
-    gStateMachine:change('profileChoose')
+    gStateMachine:change('p1Level')
 
 
     love.keyboard.keysPressed = {}
