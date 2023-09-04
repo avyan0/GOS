@@ -42,8 +42,8 @@ function createNewSave(saveNumber)
 		startingWeapon1 = math.random(1,7)
 		startingWeapon2 = math.random(1,7)
 	end
-	data.gold = 100000
-	data.gems = 10
+	data.gold = 0
+	data.gems = 0
 	data.time = '00:00'
 	data.hours = 0
 	data.mins = 0
@@ -381,21 +381,118 @@ function newLevelObject(spawn,stage)
 end
 
 function loadData()
-    local file = io.open("data.txt", "r")  -- Open the file in read mode
-    if file then
-        local dataString = file:read("*a")  -- Read the entire content of the file
-        file:close()  -- Close the file
+	local startingWeapon = math.random(1, 7)
+		local startingWeapon1 = math.random(1, 7)
+		local startingWeapon2 = math.random(1, 7)
 
-        -- Attempt to decode the JSON string
-        local success, decodedData = pcall(json.decode, dataString)
-        if success then
-            data = decodedData
-        else
-            print("Error decoding JSON:", decodedData)  -- Print the error message
-        end
-    else
-        print("Error opening file")
-    end
+		while startingWeapon == startingWeapon1 or startingWeapon == startingWeapon2 or startingWeapon2 == startingWeapon1 do
+			startingWeapon = math.random(1, 7)
+			startingWeapon1 = math.random(1, 7)
+			startingWeapon2 = math.random(1, 7)
+		end
+
+		local datatemp = {
+			gold = 0,
+			gems = 0,
+			time = '00:00',
+			hours = 0,
+			mins = 0,
+			planet = 1,
+			name = 'testing',
+			weaponChoose1 = '',
+			weaponChoose2 = '',
+			weaponChoose3 = '',
+			currentLevel = '',
+			weapons = {
+				AstroidRain = (startingWeapon == 1 or startingWeapon1 == 1 or startingWeapon2 == 1),
+				PoisonArrow = (startingWeapon == 2 or startingWeapon1 == 2 or startingWeapon2 == 2),
+				TripleThreat = (startingWeapon == 3 or startingWeapon1 == 3 or startingWeapon2 == 3),
+				CosmicFire = (startingWeapon == 4 or startingWeapon1 == 4 or startingWeapon2 == 4),
+				Astrobolt = (startingWeapon == 5 or startingWeapon1 == 5 or startingWeapon2 == 5),
+				StarBlast = (startingWeapon == 6 or startingWeapon1 == 6 or startingWeapon2 == 6),
+				LaserKill = (startingWeapon == 7 or startingWeapon1 == 7 or startingWeapon2 == 7),
+				StellarBoost = false,
+				ThunderStrike = false,
+				BattleRam = false,
+				ElectroJolt = false,
+				DaggerThrow = false,
+				Hevalstruck = false,
+				RecursiveExplosion = false,
+				Dueltroid = false,
+				FreshStart = false,
+				SantaAxe = false,
+				Respawn = false,
+				Offguard = false,
+				LaserBeam = false,
+				MindBlast = false,
+				GrenadeLauncher = false,
+				Protected = false,
+				Hypnosis = false,
+				ShrinkRay = false,
+				GalacticBeam = false,
+				SolarFlare = false,
+				CometStrike = false,
+				DeathVirus = false,
+				VoidBurst = false,
+				CelestialDisruption = false,
+				QuantumFlux = false
+			},
+			aliensKilled = 0,
+			wins = 0,
+			matchesPlayed = 0,
+			level = 0,
+			brightness = 100,
+			volume = 100,
+			sfx = 100,
+			walls = 0,
+			retreat = 0,
+			zap = 0,
+			bomb = 0,
+			doubleGold = 0,
+			teleporter = 0,
+			electricity = 0,
+			protection = 0,
+			aliensUnlocked = 2,
+			goldBuff = 1,
+			profile = nil,
+			items = {
+				Wall = false,
+				Retreat = false,
+				Zap = false,
+				Bomb = false,
+				DoubleGold = false,
+				Teleporter = false,
+				Electricity = false,
+				Protection = false
+			},
+			saveNumber = saveNumber,
+			turn = true
+		}
+		local filteredData = filterUserData(datatemp)  -- Filter out userdata
+		local file = io.open("data.txt", "w")  -- Open the file in write mode
+		if file then
+			local dataString = json.encode(filteredData)  -- Convert the filtered data table to a JSON string
+			file:write(dataString)  -- Write the data string to the file
+			file:close()  -- Close the file
+		end
+		
+	if fileExists('data.txt') then
+		local file = io.open("data.txt", "r")  -- Open the file in read mode
+		if file then
+			local dataString = file:read("*a")  -- Read the entire content of the file
+			file:close()  -- Close the file
+
+			-- Attempt to decode the JSON string
+			local success, decodedData = pcall(json.decode, dataString)
+			if success then
+				data = decodedData
+			end
+		end
+	else
+		love.filesystem.write("data.txt", jsonText)
+		createNewSave()
+		saveData()
+	end
 end
 
 
@@ -553,4 +650,13 @@ function makeAlien(health,speed, heval,ability,name,desc)
 	temp.name = name
 	temp.desc = desc
 	return temp
+end
+
+function fileExists(filename)
+    local file = io.open(filename, "r")
+    if file then
+        file:close()
+        return true
+    end
+    return false
 end
