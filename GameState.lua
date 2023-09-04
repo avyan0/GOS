@@ -133,7 +133,7 @@ function GameState:render()
     end
     setColor(0,172/255,102/255)
     love.graphics.setFont(gFonts['game25'])
-    love.graphics.printf(alienCounter,1055,680,150,'center')
+    love.graphics.printf('End Turn',1055,680,150,'center')
 
     
     setColor(1,1,1)
@@ -859,6 +859,12 @@ function GameState:attack(weapon)
             end
         end
     end
+    attacker.damageAll = attacker.damageAll / ((data.upgrades[attacker.name] * 0.1) + 1)
+    attacker.damageLane = attacker.damageLane / ((data.upgrades[attacker.name] * 0.1) + 1)
+    attacker.damageTile = attacker.damageTile / ((data.upgrades[attacker.name] * 0.1) + 1)
+    attacker.poison = attacker.poison / ((data.upgrades[attacker.name] * 0.1) + 1)
+    attacker.damageRandLane = attacker.damageRandLane / ((data.upgrades[attacker.name] * 0.1) + 1)
+    attacker.damage = attacker.damage / ((data.upgrades[attacker.name] * 0.1) + 1)
 end
 
 function GameState:attackLane(weapon, lane)
