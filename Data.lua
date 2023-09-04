@@ -147,6 +147,38 @@ function createNewSave(saveNumber)
 	if saveNumber == nil then saveNumber = 1 end
 	data.saveNumber = saveNumber
 	data.turn = true
+	data.upgrades = {}
+	data.upgrades['Astroid Rain'] = 0
+	data.upgrades['Poison Arrow'] = 0
+	data.upgrades['Triple Threat'] = 0
+	data.upgrades['Cosmic Fire'] = 0
+	data.upgrades['Astrobolt'] = 0
+	data.upgrades['Star Blast'] = 0
+	data.upgrades['Laser Kill'] = 0
+	data.upgrades['Stellar Boost'] = 0
+	data.upgrades['Thunder Strike'] = 0
+	data.upgrades['Battle Ram'] = 0
+	data.upgrades['Electro Jolt'] = 0
+	data.upgrades['Dagger Throw'] = 0
+	data.upgrades['Hevalstruck'] = 0
+	data.upgrades['Recursive Explosion'] = 0
+	data.upgrades['Dueltroid'] = 0
+	data.upgrades['Fresh Start'] = 0
+	data.upgrades['Santa Axe'] = 0
+	data.upgrades['Respawn'] = 0
+	data.upgrades['Offguard'] = 0
+	data.upgrades['Laser Beam'] = 0
+	data.upgrades['Mind Blast'] = 0
+	data.upgrades['Grenade Launcher'] = 0
+	data.upgrades['Protected'] = 0
+	data.upgrades['Hypnosis'] = 0
+	data.upgrades['Galactic Beam'] = 0
+	data.upgrades['Solar Flare'] = 0
+	data.upgrades['Comet Strike'] = 0
+	data.upgrades['Death Virus'] = 0
+	data.upgrades['Void Burst'] = 0
+	data.upgrades['Celestial Disruption'] = 0
+	data.upgrades['Quantum Flux'] = 0
 end
 
 function makeLevel()
@@ -429,18 +461,18 @@ end
 
 function weaponDictionary()
 	Weapons = {}
-	Weapons['AstroidRain'] = makeWeapon(3000,'common',175,0,2,0,0,0,0,0,'Astroid Rain','all',175,0,'Attakcs all aliens in all lanes',gWeapons['AsteroidRain']) --works
-	Weapons['PoisonArrow'] = makeWeapon(3000,'common',0,150,1,0,0,75,0,0,'Posion Arrow','lane',150,0,'Attacks a whole lane and poisons all aliens for 75 damage',gWeapons['PoisonDart']) --works
+	Weapons['AstroidRain'] = makeWeapon(3000,'common',175,0,3,0,0,0,0,0,'Astroid Rain','all',175,0,'Attakcs all aliens in all lanes',gWeapons['AsteroidRain']) --works
+	Weapons['PoisonArrow'] = makeWeapon(3000,'common',0,150,1,0,0,75,0,0,'Poison Arrow','lane',150,0,'Attacks a whole lane and poisons all aliens for 75 damage',gWeapons['PoisonDart']) --works
 	Weapons['TripleThreat'] = makeWeapon(3000,'common',0,0,0,275,0,0,0,0,'Triple Threat','tile',275,3,'Attacks 3 specifc tiles of your choosing',gWeapons['Targeted']) --works
 	Weapons['CosmicFire'] = makeWeapon(3000,'common',0,250,0,0,0,0,0,0,'Cosmic Fire','lane',250,0,'Attacks all aliens in a lane',gWeapons['RazorThrower']) --works
 	Weapons['Astrobolt'] = makeWeapon(3000,'common',0,100,0,0,0,0,0,2,'Astrobolt','lane',100,0,'Attacks all aliens in a lane and stuns the first two for one turn',gWeapons['Lightning'],1) -- works
-	Weapons['StarBlast'] = makeWeapon(3000,'common',0,0,0,0,0,0,0,0,'Star Blast','tile',125,1,'Attacks in a cross shapped pattern from a center point of your choice',gWeapons['StarBlast']) -- works
-	Weapons['LaserKill'] = makeWeapon(3000,'common',0,0,0,0,0,0,0,0,'Laser Kill','lane',0,0,'Kills all aliens below 375 health in a lane, if they are above 375 health, Laser Kill does no damage',gWeapons['LaserKill']) -- works
+	Weapons['StarBlast'] = makeWeapon(3000,'common',0,0,0,0,0,0,0,0,'Star Blast','tile',160,1,'Attacks in a cross shapped pattern from a center point of your choice',gWeapons['StarBlast']) -- works
+	Weapons['LaserKill'] = makeWeapon(3000,'common',0,0,0,0,0,0,0,0,'Laser Kill','lane',375,0,'Kills all aliens below 375 health in a lane, if they are above 375 health, Laser Kill does no damage. Can not be effected by damage buffs or nerfs',gWeapons['LaserKill']) -- works
 	Weapons['StellarBoost'] = makeWeapon(3000,'common',0,0,3,0,0,0,0,0,'Stellar Boost','buff',0,0,'Buffs all your weapons damage by 20 percent this turn and 10 percent for the next 2 turns',gWeapons['Buffer']) -- works
 
 	Weapons['ThunderStrike'] = makeWeapon(6500,'rare',0,700,0,0,0,0,0,0,'Thunder Strike','lane',700,0,'Attacks a lane for 700 damage and has a 33% chance to stun the first alien, if sucsessful, the stun keeps going with the same chance',gWeapons['ElectricBall'])-- doen
 	Weapons['BattleRam'] = makeWeapon(6500,'rare',0,0,0,0,1,0,0,0,'Battle Ram','lane',1050,0,'Attacks the first alien in a lane for 1050 damage and knocks them back 1 tile',gWeapons['SwordShield'])
-	Weapons['ElectroJolt'] = makeWeapon(6500,'rare',0,0,2,0,0,0,0,10,'Electric Jolt','lane',0,0,'Stuns the whole lane for 1 turn',gWeapons['ElectroShock'],1) -- record
+	Weapons['ElectroJolt'] = makeWeapon(6500,'rare',0,0,2,0,0,0,0,10,'Electro Jolt','lane',0,0,'Stuns the whole lane for 1 turn',gWeapons['ElectroShock'],1) -- record
 	Weapons['DaggerThrow'] =  makeWeapon(6500,'rare',0,900,0,0,0,0,0,0,'Dagger Throw','lane',900,0,'Does 900 damage to the lane',gWeapons['PiercingSword']) -- record
 	Weapons['Hevalstruck'] = makeWeapon(6500,'rare',0,0,0,0,0,0,0,0,'Hevalstruck','lane',1200,0,'Does 1200 to the first alien in the lane, does double the damage if the alien is a hevalten',gWeapons['Hevalstruck']) -- record
 	Weapons['RecursiveExplosion'] =  makeWeapon(6500,'rare',425,0,0,0,0,0,0,0,'Recursive Explosion','all',425,0,'Does 425 damage to all aliens',gWeapons['RecursiveExplosion']) -- record
@@ -450,7 +482,7 @@ function weaponDictionary()
 	Weapons['SantaAxe'] = makeWeapon(10000,'scarce',0,2200,0,0,0,0,0,0,'Santa Axe','lane',2200,0,'Does 2200 damage to an entire lane',gWeapons['SantaAxe']) -- record
 	Weapons['Respawn'] =  makeWeapon(10000,'scarce',0,0,2,0,0,0,0,0,'Respawn','lane',0,0,'Stops all aliens except Hevaltens from spawning in the lane you choose for 1 turn',gWeapons['Respawn']) -- record
 	Weapons['Offguard'] =  makeWeapon(10000,'scarce',0,0,3,0,0,0,0,10,'Offguard','all',0,0,'Stuns the whole game for 1 turn',gWeapons['Offguard'],1) -- record
-	Weapons['LaserBeam'] = makeWeapon(10000,'scarce',0,0,0,0,0,0,0,0,'Laser Beam','lane',0,0,'Kills all aliens in a lane who have less than 6000 health',gWeapons['LaserDeath']) -- Record
+	Weapons['LaserBeam'] = makeWeapon(10000,'scarce',0,0,0,0,0,0,0,0,'Laser Beam','lane',6000,0,'Kills all aliens in a lane who have less than 6000 health. Cannot be effected by damage buffs',gWeapons['LaserDeath']) -- Record
 	Weapons['MindBlast'] = makeWeapon(10000,'scarce',0,0,2,0,0,0,0,0,'Mind Blast','lane',7001,0,'Does 7001 damage to the first alien in a lane, if it survives then it will hypnotise that alien',gWeapons['MagicGun']) -- record
 	Weapons['GrenadeLauncher'] =  makeWeapon(10000,'scarce',0,0,0,0,0,0,0,0,'Grenade Launcher','row',3950,0,'Does 3950 damage to the first and last row of aliens',gWeapons['Grenade']) -- record
 	Weapons['Protected'] = makeWeapon(10000,'scarce',0,400,2,0,0,0,0,0,'Protected','lane',400,0,'Buffs all damage by 1.25% for the rest of the stage and does 400 damage to a lane',gWeapons['Walls']) -- Record
