@@ -2,37 +2,37 @@ WeaponSelect = Class{__includes = BaseState}
 
 local weaponnum = 0
 local buttons = {
-    {name = 'AstroidRain', x = 0, y = 158, width = 156, height = 38, highlighted = false},
-    {name = 'PoisonArrow', x = 188, y = 158, width = 156, height = 38, highlighted = false},
-    {name = 'TripleThreat', x = 376, y = 158, width = 156, height = 38, highlighted = false},
-    {name = 'CosmicFire', x = 564, y = 158, width = 156, height = 38, highlighted = false},
+    {name = 'Astroi dRain', x = 0, y = 158, width = 156, height = 38, highlighted = false},
+    {name = 'Poison Arrow', x = 188, y = 158, width = 156, height = 38, highlighted = false},
+    {name = 'Triple Threat', x = 376, y = 158, width = 156, height = 38, highlighted = false},
+    {name = 'Cosmic Fire', x = 564, y = 158, width = 156, height = 38, highlighted = false},
     {name = 'Astrobolt', x = 752, y = 158, width = 156, height = 38, highlighted = false},
-    {name = 'StarBlast', x = 940, y = 158, width = 156, height = 38, highlighted = false},
-    {name = 'LaserKill', x = 1124, y = 158, width = 156, height = 38, highlighted = false},
-    {name = 'StellarBoost', x = 0, y = 255, width = 156, height = 38, highlighted = false},
-    {name = 'ThunderStrike', x = 188, y = 255, width = 156, height = 38, highlighted = false},
-    {name = 'BattleRam', x = 376, y = 255, width = 156, height = 38, highlighted = false},
-    {name = 'ElectroJolt', x = 564, y = 255, width = 156, height = 38, highlighted = false},
-    {name = 'DaggerThrow', x = 752, y = 255, width = 156, height = 38, highlighted = false},
+    {name = 'Star Blast', x = 940, y = 158, width = 156, height = 38, highlighted = false},
+    {name = 'Laser Kill', x = 1124, y = 158, width = 156, height = 38, highlighted = false},
+    {name = 'Stellar Boost', x = 0, y = 255, width = 156, height = 38, highlighted = false},
+    {name = 'Thunder Strike', x = 188, y = 255, width = 156, height = 38, highlighted = false},
+    {name = 'Battle Ram', x = 376, y = 255, width = 156, height = 38, highlighted = false},
+    {name = 'Electro Jolt', x = 564, y = 255, width = 156, height = 38, highlighted = false},
+    {name = 'Dagger Throw', x = 752, y = 255, width = 156, height = 38, highlighted = false},
     {name = 'Hevalstruck', x = 940, y = 255, width = 156, height = 38, highlighted = false},
-    {name = 'RecursiveExplosion', x = 1124, y = 255, width = 156, height = 38, highlighted = false},
+    {name = 'Recursive Explosion', x = 1124, y = 255, width = 156, height = 38, highlighted = false},
     {name = 'Dueltroid', x = 0, y = 353, width = 156, height = 38, highlighted = false},
-    {name = 'FreshStart', x = 188, y = 353, width = 156, height = 38, highlighted = false},
-    {name = 'SantaAxe', x = 376, y = 353, width = 156, height = 38, highlighted = false},
+    {name = 'Fresh Start', x = 188, y = 353, width = 156, height = 38, highlighted = false},
+    {name = 'Santa Axe', x = 376, y = 353, width = 156, height = 38, highlighted = false},
     {name = 'Respawn', x = 564, y = 353, width = 156, height = 38, highlighted = false},
     {name = 'Offguard', x = 752, y = 353, width = 156, height = 38, highlighted = false},
-    {name = 'LaserBeam', x = 940, y = 353, width = 156, height = 38, highlighted = false},
-    {name = 'MindBlast', x = 1124, y = 353, width = 156, height = 38, highlighted = false},
-    {name = 'GrenadeLauncher', x = 0, y = 451, width = 156, height = 38, highlighted = false},
+    {name = 'Laser Beam', x = 940, y = 353, width = 156, height = 38, highlighted = false},
+    {name = 'Mind Blast', x = 1124, y = 353, width = 156, height = 38, highlighted = false},
+    {name = 'Grenade Launcher', x = 0, y = 451, width = 156, height = 38, highlighted = false},
     {name = 'Protected', x = 188, y = 451, width = 156, height = 38, highlighted = false},
     {name = 'Hypnosis', x = 376, y = 451, width = 156, height = 38, highlighted = false},
-    {name = 'GalacticBeam', x = 564, y = 451, width = 156, height = 38, highlighted = false},
-    {name = 'SolarFlare', x = 752, y = 451, width = 156, height = 38, highlighted = false},
-    {name = 'CometStrike', x = 940, y = 451, width = 156, height = 38, highlighted = false},
-    {name = 'DeathVirus', x = 1124, y = 451, width = 156, height = 38, highlighted = false},
-    {name = 'VoidBurst', x = 0, y = 548, width = 156, height = 38, highlighted = false},
-    {name = 'CelestialDisruption', x = 188, y = 548, width = 156, height = 38, highlighted = false},
-    {name = 'QuantumFlux', x = 376, y = 548, width = 156, height = 38, highlighted = false}
+    {name = 'Galactic Beam', x = 564, y = 451, width = 156, height = 38, highlighted = false},
+    {name = 'Solar Flare', x = 752, y = 451, width = 156, height = 38, highlighted = false},
+    {name = 'Comet Strike', x = 940, y = 451, width = 156, height = 38, highlighted = false},
+    {name = 'Death Virus', x = 1124, y = 451, width = 156, height = 38, highlighted = false},
+    {name = 'Void Burst', x = 0, y = 548, width = 156, height = 38, highlighted = false},
+    {name = 'Celestial Disruption', x = 188, y = 548, width = 156, height = 38, highlighted = false},
+    {name = 'Quantum Flux', x = 376, y = 548, width = 156, height = 38, highlighted = false}
 }
 
 function WeaponSelect:render()
@@ -55,6 +55,11 @@ function WeaponSelect:render()
         
             love.graphics.rectangle('fill', button.x, button.y, button.width, button.height)
             setColor(1,1,1)
+            if button.name == 'Recursive Explosion' or button.name == 'Grenade Launcher' or button.name == 'Celestial Disruption' then
+                love.graphics.setFont(gFonts['game15'])
+            else
+                love.graphics.setFont(gFonts['game18'])
+            end
             love.graphics.printf(button.name, button.x, button.y + button.height / 2, button.width, 'center')
         end
     end
@@ -94,13 +99,13 @@ function WeaponSelect:handleWeaponButtonClick(weaponName)
     local highlightedCount = 0
     weaponnum = weaponnum%3 +1
     if weaponnum == 1 then
-        data.weaponChoose1 = weaponName
+        data.weaponChoose1 = string.gsub(weaponName, " ", "")
     end
     if weaponnum == 2 then
-        data.weaponChoose2 = weaponName
+        data.weaponChoose2 = string.gsub(weaponName, " ", "")
     end
     if weaponnum == 3 then
-        data.weaponChoose3 = weaponName
+        data.weaponChoose3 = string.gsub(weaponName, " ", "")
     end
     saveData()
     for _, button in ipairs(buttons) do
