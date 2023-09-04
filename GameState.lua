@@ -484,8 +484,9 @@ function GameState:spawnAliens()
         elseif lane == 5 then
             GameState:moveLane(5,alien1)
         end
+    else
+        GameState:moveLane()
     end
-
 end
 
 function GameState:moveLane(n, thingy)
@@ -639,7 +640,7 @@ function GameState:moveLane(n, thingy)
                 end
                 if alienAlive[i][j] then
                     local alien = alienStats[i][j]
-                    local speed = thingy.speed
+                    local speed = 1
                     if alienStats[i][j].stunned then
                         speed = 0 -- Stunned aliens cannot move
                     end
@@ -681,24 +682,27 @@ function GameState:moveLane(n, thingy)
             end
         end
     end
-    while alienAlive[1][n] do
-        n = math.random(1, 5)
+
+    if n ~= nil then
+        while alienAlive[1][n] do
+            n = math.random(1, 5)
+        end
+        if thingy.name == 'DarkArts' then
+            GameState:upgrade()
+        end
+        if thingy.name == 'Virus' then
+            weapon1Cooldown = weapon1Cooldown - 1
+            weapon2Cooldown = weapon2Cooldown -1
+            weapon3Cooldown = weapon3Cooldown -1
+        end
+        if thingy.name == 'GodOfSpace' then
+            GameState:godRand(thingy)
+            GameState:godRand(thingy)
+            GameState:godRand(thingy)
+        end
+            
+        GameState:makeAlien(1,n,thingy.health,thingy.hevalten,thingy.name)
     end
-    if thingy.name == 'DarkArts' then
-        GameState:upgrade()
-    end
-    if thingy.name == 'Virus' then
-        weapon1Cooldown = weapon1Cooldown - 1
-        weapon2Cooldown = weapon2Cooldown -1
-        weapon3Cooldown = weapon3Cooldown -1
-    end
-    if thingy.name == 'GodOfSpace' then
-        GameState:godRand(thingy)
-        GameState:godRand(thingy)
-        GameState:godRand(thingy)
-    end
-        
-    GameState:makeAlien(1,n,thingy.health,thingy.hevalten,thingy.name)
 
     for x = 1,10 do
         for y = 1,5 do
