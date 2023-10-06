@@ -190,7 +190,7 @@ function ItemsScreenState:mousePressed(x,y)
 	end
 	if data.items['Zap'] then
 		if love.clicked(x,y,304,570,170,260) then
-			gStateMachine:change('itemDescriptions', 'This item stuns every alien in any lane of your choosing for 2 turns. Other aliens could spawn in that lane and move. When an alien is stunned, it cannot move for a specific amount of time, in this case 2 turns.')
+			gStateMachine:change('itemDescriptions',  'This item stuns every alien in a random lane for 3 turns. Other aliens could spawn in that lane and move. When an alien is stunned, it cannot move for a specific amount of time, in this case 3 turns.')
 		end
 	end
 	
