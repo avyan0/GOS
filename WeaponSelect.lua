@@ -88,6 +88,9 @@ function WeaponSelect:mousePressed(x, y)
     if love.clicked(x,y,990,1190,608,698) then
         if not(data.weaponChoose1 == data.weaponChoose2 or data.weaponChoose1 == data.weaponChoose3 or data.weaponChoose2 == data.weaponChoose3) then
             if data.weaponChoose1 ~= "" and data.weaponChoose2~="" and data.weaponChoose3~="" then
+                for i, button in ipairs(buttons) do
+                    button.highlighted = false
+                end
                 gStateMachine:change('game')
             end
         end
