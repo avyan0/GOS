@@ -462,8 +462,8 @@ end
 function weaponDictionary()
 	Weapons = {}
 	Weapons['AstroidRain'] = makeWeapon(3000,'common',175,0,3,0,0,0,0,0,'Astroid Rain','all',175,0,'Attakcs all aliens in all lanes',gWeapons['AsteroidRain']) --works
-	Weapons['PoisonArrow'] = makeWeapon(3000,'common',0,150,1,0,0,75,0,0,'Poison Arrow','lane',150,0,'Attacks a whole lane and poisons all aliens for 75 damage',gWeapons['PoisonDart']) --works
-	Weapons['TripleThreat'] = makeWeapon(3000,'common',0,0,0,275,0,0,0,0,'Triple Threat','tile',275,3,'Attacks 3 specifc tiles of your choosing',gWeapons['Targeted']) --works
+	Weapons['PoisonArrow'] = makeWeapon(3000,'common',0,150,1,0,0,55,0,0,'Poison Arrow','lane',150,0,'Attacks a whole lane and poisons all aliens for 75 damage',gWeapons['PoisonDart']) --works
+	Weapons['TripleThreat'] = makeWeapon(3000,'common',0,0,0,200,0,0,0,0,'Triple Threat','tile',200,3,'Attacks 3 specifc tiles of your choosing',gWeapons['Targeted']) --works
 	Weapons['CosmicFire'] = makeWeapon(3000,'common',0,250,0,0,0,0,0,0,'Cosmic Fire','lane',250,0,'Attacks all aliens in a lane',gWeapons['RazorThrower']) --works
 	Weapons['Astrobolt'] = makeWeapon(3000,'common',0,100,0,0,0,0,0,2,'Astrobolt','lane',100,0,'Attacks all aliens in a lane and stuns the first two for one turn',gWeapons['Lightning'],1) -- works
 	Weapons['StarBlast'] = makeWeapon(3000,'common',0,0,0,0,0,0,0,0,'Star Blast','tile',160,1,'Attacks in a cross shapped pattern from a center point of your choice',gWeapons['StarBlast']) -- works
