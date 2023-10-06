@@ -7,19 +7,35 @@ function WinState:init()
     data.matchesPlayed = data.matchesPlayed + 1
     saveData()
     local planet = tonumber(string.match(data.currentLevel,'%d+'))
-    if planet == 1 then
-        gold = math.random(7,13) * data.goldBuff
-    elseif planet == 2 then
-        gold = math.random(10,20)* data.goldBuff
-    elseif planet == 3 then
-        gold = math.random(15,29)* data.goldBuff
-    elseif planet == 4 then
-        gold = math.random(21,39)* data.goldBuff
-    elseif planet ==5 then
-        gold = math.random(27,49)* data.goldBuff
-    elseif planet == 6 then
-        gold = math.random(34,62)* data.goldBuff
-    end
+    --local levelNumber = tonumber(string.match(currentLevel, '-(%d+)'))
+    --if levelNumber-1 == data.level then
+        if planet == 1 then
+            gold = math.random(7,13) * data.goldBuff
+        elseif planet == 2 then
+            gold = math.random(10,20)* data.goldBuff
+        elseif planet == 3 then
+            gold = math.random(15,29)* data.goldBuff
+        elseif planet == 4 then
+            gold = math.random(21,39)* data.goldBuff
+        elseif planet ==5 then
+            gold = math.random(27,49)* data.goldBuff
+        elseif planet == 6 then
+            gold = math.random(34,62)* data.goldBuff
+        end
+    --[[else
+        if planet == 1 then
+            gold = math.random(1,3) * data.goldBuff
+        elseif planet == 2 then
+            gold = math.random(1,5)* data.goldBuff
+        elseif planet == 3 then
+            gold = math.random(1,8)* data.goldBuff
+        elseif planet == 4 then
+            gold = math.random(1,11)* data.goldBuff
+        elseif planet ==5 then
+            gold = math.random(2,13)* data.goldBuff
+        elseif planet == 6 then
+            gold = math.random(3,16)* data.goldBuff
+        end--]]
     if data.goldBuff ~= 1 then
         data.goldBuff = 1
     end
