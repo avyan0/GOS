@@ -497,10 +497,10 @@ function GameState:moveLane(n, thingy)
     stellar = stellar -1
     local counter = 0
     if stellar == 2 then        
-        damageBuff = damageBuff /1.2
-        damageBuff = damageBuff*1.1
+        damageBuff = damageBuff /(1.2 * ((data.upgrades[attacker.name] * 0.1) + 1))
+        damageBuff = damageBuff*1.1 * ((data.upgrades[attacker.name] * 0.1) + 1)
     elseif stellar == 0 then
-        damageBuff = damageBuff/1.1
+        damageBuff = damageBuff/(1.1 *((data.upgrades[attacker.name] * 0.1) + 1))
     end
     
     for a = 10,1,-1 do
@@ -896,12 +896,6 @@ function GameState:attackLane(weapon, lane)
     if attacker.name ==  'Dueltroid' then
         GameState:Dueltroid(lane)
     end
-    if attacker.knockback > 0 then
-        GameState:knockback(attacker,lane)
-    end
-    if attacker.stunDuration > 0 then
-        GameState:stun(attacker,lane)
-    end
     if attacker.name == 'Respawn' then
         GameState:respawn(lane)
     end
@@ -945,6 +939,12 @@ function GameState:attackLane(weapon, lane)
             end
             GameState:spawnRand(alien,preHealth)
         end
+    end
+    if attacker.knockback > 0 then
+        GameState:knockback(attacker,lane)
+    end
+    if attacker.stunDuration > 0 then
+        GameState:stun(attacker,lane)
     end
 end
 
@@ -1203,14 +1203,14 @@ end
 function GameState:LaserKill(lane)
 
     for i = 10, 1, -1 do
-        if alienAlive[i][lane] and alienStats[i][lane].health <= attacker.damage and not alienStats[i][lane].immmunity and not alienStats[i][lane].fly then
+        if alienAlive[i][lane] and alienStats[i][lane].health <= (attacker.damage * ((data.upgrades[attacker.name] * 0.1) + 1)) and not alienStats[i][lane].immmunity and not alienStats[i][lane].fly then
             alienStats[i][lane].health = 0
         end
     end
 end
 
 function GameState:StellarBoost()
-    damageBuff = damageBuff * 1.2
+    damageBuff = damageBuff * 1.2 * ((data.upgrades[attacker.name] * 0.1) + 1)
 end
 
 function GameState:ThunderStrike(lane)
@@ -1221,7 +1221,7 @@ function GameState:ThunderStrike(lane)
                 local value = math.random(1,3)
                 if value == 1 then
                     alienStats[i][lane].stunned = true
-                    alienStats[i][lane].stunDuration = 2
+                    alienStats[i][lane].stunDuration = math.round(2 * ((data.upgrades[attacker.name] * 0.1) + 1))
                     break
                 else
                     odds = false
@@ -1333,7 +1333,7 @@ function GameState:Dueltroid(lane)
             if alienAlive[i][lane] and first and not alienStats[i][lane].immmunity and not alienStats[i][lane].fly and not(allGood) then
                 first = false
                 alienStats[i][lane].stunned = true
-                alienStats[i][lane].stunDuration = 5
+                alienStats[i][lane].stunDuration = math.round(5 * ((data.upgrades[attacker.name] * 0.1) + 1))
             end
         end
     else
@@ -1342,7 +1342,7 @@ function GameState:Dueltroid(lane)
                 secondCount = secondCount +1
                 if secondCount >= 2 then second = false end
                 alienStats[i][lane].stunned = true
-                alienStats[i][lane].stunDuration = 3
+                alienStats[i][lane].stunDuration = math.round(3*((data.upgrades[attacker.name] * 0.1) + 1))
             end
         end
     end
@@ -1440,7 +1440,7 @@ end
 function GameState:LaserBeam(lane)
 
     for i = 10, 1, -1 do
-        if alienAlive[i][lane] and alienStats[i][lane].health <= attacker.damage and not alienStats[i][lane].immmunity and not alienStats[i][lane].fly then
+        if alienAlive[i][lane] and alienStats[i][lane].health <= (attacker.damage* ((data.upgrades[attacker.name] * 0.1) + 1)) and not alienStats[i][lane].immmunity and not alienStats[i][lane].fly then
             alienStats[i][lane].health = 0
         end
     end
@@ -1488,7 +1488,7 @@ function GameState:Offguard()
         for j = 1,5 do
             if alienAlive[i][j] and not alienStats[i][j].stunned and not alienStats[i][j].immmunity and not(allGood) then
                 alienStats[i][j].stunned = true
-                alienStats[i][j].stunDuration = 2
+                alienStats[i][j].stunDuration = math.round(2*((data.upgrades[attacker.name] * 0.1) + 1))
             end
         end
     end
