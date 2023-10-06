@@ -10,21 +10,39 @@ function ShopState:render()
 	love.graphics.setFont(gFonts['shop'])
 	love.graphics.setColor(0,0,0)
 	love.graphics.printf('Spin',15, 140, 250, 'center')
+	if ((data.planet == 2 and data.level >= 15) or data.planet > 2) then
 	love.graphics.printf('Spin',265, 140, 250, 'center')
+	end
+	if ( data.planet >= 4) then
 	love.graphics.printf('Spin',515, 140, 250, 'center')
+	end
+	if ((data.planet == 5 and data.level >= 15) or data.planet > 5) then
 	love.graphics.printf('Spin',765, 140, 250, 'center')
+	end
 	love.graphics.printf('Spin',1015, 140, 250, 'center')
 
 	love.graphics.printf('Common',15, 80, 250, 'center')
+	if ((data.planet == 2 and data.level >= 15) or data.planet > 2) then
 	love.graphics.printf('Rare',265, 80, 250, 'center')
+	end
+	if ( data.planet >= 4) then
 	love.graphics.printf('Scarce',515, 80, 250, 'center')
+	end
+	if ((data.planet == 5 and data.level >= 15) or data.planet > 5) then
 	love.graphics.printf('God',765, 80, 250, 'center')
+	end
 	love.graphics.printf('Item',1015, 80, 250, 'center')
 
 	love.graphics.printf('25 Gold',15, 470, 250, 'center')
+	if ((data.planet == 2 and data.level >= 15) or data.planet > 2) then
 	love.graphics.printf('45 Gold',265, 470, 250, 'center')
+	end
+	if ( data.planet >= 4) then
 	love.graphics.printf('100 Gold',515, 470, 250, 'center')
+	end
+	if ((data.planet == 5 and data.level >= 15) or data.planet > 5) then
 	love.graphics.printf('270 Gold',765, 470, 250, 'center')
+	end
 	love.graphics.printf('25 Gold',1015, 470, 250, 'center')
 
 	love.graphics.setFont(gFonts['shop'])
@@ -34,9 +52,16 @@ function ShopState:render()
 	local h = gTextures['wheel']:getHeight()
 	love.graphics.setColor(1,1,1,1)
 	love.graphics.draw(gTextures['wheel'],20,180,100/(w-1),200/(h-1))
-	love.graphics.draw(gTextures['wheel'],270,180,100/(w-1),200/(h-1))
-	love.graphics.draw(gTextures['wheel'],520,180,100/(w-1),200/(h-1))
-	love.graphics.draw(gTextures['wheel'],770,180,100/(w-1),200/(h-1))
+	if ((data.planet == 2 and data.level >= 15) or data.planet > 2) then
+		love.graphics.draw(gTextures['wheel'],270,180,100/(w-1),200/(h-1))
+	end
+	if ( data.planet >= 4) then
+		love.graphics.draw(gTextures['wheel'],520,180,100/(w-1),200/(h-1))
+	end
+	if ((data.planet == 5 and data.level >= 15) or data.planet > 5) then
+		love.graphics.draw(gTextures['wheel'],770,180,100/(w-1),200/(h-1))
+	end
+
 	love.graphics.draw(gTextures['wheel'],1020,180,100/(w-1),200/(h-1))
 
 
@@ -51,14 +76,20 @@ function ShopState:mousePressed(x,y)
 		gStateMachine:change('spin','Common')
 	end
 	love.bottomClicked(x,y)
+	if ((data.planet == 2 and data.level >= 15) or data.planet > 2) then
 	if love.clicked(x,y,290,475,200,400) then
 		gStateMachine:change('spin','Rare')
 	end
+	end
+	if ( data.planet >= 4) then
 	if love.clicked(x,y,540,725,200,400) then
 		gStateMachine:change('spin','Scarce')
 	end
+	end
+	if ((data.planet == 5 and data.level >= 15) or data.planet > 5) then
 	if love.clicked(x,y,790,985,200,400) then
 		gStateMachine:change('spin','God')
+	end
 	end
 	if love.clicked(x,y,1040,1225,200,400) then
 		gStateMachine:change('spin','Item')
