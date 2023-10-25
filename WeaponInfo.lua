@@ -7,13 +7,13 @@ function WeaponInfo:render()
 	love.drawBack(0,0,0)
 
 	love.graphics.setColor(0,0,0)
-	love.graphics.setFont( love.graphics.newFont('states/homeState/things/shop.otf',40))
+	love.graphics.setFont(gFonts['game45'])
 	love.graphics.printf('Damage: '..tostring(self.weapon1.damage * ((data.upgrades[self.weapon1.name] * 0.1) + 1) ),0,380,VIRTUAL_WIDTH-30,'center')
 	love.graphics.printf('Special Effect:'..tostring(self.weapon1.specialEffect),0,470,VIRTUAL_WIDTH-30,'center')
-	love.graphics.printf('Cooldown:'..tostring(self.weapon1.cooldown) .. ' turns',0,560,VIRTUAL_WIDTH-30,'center')
+	love.graphics.printf('Cooldown:'..tostring(self.weapon1.cooldown) .. ' turns',0,585,VIRTUAL_WIDTH-30,'center')
 	love.graphics.printf('Upgrades:'..tostring(data.upgrades[self.weapon1.name]),0,650,VIRTUAL_WIDTH-30,'center')
 
-	love.graphics.setFont( love.graphics.newFont('states/homeState/things/shop.otf',50))
+	love.graphics.setFont(gFonts['game45'])
 	love.graphics.printf(tostring(self.weapon1.name),0,75,VIRTUAL_WIDTH,'center')
 
 	love.graphics.setColor(1,1,1)
