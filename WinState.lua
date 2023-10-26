@@ -104,9 +104,66 @@ function WinState:init()
             spin = 'God'
         end
     end
+    if(l==7 and p==1) then
+        setAlienUnlock(3)
+    elseif(l==14 and p==1) then
+        setAlienUnlock(4)
+    elseif(l==21 and p==1) then
+        setAlienUnlock(5)
+    elseif(l==28 and p==1) then
+        setAlienUnlock(6)
+    elseif(l==5 and p==2) then
+        setAlienUnlock(7)
+    elseif(l==12 and p==2) then
+        setAlienUnlock(8)
+    elseif(l==19 and p==2) then
+        setAlienUnlock(9)
+    elseif(l==26 and p==2) then
+        setAlienUnlock(10)
+    elseif(l==3 and p==3) then
+        setAlienUnlock(11)
+    elseif(l==10 and p==3) then
+        setAlienUnlock(12)
+    elseif(l==17 and p==3) then
+        setAlienUnlock(13)
+    elseif(l==24 and p==3) then
+        setAlienUnlock(14)
+    elseif(l==1 and p==4) then
+        setAlienUnlock(15)
+    elseif(l==8 and p==4) then
+        setAlienUnlock(16)
+    elseif(l==14 and p==4) then
+        setAlienUnlock(17)
+    elseif(l==20 and p==4) then
+        setAlienUnlock(18)
+    elseif(l==26 and p==4) then
+        setAlienUnlock(19)
+    elseif(l==2 and p==5) then
+        setAlienUnlock(20)
+    elseif(l==8 and p==5) then
+        setAlienUnlock(21)
+    elseif(l==14 and p==5) then
+        setAlienUnlock(22)
+    elseif(l==20 and p==5) then
+        setAlienUnlock(23)
+    elseif(l==26 and p==5) then
+        setAlienUnlock(24)
+    elseif(l==2 and p==6) then
+        setAlienUnlock(25)
+    elseif(l==8 and p==6) then
+        setAlienUnlock(26)
+    elseif(l==14 and p==6) then
+        setAlienUnlock(27)
+    end
     saveData()
 end
 
+function setAlienUnlock(x)
+    if (data.aliensUnlocked<=x) then
+        data.aliensUnlocked = x
+        saveData();
+    end
+end
 function WinState:render()
     push:apply('start')
 
