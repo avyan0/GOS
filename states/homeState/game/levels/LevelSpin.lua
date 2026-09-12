@@ -8,7 +8,7 @@ function LevelSpin:render()
 	love.graphics.setColor(70/255,20/255,200/255)
 	love.graphics.rectangle('fill',0,0,VIRTUAL_WIDTH, VIRTUAL_HEIGHT)
 
-	love.graphics.getFont(gFonts['game'])
+	love.graphics.setFont(gFonts['game'])
 	love.graphics.setColor(192/255,192/255,192/255)
 		love.graphics.printf('You won '.. name ..'!',400,300,400,'center')
 
@@ -115,7 +115,7 @@ function LevelSpin:getChance()
 		end
 
 		if com >= 21 and com <= 30 then
-		    data.weapons['Battle am'] = true
+		    data.weapons['BattleRam'] = true
 		    
 			saveData()
 		    return 'Battle Ram'

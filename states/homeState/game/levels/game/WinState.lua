@@ -188,7 +188,6 @@ function WinState:render()
     love.graphics.printf('Play again',60,527,350,'center')
     love.graphics.printf('Go To Home',870,527,350,'center')
     love.setBright()
-    saveData()
 
     push:apply('end')
 end

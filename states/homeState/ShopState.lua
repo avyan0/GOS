@@ -51,18 +51,18 @@ function ShopState:render()
 	local w = gTextures['wheel']:getWidth()
 	local h = gTextures['wheel']:getHeight()
 	love.graphics.setColor(1,1,1,1)
-	love.graphics.draw(gTextures['wheel'],20,180,100/(w-1),200/(h-1))
+	love.graphics.draw(gTextures['wheel'],20,180, 0,100/(w-1),200/(h-1))
 	if ((data.planet == 2 and data.level >= 15) or data.planet > 2) then
-		love.graphics.draw(gTextures['wheel'],270,180,100/(w-1),200/(h-1))
+		love.graphics.draw(gTextures['wheel'],270,180, 0,100/(w-1),200/(h-1))
 	end
 	if ( data.planet >= 4) then
-		love.graphics.draw(gTextures['wheel'],520,180,100/(w-1),200/(h-1))
+		love.graphics.draw(gTextures['wheel'],520,180, 0,100/(w-1),200/(h-1))
 	end
 	if ((data.planet == 5 and data.level >= 15) or data.planet > 5) then
-		love.graphics.draw(gTextures['wheel'],770,180,100/(w-1),200/(h-1))
+		love.graphics.draw(gTextures['wheel'],770,180, 0,100/(w-1),200/(h-1))
 	end
 
-	love.graphics.draw(gTextures['wheel'],1020,180,100/(w-1),200/(h-1))
+	love.graphics.draw(gTextures['wheel'],1020,180, 0,100/(w-1),200/(h-1))
 
 
 	love.graphics.setColor(0,0,0,1-(data.brightness/100))

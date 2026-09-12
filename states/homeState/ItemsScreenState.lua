@@ -81,81 +81,81 @@ end
 	if data.items['Wall'] then
 	local w = gTextures['lockWeapons']:getWidth()
 	local h = gTextures['lockWeapons']:getHeight()
-	love.graphics.draw(gTextures['lockWeapons'],16,182,55/(w-1),55/(h-1))
+	love.graphics.draw(gTextures['lockWeapons'],16,182, 0,55/(w-1),55/(h-1))
 else
 	local w = gTextures['lockWeapons']:getWidth()
 	local h = gTextures['lockWeapons']:getHeight()
-	love.graphics.draw(gTextures['lockWeapons'],16,182,55/(w-1),55/(h-1))
+	love.graphics.draw(gTextures['lockWeapons'],16,182, 0,55/(w-1),55/(h-1))
 end
 
 	if data.items['Retreat'] then
 	local w1 = gTextures['lockWeapons']:getWidth()
 	local h1 = gTextures['lockWeapons']:getHeight()
-	love.graphics.draw(gTextures['lockWeapons'],16,462,55/(w1-1),55/(h1-1))
+	love.graphics.draw(gTextures['lockWeapons'],16,462, 0,55/(w1-1),55/(h1-1))
 else 
 	local w1 = gTextures['lockWeapons']:getWidth()
 	local h1 = gTextures['lockWeapons']:getHeight()
-	love.graphics.draw(gTextures['lockWeapons'],16,462,55/(w1-1),55/(h1-1))
+	love.graphics.draw(gTextures['lockWeapons'],16,462, 0,55/(w1-1),55/(h1-1))
 end
 
 	if data.items['Zap'] then
 	local w2 = gTextures['lockWeapons']:getWidth()
 	local h2 = gTextures['lockWeapons']:getHeight()
-	love.graphics.draw(gTextures['lockWeapons'],320,182,55/(w2-1),55/(h2-1))
+	love.graphics.draw(gTextures['lockWeapons'],320,182, 0,55/(w2-1),55/(h2-1))
 else
 	local w2 = gTextures['lockWeapons']:getWidth()
 	local h2 = gTextures['lockWeapons']:getHeight()
-	love.graphics.draw(gTextures['lockWeapons'],320,182,55/(w2-1),55/(h2-1))
+	love.graphics.draw(gTextures['lockWeapons'],320,182, 0,55/(w2-1),55/(h2-1))
 end
 
 	if data.items['Bomb'] then
 	local w3 = gTextures['lockWeapons']:getWidth()
 	local h3 = gTextures['lockWeapons']:getHeight()
-	love.graphics.draw(gTextures['lockWeapons'],320,462,55/(w3-1),55/(h3-1))
+	love.graphics.draw(gTextures['lockWeapons'],320,462, 0,55/(w3-1),55/(h3-1))
 else
 	local w3 = gTextures['lockWeapons']:getWidth()
 	local h3 = gTextures['lockWeapons']:getHeight()
-	love.graphics.draw(gTextures['lockWeapons'],320,462,55/(w3-1),55/(h3-1))
+	love.graphics.draw(gTextures['lockWeapons'],320,462, 0,55/(w3-1),55/(h3-1))
 end
 
 	if data.items['DoubleGold'] then
 	local w4 = gTextures['lockWeapons']:getWidth()
 	local h4 = gTextures['lockWeapons']:getHeight()
-	love.graphics.draw(gTextures['lockWeapons'],624,182,55/(w4-1),55/(h4-1))
+	love.graphics.draw(gTextures['lockWeapons'],624,182, 0,55/(w4-1),55/(h4-1))
 else
 	local w4 = gTextures['lockWeapons']:getWidth()
 	local h4 = gTextures['lockWeapons']:getHeight()
-	love.graphics.draw(gTextures['lockWeapons'],624,182,55/(w4-1),55/(h4-1))
+	love.graphics.draw(gTextures['lockWeapons'],624,182, 0,55/(w4-1),55/(h4-1))
 end
 	
 	if data.items['Teleporter'] then
 	local w5 = gTextures['lockWeapons']:getWidth()
 	local h5 = gTextures['lockWeapons']:getHeight()
-	love.graphics.draw(gTextures['lockWeapons'],624,462,55/(w5-1),55/(h5-1))
+	love.graphics.draw(gTextures['lockWeapons'],624,462, 0,55/(w5-1),55/(h5-1))
 else
 	local w5 = gTextures['lockWeapons']:getWidth()
 	local h5 = gTextures['lockWeapons']:getHeight()
-	love.graphics.draw(gTextures['lockWeapons'],624,462,55/(w5-1),55/(h5-1))
+	love.graphics.draw(gTextures['lockWeapons'],624,462, 0,55/(w5-1),55/(h5-1))
 end
 
 	if data.items['Electricity'] then
 	local w6 = gTextures['lockWeapons']:getWidth()
 	local h6 = gTextures['lockWeapons']:getHeight()
-	love.graphics.draw(gTextures['lockWeapons'],925,182,55/(w6-1),55/(h6-1))
+	love.graphics.draw(gTextures['lockWeapons'],925,182, 0,55/(w6-1),55/(h6-1))
 else
 	local w6 = gTextures['lockWeapons']:getWidth()
 	local h6 = gTextures['lockWeapons']:getHeight()
-	love.graphics.draw(gTextures['lockWeapons'],925,182,55/(w6-1),55/(h6-1))
+	love.graphics.draw(gTextures['lockWeapons'],925,182, 0,55/(w6-1),55/(h6-1))
 end
 
 	if data.items['Protection'] then
 	local w8 = gTextures['lockWeapons']:getWidth()
 	local h8 = gTextures['lockWeapons']:getHeight()
-	love.graphics.draw(gTextures['lockWeapons'],925,462,55/(w8-1),55/(h8-1))
+	love.graphics.draw(gTextures['lockWeapons'],925,462, 0,55/(w8-1),55/(h8-1))
 else 
 	local w8 = gTextures['lockWeapons']:getWidth()
 	local h8 = gTextures['lockWeapons']:getHeight()
-	love.graphics.draw(gTextures['lockWeapons'],925,462,55/(w8-1),55/(h8-1))
+	love.graphics.draw(gTextures['lockWeapons'],925,462, 0,55/(w8-1),55/(h8-1))
 end
 	
 	

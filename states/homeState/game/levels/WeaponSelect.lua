@@ -75,12 +75,8 @@ function WeaponSelect:mousePressed(x, y)
     end
 
     for i, button in ipairs(buttons) do
-        if love.clicked(x, y, button.x, button.width + button.x, button.y, button.height + button.y) then
-            if button.name == 'Done' then
-                self:handleDoneButtonClick()
-            else
-                self:handleWeaponButtonClick(button.name)
-            end
+        if data.weapons[string.gsub(button.name, " ", "")] and love.clicked(x, y, button.x, button.width + button.x, button.y, button.height + button.y) then
+            self:handleWeaponButtonClick(button.name)
             break
         end
     end
@@ -135,12 +131,3 @@ function WeaponSelect:handleWeaponButtonClick(weaponName)
     end
 end
 
-function WeaponSelect:mouseMoved(x, y)
-    for i, button in ipairs(buttons) do
-        if x >= button.x and x <= button.x + button.width and y >= button.y and y <= button.y + button.height then
-            button.highlighted = true
-        else
-            button.highlighted = false
-        end
-    end
-end

@@ -17,7 +17,6 @@ function ProfileScreenState:render()
 	love.graphics.printf('Planet Unlocked: '..tostring(data.planet),0,430,600,'center')
 	love.graphics.printf('Aliens Killed: '..tostring(data.aliensKilled),670,430,600,'center')
 	love.graphics.printf('Matches Played: '..tostring(data.matchesPlayed),0,570,600,'center')
-	love.graphics.printf('Save Number: '..tostring(data.saveNumber),670,570,600,'center')
 
 	love.setBright()
 	push:apply('end')

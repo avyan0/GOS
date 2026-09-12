@@ -7,6 +7,7 @@ function StateMachine:init(states)
 		enter = function() end,
 		exit = function() end,
 		mousePressed = function() end,
+		mouseMoved = function() end,
 		mouseReleased = function() end
 	}
 	self.states = states or {} 
@@ -30,6 +31,10 @@ end
 
 function StateMachine:mousePressed(x,y,msbutton)
 	self.current:mousePressed(x,y,msbutton)
+end
+
+function StateMachine:mouseMoved(x,y)
+	self.current:mouseMoved(x,y)
 end
 
 function StateMachine:mouseReleased(x,y,msbutton)

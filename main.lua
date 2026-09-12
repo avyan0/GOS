@@ -21,6 +21,8 @@ function love.load()
         ['back'] = love.graphics.newFont('states/homeState/weapons/things/backSign.ttf',35),
         ['shop'] = love.graphics.newFont('states/homeState/things/shop.otf',30),
         ['shop2'] = love.graphics.newFont('states/homeState/things/shop.otf',20),
+        ['shop40'] = love.graphics.newFont('states/homeState/things/shop.otf',40),
+        ['shop50'] = love.graphics.newFont('states/homeState/things/shop.otf',50),
         ['profile'] = love.graphics.newFont('states/homeState/things/profile.ttf',60),
         ['settingsBig'] = love.graphics.newFont('states/homeState/things/settings.ttf',19),
         ['settingsSmall'] = love.graphics.newFont('states/homeState/things/settings.ttf',15),
@@ -127,12 +129,7 @@ function love.load()
         ['weaponInfo'] = function() return WeaponInfo() end,
         ['itemDescriptions'] = function() return ItemDescriptions() end,
         ['spin'] = function() return SpinState() end,
-        ['p1Level'] = function() return P1Level() end,
-        ['p2Level'] = function() return P2Level() end,
-        ['p3Level'] = function() return P3Level() end,
-        ['p4Level'] = function() return P4Level() end,
-        ['p5Level'] = function() return P5Level() end,
-        ['p6Level'] = function() return P6Level() end,
+        ['planetLevel'] = function() return PlanetLevel() end,
         ['weaponSelect'] = function() return WeaponSelect() end,
         ['game'] = function() return GameState() end,
         ['lose'] = function() return LoseState() end,
@@ -143,7 +140,6 @@ function love.load()
         ['profileChoose'] = function() return ProfileChoose() end,
         ['alienInfo'] = function() return AlienInfo() end
     }
-    makeLevel()
     gStateMachine:change('loading')
 
 
@@ -162,15 +158,10 @@ function love.resize(w, h)
 end
 
 function love.update(dt)
-    local currentTime = love.timer.getTime()
-    local elapsedTime = currentTime
-
-    data.hours =  temphours
-    data.mins = math.floor((elapsedTime % 3600) / 60) + tempmins
-    if data.mins>=60 then
-        data.mins = data.mins%60
-        data.hours = data.hours +1
-    end
+    -- total playtime = what was saved + minutes since this launch
+    local totalMins = temphours * 60 + tempmins + math.floor(love.timer.getTime() / 60)
+    data.hours = math.floor(totalMins / 60)
+    data.mins = totalMins % 60
     data.time = string.format("%02d:%02d", data.hours, data.mins)
 
     saveTimer = saveTimer + dt
@@ -209,16 +200,19 @@ function love.draw()
     push:apply('end')
 end
 
+-- convert window coords to the 1280x720 virtual screen; nil when outside the letterboxed area
 function love.mousepressed(x, y)
-    x1 = love.mouse.getX()
-    y1 = love.mouse.getY()
-    gStateMachine:mousePressed(x1,y1)
+    x, y = push:toGame(x, y)
+    if x and y then gStateMachine:mousePressed(x, y) end
 end
 
-function love.mouseMoved(x,y)
-    x1 = love.mouse.getX()
-    y1 = love.mouse.getY()
-    gStateMachine:mouseMoved(x1,y1)
+function love.mousemoved(x, y)
+    x, y = push:toGame(x, y)
+    if x and y then gStateMachine:mouseMoved(x, y) end
+end
+
+function love.quit()
+    saveData()
 end
 
 

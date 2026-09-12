@@ -77,19 +77,14 @@ end
 
 function StageSelect:mousePressed(x, y)
     for i, button in ipairs(buttons) do
-        if love.clicked(x, y, button.x, button.width + button.x, button.y, button.height + button.y) then
-            if button.name == 'Done' then
-                self:handleDoneButtonClick()
-            else
-                self:handleWeaponButtonClick(button.name)
-            end
+        if data.weapons[button.name] and love.clicked(x, y, button.x, button.width + button.x, button.y, button.height + button.y) then
+            self:handleWeaponButtonClick(button.name)
             break
         end
     end
 
     if love.clicked(x,y,990,1190,608,698) then
         if not(data.weaponChoose1 == data.weaponChoose2 or data.weaponChoose1 == data.weaponChoose3 or data.weaponChoose2 == data.weaponChoose3) then
-                gStateMachine:change('game')
                 if weaponToAdd ~= nil and weaponToRemove ~= nil then
                     if replaceNum == 1 then
                         data.weaponChoose1 = weaponToAdd
@@ -99,7 +94,10 @@ function StageSelect:mousePressed(x, y)
                         data.weaponChoose3 = weaponToAdd
                     end
                     saveData()
-                end 
+                end
+                weaponToAdd, weaponToRemove, replaceNum = nil, nil, 0
+                for _, b in ipairs(buttons) do b.highlighted = false; b.highlightedRed = false end
+                gStateMachine:change('game')
         end
     end
 end

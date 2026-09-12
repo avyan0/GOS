@@ -51,8 +51,8 @@ function newSlider(x, y, length, value, min, max, setter, style)
 end
 
 function slider:update()
-    local x = love.mouse.getX()
-    local y = love.mouse.getY()
+    local x, y = push:toGame(love.mouse.getPosition())
+    if not x then return end -- cursor outside the game area
     local down = love.mouse.isDown(1)
     if mouseDown ~= nil then
         down = mouseDown

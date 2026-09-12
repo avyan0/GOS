@@ -316,65 +316,20 @@ function GameState:update(dt)
     
     if stage == 'first' then-- check stages
         if alienCounter >= Levels[data.currentLevel].first and GameState:checkDead() then
-            alienCounter = 0
             stage = 'second'
-            weapon1Clicked = false
-            weapon2Clicked = false
-            weapon3Clicked = false
-            mousePressed = true
-            weapon1Cooldown = 0
-            damageBuff = 1
-            commonBuff = 1
-            targetBuff = 1
-            rareBuff = 1
-            scarceBuff = 1
-            weapon2Cooldown = 0
-            weapon3Cooldown = 0
-            chooseTile = false
-            chooseLane = false
-            GameState:killAllAliens()
+            GameState:switchStage()
             gStateMachine:change('stageSelect')
         end
     elseif stage == 'second' then
         if alienCounter >= Levels[data.currentLevel].second and GameState:checkDead() then
-            alienCounter = 0
             stage = 'third'
-            weapon1Clicked = false
-            weapon2Clicked = false
-            weapon3Clicked = false
-            mousePressed = true
-            weapon1Cooldown = 0
-            damageBuff = 1
-            commonBuff = 1
-            rareBuff = 1
-            targetBuff = 1
-            weapon2Cooldown = 0
-            scarceBuff = 1
-            weapon3Cooldown = 0
-            chooseLane = false
-            chooseTile = false
-            GameState:killAllAliens()
+            GameState:switchStage()
             gStateMachine:change('stageSelect')        
         end
     elseif stage == 'third' then
         if alienCounter >= Levels[data.currentLevel].third and GameState:checkDead() then
-            alienCounter = 0
             stage = 'first'
-            weapon1Clicked = false
-            weapon2Clicked = false
-            weapon3Clicked = false
-            mousePressed = true
-            weapon1Cooldown = 0
-            weapon2Cooldown = 0
-            weapon3Cooldown = 0
-            chooseLane = false
-            damageBuff = 1
-            scarceBuff = 1
-            rareBuff = 1
-            commonBuff = 1
-            targetBuff = 1
-            chooseTile = false
-            GameState:killAllAliens()
+            GameState:switchStage()
             gStateMachine:change('win')
         end
     end
@@ -416,23 +371,8 @@ function GameState:update(dt)
     for i =1,5 do -- check if lose
         if spotTaken[11][i] then
             data.turn = false
-            alienCounter = 0
             stage = 'first'
-            weapon1Clicked = false
-            weapon2Clicked = false
-            weapon3Clicked = false
-            mousePressed = true
-            weapon1Cooldown = 0
-            weapon2Cooldown = 0
-            weapon3Cooldown = 0
-            chooseLane = false
-            damageBuff = 1
-            scarceBuff = 1
-            rareBuff = 1
-            commonBuff = 1
-            targetBuff = 1
-            chooseTile = false
-            GameState:killAllAliens()
+            GameState:switchStage()
             saveData()
             gStateMachine:change('lose')
         end
@@ -441,7 +381,6 @@ end
 
 function GameState:spawnAliens()
     if alienCounter < aliensNeeded  then
-        respawnLane = 0
             local alien = math.random(1,100)
              alien1 = nil
              for _, alienName in ipairs(alienNames) do
@@ -473,6 +412,7 @@ function GameState:spawnAliens()
         if alien1.hevalten then
             lane = math.random(1,5)
         end
+        respawnLane = 0 -- Respawn only blocks one spawn
         if lane == 1 then
             GameState:moveLane(1,alien1)
         elseif lane == 2 then
@@ -666,7 +606,7 @@ function GameState:moveLane(n, thingy)
                         else
                             if alienStats[i][j].name == 'Jumper' then
                                 local temp = 1
-                                while walls[destRow + temp][j] do
+                                while walls[destRow + temp] and walls[destRow + temp][j] do
                                     temp = temp +1
                                 end
                                 GameState:changeStats(destRow + temp,j,i,j)
@@ -683,7 +623,7 @@ function GameState:moveLane(n, thingy)
         end
     end
 
-    if n ~= nil then
+    if n ~= nil and not (alienAlive[1][1] and alienAlive[1][2] and alienAlive[1][3] and alienAlive[1][4] and alienAlive[1][5]) then
         while alienAlive[1][n] do
             n = math.random(1, 5)
         end
@@ -787,7 +727,7 @@ function GameState:mousePressed(x, y)
                 weapon2Cooldown = weapon2Cooldown + 1 end
             if weapon3Clicked then
                 weapon3Cooldown = weapon3Cooldown + 1 end
-        elseif love.clicked(x,y,1010,1280,630,780) then
+        elseif love.clicked(x,y,1210,1280,630,780) then
             gStateMachine:change('pause')
         end
 
@@ -1052,14 +992,15 @@ function GameState:attackTile(weapon, row,lane)
             local alien = alienStats[row][lane]
             local preHealth = alien.health
             if GameState:checkGuardian(lane) then
+                local g = GameState:findGuardian(lane)
                 if attacker.rarity == 'common' then
-                    alienStats[GameState:findGuardian(j)][j].health = alienStats[GameState:findGuardian(j)][j].health - (attacker.damageTile * damageBuff * commonBuff*targetBuff)
+                    alienStats[g][lane].health = alienStats[g][lane].health - (attacker.damageTile * damageBuff * commonBuff*targetBuff)
                 elseif attacker.rarity == 'rare' then
-                    alienStats[GameState:findGuardian(j)][j].health = alienStats[GameState:findGuardian(j)][j].health - (attacker.damageTile * damageBuff * rareBuff*targetBuff)
+                    alienStats[g][lane].health = alienStats[g][lane].health - (attacker.damageTile * damageBuff * rareBuff*targetBuff)
                 elseif attacker.rarity == 'scarce' then
-                    alienStats[GameState:findGuardian(j)][j].health = alienStats[GameState:findGuardian(j)][j].health - (attacker.damageTile * damageBuff * scarceBuff*targetBuff)
+                    alienStats[g][lane].health = alienStats[g][lane].health - (attacker.damageTile * damageBuff * scarceBuff*targetBuff)
                 else
-                    alienStats[GameState:findGuardian(j)][j].health = alienStats[GameState:findGuardian(j)][j].health - (attacker.damageTile * damageBuff*targetBuff)
+                    alienStats[g][lane].health = alienStats[g][lane].health - (attacker.damageTile * damageBuff*targetBuff)
                 end
             elseif weaponTemp.rarity == 'common' then
                 alien.health = alien.health - (weaponTemp.damageTile * damageBuff * commonBuff * targetBuff)
@@ -1239,7 +1180,7 @@ function GameState:knockback(weapon, lane)
         if alienAlive[i][lane] and done and not alienStats[i][lane].immmunity and not GameState:checkGuardian(lane) and not(allGood) then
                 done = false
 
-            if not(alienAlive[i-1]) then
+            if not alienAlive[i-1][lane] then
                 GameState:changeStats(i-1,lane,i,lane)
 
                 GameState:reset(i,lane)
@@ -1348,6 +1289,7 @@ function GameState:Dueltroid(lane)
     end
 end
 function GameState:FreshStart(row,lane)
+    row = math.max(row, 2) -- row 1 would index alienAlive[0]
     if lane == 1 then
         if row == 10 then
             for i = 10, 9,-1 do
@@ -1451,11 +1393,11 @@ function GameState:GrenadeLancher()
             if alienAlive[i][j] and not alienStats[i][j].immmunity and not(alienStats[i][j].name == 'Splashfest')  then
                 local preHealth = alienStats[i][j].health
                 if GameState:checkGuardian(j) then
-                    alienStats[GameState:findGuardian(j)][j].health = alienStats[GameState:findGuardian(j)][j].health - (-attacker.damage * damageBuff*scarceBuff)
+                    alienStats[GameState:findGuardian(j)][j].health = alienStats[GameState:findGuardian(j)][j].health - (attacker.damage * damageBuff*scarceBuff)
                 else
                     alienStats[i][j].health = alienStats[i][j].health - attacker.damage*scarceBuff*damageBuff
                 end
-                if alienStats[i][j].name == 'OldGranny' and not alienAlive[i][j] and preHealth ~= alienStats[i][j].health and not GameState:checkGuardian(lane) then
+                if alienStats[i][j].name == 'OldGranny' and not alienAlive[i][j] and preHealth ~= alienStats[i][j].health and not GameState:checkGuardian(j) then
                     GameState:changeStats(i+1,j,i,j)
                 end
                 GameState:spawnRand(alienStats[i][j],preHealth)
@@ -1947,7 +1889,7 @@ function GameState:enter(item)
             i = math.random(1,10)
             j = math.random(1,5)
         end
-        GameState:resetStats(i,j)
+        if alive then GameState:resetStats(i,j) end
     elseif item == 'gold' then
         data.goldBuff = 2
         saveData()
@@ -1999,6 +1941,9 @@ function GameState:switchStage()
     commonBuff = 1
     targetBuff = 1
     chooseTile = false
+    allGood = false
+    stellar = 0
+    respawnLane = 0
     GameState:killAllAliens()
 end
 function checkLane(j)

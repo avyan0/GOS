@@ -6,22 +6,7 @@ function SpinState:render()
 	love.graphics.setColor(70/255,20/255,200/255)
 	love.graphics.rectangle('fill',0,0,VIRTUAL_WIDTH, VIRTUAL_HEIGHT)
 	love.drawBack()
-	if typeSpin == 'Common' then
-		priceForSpin = 25
-	end
-	if typeSpin == 'Rare' then
-		priceForSpin = 45
-	end
-	if typeSpin == 'Scarce' then
-		priceForSpin = 100
-	end
-	if typeSpin == 'God' then
-		priceForSpin = 270
-	end
-	if typeSpin == 'Item' then
-		priceForSpin = 25
-	end
-	love.graphics.getFont(gFonts['game'])
+	love.graphics.setFont(gFonts['game'])
 	love.graphics.setColor(192/255,192/255,192/255)
 	love.graphics.printf(typeSpin..' Spin',400,50,400,'center')
 	love.graphics.printf('Gold: '..tostring(data.gold),400,125,400,'center')
@@ -39,8 +24,11 @@ function SpinState:render()
 	push:apply('end')
 end
 
+local SPIN_PRICE = {Common = 25, Rare = 45, Scarce = 100, God = 270, Item = 25}
+
 function SpinState:enter(spin)
 	typeSpin = spin
+	priceForSpin = SPIN_PRICE[spin]
 	draw19 = false
 end
 
@@ -536,13 +524,9 @@ function SpinState:mousePressed(x,y)
 	if love.clicked(x,y,400,800,500,700) and data.gold>=priceForSpin then
 		weapon198 =SpinState:getChance()
 		draw19 = true
-		SpinState:render()
 
 	end
 end
 
 
-function SpinState:win()
 
-	push:apply('end')
-end

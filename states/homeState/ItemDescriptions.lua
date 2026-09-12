@@ -44,7 +44,7 @@ function ItemDescriptions:render()
 	love.graphics.setColor(1,1,1)
 	local w = gTextures['lockWeapons']:getWidth()
 	local h = gTextures['lockWeapons']:getHeight()
-	love.graphics.draw(gTextures['lockWeapons'],305,265,78/(w-1),78/(h-1))
+	love.graphics.draw(gTextures['lockWeapons'],305,265, 0,78/(w-1),78/(h-1))
 	love.graphics.setColor(0,0,0,1-(data.brightness/100))
 	love.graphics.rectangle('fill', 0,0,VIRTUAL_WIDTH,VIRTUAL_HEIGHT)
 end

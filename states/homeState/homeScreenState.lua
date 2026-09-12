@@ -75,8 +75,6 @@ function HomeScreenState:render()
 end
 
 function HomeScreenState:mousePressed(x,y)
-	x = love.mouse.getX()
-	y = love.mouse.getY()
 
 	love.bottomClicked(x,y)
 
@@ -97,32 +95,32 @@ function HomeScreenState:mousePressed(x,y)
 	
 
 	if love.clicked(x,y,0,180,270,400) then
-		gStateMachine:change('p1Level')
+		gStateMachine:change('planetLevel', 1)
 	end
 
 	if data.planet >= 2 then
 	if love.clicked(x,y,220,400,270,400) then
-		gStateMachine:change('p2Level')
+		gStateMachine:change('planetLevel', 2)
 	end end
 
 	if data.planet >= 3 then
 	if love.clicked(x,y,440,620,270,400) then
-		gStateMachine:change('p3Level')
+		gStateMachine:change('planetLevel', 3)
 	end end
 
 	if data.planet >= 4 then
 	if love.clicked(x,y,660,840,270,400) then
-		gStateMachine:change('p4Level')
+		gStateMachine:change('planetLevel', 4)
 	end end
 
 	if data.planet >= 5 then
 	if love.clicked(x,y,880,1060,270,400) then
-		gStateMachine:change('p5Level')
+		gStateMachine:change('planetLevel', 5)
 	end end
 
 	if data.planet >= 6 then
 	if love.clicked(x,y,1100,1280,270,400) then
-		gStateMachine:change('p6Level')
+		gStateMachine:change('planetLevel', 6)
 	end end
 end
 
