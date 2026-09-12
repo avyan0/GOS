@@ -28,158 +28,6 @@ alienNames = {
 	"TheHevalGod",
 	"GodOfSpace"
 }
-function createNewSave(saveNumber)
-	local file = love.filesystem.newFile("data.txt")
-    if file then
-        file:open("w")  -- Open the file in write mode to create it
-        file:close()  -- Close the file
-    end
-	local startingWeapon = math.random(1,7)
-	local startingWeapon1 = math.random(1,7)
-	local startingWeapon2 = math.random(1,7)
-	while startingWeapon == startingWeapon1 or startingWeapon ~= startingWeapon2 or startingWeapon2 ~= startingWeapon1 do
-		startingWeapon = math.random(1,7)
-		startingWeapon1 = math.random(1,7)
-		startingWeapon2 = math.random(1,7)
-	end
-	data.gold = 0
-	data.gems = 0
-	data.time = '00:00'
-	data.hours = 0
-	data.mins = 0
-	data.planet = 6
-	data.name = 'testing'
-	data.weaponChoose1 = ''
-	data.weaponChoose2 = ''
-	data.weaponChoose3 = ''
-	data.currentLevel = ''
-	data.weapons = {}
-	if startingWeapon ==1 or startingWeapon1 ==1 or startingWeapon2 ==1 then
-		data.weapons['AstroidRain'] = true
-	else
-		data.weapons['AstroidRain'] = false
-	end
-	if startingWeapon ==2 or startingWeapon1 ==2 or startingWeapon2 ==2 then
-		data.weapons['PoisonArrow'] = true
-	else
-		data.weapons['PoisonArrow'] = false
-	end
-	if startingWeapon ==3 or startingWeapon1 ==3 or startingWeapon2 ==3 then
-	data.weapons['TripleThreat'] = true
-	else
-		data.weapons['TripleThreat'] = false
-	end
-	if startingWeapon ==4 or startingWeapon1 ==4 or startingWeapon2 ==4 then
-	data.weapons['CosmicFire'] = true
-	else
-		data.weapons['CosmicFire'] = false
-	end
-	if startingWeapon ==5 or startingWeapon1 ==5 or startingWeapon2 ==5 then
-	data.weapons['Astrobolt'] = true
-	else
-		data.weapons['Astrobolt'] = false
-	end
-	if startingWeapon ==6 or startingWeapon1 ==6 or startingWeapon2 ==6 then
-	data.weapons['StarBlast'] = true
-	else
-		data.weapons['StarBlast'] = false
-	end
-	if startingWeapon ==7 or startingWeapon1 ==7 or startingWeapon2 ==7 then
-	data.weapons['LaserKill'] = true
-	else
-		data.weapons['LaserKill'] = false
-	end
-
-
-	data.weapons['StellarBoost'] = false
-	data.weapons['ThunderStrike'] = false
-	data.weapons['BattleRam'] = false
-	data.weapons['ElectroJolt'] = false
-	data.weapons['DaggerThrow'] = false
-	data.weapons['Hevalstruck'] = false
-	data.weapons['RecursiveExplosion'] = false
-	data.weapons['Dueltroid'] = false
-	data.weapons['FreshStart'] = false
-	data.weapons['SantaAxe'] = false
-	data.weapons['Respawn'] = false
-	data.weapons['Offguard'] = false
-	data.weapons['LaserBeam'] = false
-	data.weapons['MindBlast'] = false
-	data.weapons['GrenadeLauncher'] = false
-	data.weapons['Protected'] = false
-	data.weapons['Hypnosis'] = false
-	data.weapons['ShrinkRay'] = false
-	data.weapons['GalacticBeam'] = false
-	data.weapons['SolarFlare'] = false
-	data.weapons['CometStrike'] = false
-	data.weapons['DeathVirus'] = false
-	data.weapons['VoidBurst'] = false
-	data.weapons['CelestialDisruption'] = false
-	data.weapons['QuantumFlux'] = false
-	data.aliensKilled = 0
-	data.wins = 0
-	data.matchesPlayed = 0
-	data.level = 1
-	data.brightness = 100
-	data.volume = 100
-	data.sfx = 100
-	data.walls = 0
-	data.retreat = 0
-	data.zap = 0
-	data.bomb = 0
-	data.doubleGold = 0
-	data.teleporter = 0
-	data.electricity = 0
-	data.protection = 0
-	data.aliensUnlocked = 2
-	data.goldBuff = 1
-	data.profile = nil
-	data.items = {}
-	data.items['Wall'] = false
-	data.items['Retreat'] = false
-	data.items['Zap'] = false
-	data.items['Bomb'] = false
-	data.items['DoubleGold'] = false
-	data.items['Teleporter'] = false
-	data.items['Electricity'] = false
-	data.items['Protection'] = false
-
-	if saveNumber == nil then saveNumber = 1 end
-	data.saveNumber = saveNumber
-	data.turn = true
-	data.upgrades = {}
-	data.upgrades['Astroid Rain'] = 0
-	data.upgrades['Poison Arrow'] = 0
-	data.upgrades['Triple Threat'] = 0
-	data.upgrades['Cosmic Fire'] = 0
-	data.upgrades['Astrobolt'] = 0
-	data.upgrades['Star Blast'] = 0
-	data.upgrades['Laser Kill'] = 0
-	data.upgrades['Stellar Boost'] = 0
-	data.upgrades['Thunder Strike'] = 0
-	data.upgrades['Battle Ram'] = 0
-	data.upgrades['Electro Jolt'] = 0
-	data.upgrades['Dagger Throw'] = 0
-	data.upgrades['Hevalstruck'] = 0
-	data.upgrades['Recursive Explosion'] = 0
-	data.upgrades['Dueltroid'] = 0
-	data.upgrades['Fresh Start'] = 0
-	data.upgrades['Santa Axe'] = 0
-	data.upgrades['Respawn'] = 0
-	data.upgrades['Offguard'] = 0
-	data.upgrades['Laser Beam'] = 0
-	data.upgrades['Mind Blast'] = 0
-	data.upgrades['Grenade Launcher'] = 0
-	data.upgrades['Protected'] = 0
-	data.upgrades['Hypnosis'] = 0
-	data.upgrades['Galactic Beam'] = 0
-	data.upgrades['Solar Flare'] = 0
-	data.upgrades['Comet Strike'] = 0
-	data.upgrades['Death Virus'] = 0
-	data.upgrades['Void Burst'] = 0
-	data.upgrades['Celestial Disruption'] = 0
-	data.upgrades['Quantum Flux'] = 0
-end
 
 function makeLevel()
 	Levels = {}
@@ -412,25 +260,6 @@ function newLevelObject(spawn,stage)
 	return level
 end
 
-function loadData()
-	if fileExists('data.txt') then
-		local file = io.open("data.txt", "r")  -- Open the file in read mode
-		if file then
-			local dataString = file:read("*a")  -- Read the entire content of the file
-			file:close()  -- Close the file
-
-			-- Attempt to decode the JSON string
-			local success, decodedData = pcall(json.decode, dataString)
-			if success then
-				data = decodedData
-			end
-		end
-	else
-		love.filesystem.write("data.txt", jsonText)
-		createNewSave()
-		saveData()
-	end
-end
 
 
 function makeWeapon(health,rarity,damageAll,damageLane,cooldown,damageTile,knockback,poison,damageRandLane,stun,name,aoe,damage,attack,specialEffect,image,stunDuration)
@@ -495,28 +324,13 @@ function weaponDictionary()
 	Weapons['VoidBurst'] = makeWeapon(14500,'god',0,0,0,11000,0,0,0,0,'Void Burst','tile',11000,3,'Does 11000 to 3 tiles of your choice',gWeapons['Cannon']) -- record
 	Weapons['CelestialDisruption'] = makeWeapon(14500,'god',0,0,0,0,0,0,0,0,'Celestial Disruption','lane',0,0,'Makes 4 non-hevaltens go to 1 health in that row',gWeapons['Wipeout']) -- record
 	Weapons['QuantumFlux'] = makeWeapon(14500,'god',3000,0,0,0,0,0,0,0,'Quantum Flux','all',3000,0,'Does 3000 damage to all aliens',gWeapons['Transformer']) -- record
+	-- upgrades are keyed by display name; make sure every weapon has an entry
+	for _, w in pairs(Weapons) do
+		if data.upgrades[w.name] == nil then data.upgrades[w.name] = 0 end
+	end
 end
 
 
-function saveData()
-    local filteredData = filterUserData(data)  -- Filter out userdata
-    local file = io.open("data.txt", "w")  -- Open the file in write mode
-    if file then
-        local dataString = json.encode(filteredData)  -- Convert the filtered data table to a JSON string
-        file:write(dataString)  -- Write the data string to the file
-        file:close()  -- Close the file
-    end
-end
-
-function filterUserData(data)
-    local filteredData = {}
-    for key, value in pairs(data) do
-        if type(value) ~= "userdata" then
-            filteredData[key] = value
-        end
-    end
-    return filteredData
-end
 
 function alienDictionary()
 	Aliens = {}
@@ -589,11 +403,116 @@ function makeAlien(health,speed, heval,ability,name,desc)
 	return temp
 end
 
-function fileExists(filename)
-    local file = io.open(filename, "r")
-    if file then
-        file:close()
-        return true
-    end
-    return false
+-- ========================= SAVE SYSTEM =========================
+-- Lives in LÖVE's save directory (see t.identity in conf.lua), never the
+-- game folder, so it works when packaged as .love/.exe.
+-- data.txt  = current save, data.bak = previous good save.
+-- Every field the game reads has a default here; a save missing a key
+-- (older version, hand-edited, new weapon added) gets it filled in.
+
+SAVE_FILE = 'data.txt'
+SAVE_BACKUP = 'data.bak'
+SAVE_VERSION = 1
+
+local COMMON_WEAPONS = {'AstroidRain','PoisonArrow','TripleThreat','CosmicFire','Astrobolt','StarBlast','LaserKill'}
+local ALL_WEAPONS = {'AstroidRain','PoisonArrow','TripleThreat','CosmicFire','Astrobolt','StarBlast','LaserKill','StellarBoost',
+	'ThunderStrike','BattleRam','ElectroJolt','DaggerThrow','Hevalstruck','RecursiveExplosion','Dueltroid','FreshStart',
+	'SantaAxe','Respawn','Offguard','LaserBeam','MindBlast','GrenadeLauncher','Protected','Hypnosis','ShrinkRay',
+	'GalacticBeam','SolarFlare','CometStrike','DeathVirus','VoidBurst','CelestialDisruption','QuantumFlux'}
+local ITEMS = {'Wall','Retreat','Zap','Bomb','DoubleGold','Teleporter','Electricity','Protection'}
+
+function defaultSave()
+	local d = {
+		version = SAVE_VERSION,
+		gold = 0, gems = 0, time = '00:00', hours = 0, mins = 0,
+		planet = 1, name = 'Player', currentLevel = '',
+		weaponChoose1 = '', weaponChoose2 = '', weaponChoose3 = '',
+		aliensKilled = 0, wins = 0, matchesPlayed = 0, level = 1,
+		brightness = 100, volume = 100, sfx = 100,
+		walls = 0, retreat = 0, zap = 0, bomb = 0, doubleGold = 0,
+		teleporter = 0, electricity = 0, protection = 0,
+		aliensUnlocked = 2, goldBuff = 1, turn = false,
+		weapons = {}, items = {}, upgrades = {},
+	}
+	for _, w in ipairs(ALL_WEAPONS) do d.weapons[w] = false end
+	for _, i in ipairs(ITEMS) do d.items[i] = false end
+	return d
 end
+
+-- Fill missing keys in `t` from `defaults` (recursing into tables). Never overwrites existing values.
+local function fillDefaults(t, defaults)
+	for k, v in pairs(defaults) do
+		if type(v) == 'table' then
+			if type(t[k]) ~= 'table' then t[k] = {} end
+			fillDefaults(t[k], v)
+		elseif t[k] == nil then
+			t[k] = v
+		end
+	end
+	return t
+end
+
+function createNewSave()
+	data = defaultSave()
+	-- 3 distinct random common weapons + StellarBoost to start
+	local pool = {unpack(COMMON_WEAPONS)}
+	for _ = 1, 3 do
+		data.weapons[table.remove(pool, math.random(#pool))] = true
+	end
+	data.weapons['StellarBoost'] = true
+end
+
+local function readSave(name)
+	if not love.filesystem.getInfo(name) then return nil end
+	local text = love.filesystem.read(name)
+	if not text or text == '' then return nil end
+	local ok, decoded = pcall(json.decode, text)
+	if ok and type(decoded) == 'table' then return decoded end
+	return nil
+end
+
+function loadData()
+	local loaded = readSave(SAVE_FILE) or readSave(SAVE_BACKUP)
+	-- one-time import of a save left next to the game by the old system
+	if not loaded then
+		local f = io.open('data.txt', 'r')
+		if f then
+			local ok, decoded = pcall(json.decode, f:read('*a'))
+			f:close()
+			if ok and type(decoded) == 'table' then loaded = decoded end
+		end
+	end
+	if loaded then
+		data = fillDefaults(loaded, defaultSave())
+	else
+		createNewSave()
+	end
+	saveData()
+end
+
+-- Strip userdata (images etc.) so the table is JSON-safe.
+local function serializable(t)
+	local out = {}
+	for k, v in pairs(t) do
+		if type(v) == 'table' then out[k] = serializable(v)
+		elseif type(v) ~= 'userdata' and type(v) ~= 'function' then out[k] = v end
+	end
+	return out
+end
+
+function saveData()
+	if not data then return end
+	local ok, text = pcall(json.encode, serializable(data))
+	if not ok or not text then return end
+	-- keep the last good save as backup, then overwrite the main file
+	local previous = love.filesystem.read(SAVE_FILE)
+	if previous and previous ~= '' and previous ~= text then
+		love.filesystem.write(SAVE_BACKUP, previous)
+	end
+	love.filesystem.write(SAVE_FILE, text)
+end
+
+function fileExists(filename)
+	return love.filesystem.getInfo(filename) ~= nil
+end
+-- ===============================================================

@@ -31,6 +31,7 @@ function love.load()
         ['game18'] = love.graphics.newFont('states/homeState/game/things/WeaponSelect.otf',18),
         ['game15'] = love.graphics.newFont('states/homeState/game/things/WeaponSelect.otf',15),
         ['game30'] = love.graphics.newFont('states/homeState/game/things/WeaponSelect.otf',30),
+        ['game45'] = love.graphics.newFont('states/homeState/game/things/WeaponSelect.otf',45),
         ['game10'] = love.graphics.newFont('states/homeState/game/things/WeaponSelect.otf',10),
         ['game80'] = love.graphics.newFont('states/homeState/game/things/WeaponSelect.otf',80),
         ['game70'] = love.graphics.newFont('states/homeState/game/things/WeaponSelect.otf',70)
@@ -148,6 +149,7 @@ function love.load()
 
     love.keyboard.keysPressed = {}
 	weaponDictionary()
+	saveData()
     alienDictionary()
     makeLevel()
     data.profile = gTextures['playerIcon']
