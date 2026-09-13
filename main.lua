@@ -1,315 +1,112 @@
-require 'calls'
+WINDOW_WIDTH, WINDOW_HEIGHT = 1280, 720
+VIRTUAL_WIDTH, VIRTUAL_HEIGHT = 1280, 720
 
+push = require 'src/lib/push'
+Class = require 'src/lib/Class'
+ui = require 'src/ui'
+icons = require 'src/icons'
+require 'src/StateMachine'
+require 'src/content'
+
+require 'src/states/Loading'
+require 'src/states/Home'
+require 'src/states/Aliens'
+require 'src/states/Weapons'
+require 'src/states/Shop'
+require 'src/states/Items'
+require 'src/states/Settings'
+require 'src/states/Profile'
+require 'src/states/HowToPlay'
+require 'src/states/PlanetMap'
+require 'src/states/Loadout'
+require 'src/states/StageSelect'
+require 'src/states/Battle'
+require 'src/states/Pause'
+require 'src/states/Result'
+require 'src/states/Reward'
+
+local sessionStart = 0
+local saveTimer = 0
 
 function love.load()
+    love.window.setTitle('Gods Of Space')
+    love.graphics.setDefaultFilter('linear', 'linear')
+    math.randomseed(os.time())
+
+    push:setupScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, {vsync = true, fullscreen = false, resizable = true})
+
     loadData()
-    saveTimer = 0
-
-    love.timer.step()
-
-	math.randomseed(os.time())
-
-	love.window.setTitle('Gods Of Space')
-
-	gFonts = {
-		['loadingScreen'] = love.graphics.newFont('loadingScreen/backgroundFont.otf',100),
-        ['bottomHome'] = love.graphics.newFont('states/homeState/things/bottomHome.otf', 60),
-        ['weapons1'] = love.graphics.newFont('states/homeState/weapons/things/weapons.ttf',85),
-        ['commonWeapons'] = love.graphics.newFont('states/homeState/weapons/things/commonWeaponFont.otf',60),
-        ['commonWeapons1'] = love.graphics.newFont('states/homeState/weapons/things/commonWeaponFont.otf',47),
-        ['commonWeapons2'] = love.graphics.newFont('states/homeState/weapons/things/commonWeaponFont.otf',45),
-        ['back'] = love.graphics.newFont('states/homeState/weapons/things/backSign.ttf',35),
-        ['shop'] = love.graphics.newFont('states/homeState/things/shop.otf',30),
-        ['shop2'] = love.graphics.newFont('states/homeState/things/shop.otf',20),
-        ['shop40'] = love.graphics.newFont('states/homeState/things/shop.otf',40),
-        ['shop50'] = love.graphics.newFont('states/homeState/things/shop.otf',50),
-        ['profile'] = love.graphics.newFont('states/homeState/things/profile.ttf',60),
-        ['settingsBig'] = love.graphics.newFont('states/homeState/things/settings.ttf',19),
-        ['settingsSmall'] = love.graphics.newFont('states/homeState/things/settings.ttf',15),
-        ['items'] = love.graphics.newFont('states/homeState/things/Items.otf',25),
-        ['itemsNumbers'] = love.graphics.newFont('states/homeState/things/Items.otf',19),
-        ['game'] = love.graphics.newFont('states/homeState/game/things/WeaponSelect.otf',40),
-        ['game25'] = love.graphics.newFont('states/homeState/game/things/WeaponSelect.otf',25),
-        ['game18'] = love.graphics.newFont('states/homeState/game/things/WeaponSelect.otf',18),
-        ['game15'] = love.graphics.newFont('states/homeState/game/things/WeaponSelect.otf',15),
-        ['game30'] = love.graphics.newFont('states/homeState/game/things/WeaponSelect.otf',30),
-        ['game45'] = love.graphics.newFont('states/homeState/game/things/WeaponSelect.otf',45),
-        ['game10'] = love.graphics.newFont('states/homeState/game/things/WeaponSelect.otf',10),
-        ['game80'] = love.graphics.newFont('states/homeState/game/things/WeaponSelect.otf',80),
-        ['game70'] = love.graphics.newFont('states/homeState/game/things/WeaponSelect.otf',70)
-
-
-	}
-	love.graphics.setFont(gFonts['loadingScreen'])
-
-	gTextures = {
-		['loadingScreen'] = love.graphics.newImage('loadingScreen/loadBackground.png'),
-        ['playerIcon'] = love.graphics.newImage('states/homeState/things/profileIcon.png'),
-        ['playerIcon1'] = love.graphics.newImage('states/homeState/things/profileIcon1.png'),
-        ['planet1'] = love.graphics.newImage('states/homeState/things/Planet1.png'),
-        ['planet2'] = love.graphics.newImage('states/homeState/things/Planet2.png'),
-        ['planet3'] = love.graphics.newImage('states/homeState/things/Planet3.png'),
-        ['planet4'] = love.graphics.newImage('states/homeState/things/Planet4.png'),
-        ['planet5'] = love.graphics.newImage('states/homeState/things/Planet5.png'),
-        ['planet6'] = love.graphics.newImage('states/homeState/things/Planet6.png'),
-        ['back'] = love.graphics.newImage('states/homeState/weapons/things/BackArrow.png'),
-        ['lockWeapons'] = love.graphics.newImage('states/homeState/weapons/things/LockWeapons.png'),
-        ['mouse'] = love.graphics.newImage('states/homeState/things/Mouse.png'),
-        ['keyboard'] = love.graphics.newImage('states/homeState/things/Keyboard.png'),
-        ['wheel'] = love.graphics.newImage('states/homeState/things/Wheel.png'),
-        ['p1Background'] = love.graphics.newImage('Pictures/Level Select Screen/P1Background.png'),
-        ['p2Background'] = love.graphics.newImage('Pictures/Level Select Screen/P2Background.png'),
-        ['p3Background'] = love.graphics.newImage('Pictures/Level Select Screen/P3Background.png'),
-        ['p4Background'] = love.graphics.newImage('Pictures/Level Select Screen/P4Background.png'),
-        ['p5Background'] = love.graphics.newImage('Pictures/Level Select Screen/P5Background.png'),
-        ['p6Background'] = love.graphics.newImage('Pictures/Level Select Screen/P6Background.png'),
-        ['gameBackground1'] = love.graphics.newImage('states/homeState/game/things/gameBackground1.png'),
-        ['alien'] = love.graphics.newImage('states/homeState/game/things/alien.jpg'),
-        ['flyingAlien'] = love.graphics.newImage('states/homeState/game/things/flyingAlien.jpg'),
-        ['walls'] = love.graphics.newImage('states/homeState/game/things/walls.png') ,
-        ['profileChoose'] = function() return ProfileChoose() end
-
-	}
-
-    gWeapons = {
-        ['AsteroidRain'] = love.graphics.newImage('states/homeState/weapons/things/pics/AsteroidRain.png'),
-        ['PoisonDart'] = love.graphics.newImage('states/homeState/weapons/things/pics/PoisonDart.png'),
-        ['Targeted'] = love.graphics.newImage('states/homeState/weapons/things/pics/Targeted.png'),
-        ['RazorThrower'] = love.graphics.newImage('states/homeState/weapons/things/pics/RazorThrower.png'),
-        ['Lightning'] = love.graphics.newImage('states/homeState/weapons/things/pics/Lightning.png'),
-        ['StarBlast'] = love.graphics.newImage('states/homeState/weapons/things/pics/StarBlast.png'),
-        ['LaserKill'] = love.graphics.newImage('states/homeState/weapons/things/pics/LaserKill.png'),
-        ['Buffer'] = love.graphics.newImage('states/homeState/weapons/things/pics/Buffer.png'),
-        ['ElectricBall'] = love.graphics.newImage('states/homeState/weapons/things/pics/ElectricBall.png'),
-        ['SwordShield'] = love.graphics.newImage('states/homeState/weapons/things/pics/SwordShield.png'),
-        ['ElectroShock'] = love.graphics.newImage('states/homeState/weapons/things/pics/ElectroShock.jpg'),
-        ['PiercingSword'] = love.graphics.newImage('states/homeState/weapons/things/pics/PiercingSword.png'),
-        ['Hevalstruck'] = love.graphics.newImage('states/homeState/weapons/things/pics/Hevelstruck.png'),
-        ['RecursiveExplosion'] = love.graphics.newImage('states/homeState/weapons/things/pics/RecursiveExplosion.jpeg'),
-        ['Dueltroid'] = love.graphics.newImage('states/homeState/weapons/things/pics/Dueltriod.png'),
-        ['FreshStart'] = love.graphics.newImage('states/homeState/weapons/things/pics/FreshStart.png'),
-        ['SantaAxe'] = love.graphics.newImage('states/homeState/weapons/things/pics/SantaAxe.png'),
-        ['Respawn'] = love.graphics.newImage('states/homeState/weapons/things/pics/Respawn.png'),
-        ['Offguard'] = love.graphics.newImage('states/homeState/weapons/things/pics/Offgaurd.png'),
-        ['LaserDeath'] = love.graphics.newImage('states/homeState/weapons/things/pics/LaserDeath.png'),
-        ['MagicGun'] = love.graphics.newImage('states/homeState/weapons/things/pics/MagicGun.png'),
-        ['Grenade'] = love.graphics.newImage('states/homeState/weapons/things/pics/Grenade.png'),
-        ['Walls'] = love.graphics.newImage('states/homeState/weapons/things/pics/Walls.png'),
-        ['MindControl'] = love.graphics.newImage('states/homeState/weapons/things/pics/MindControl.png'),
-        ['ShrinkRay'] = love.graphics.newImage('states/homeState/weapons/things/pics/ShrinkRay.png'),
-        ['RazorBlade'] = love.graphics.newImage('states/homeState/weapons/things/pics/RazorBlade.png'),
-        ['Fireball'] = love.graphics.newImage('states/homeState/weapons/things/pics/Fireball.png'),
-        ['Meteor'] = love.graphics.newImage('states/homeState/weapons/things/pics/Meteor.png'),
-        ['DeathVirus'] = love.graphics.newImage('states/homeState/weapons/things/pics/DeathVirus.png'),
-        ['Cannon'] = love.graphics.newImage('states/homeState/weapons/things/pics/Cannon.png'),
-        ['Wipeout'] = love.graphics.newImage('states/homeState/weapons/things/pics/Wipeout.png'),
-        ['Transformer'] = love.graphics.newImage('states/homeState/weapons/things/pics/Transformer.png')
-
-    }
-
-    push:setupScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, {
-        vsync = true,
-        fullscreen = false,
-        resizable = true
-    })
-
-     gStateMachine = StateMachine {
-        ['loading'] = function() return LoadingScreenState() end,
-        ['home'] = function() return HomeScreenState() end,
-        ['aliens'] = function() return AlienScreenState() end,
-        ['weapons'] = function() return WeaponsScreenState() end,
-        ['settings'] = function() return SettingsScreenState() end,
-        ['items'] = function() return ItemsScreenState() end,
-        ['profile'] = function() return ProfileScreenState() end,
-        ['commonWeapons'] = function() return CommonWeaponState() end,
-        ['rareWeapons'] = function() return RareWeaponState() end,
-        ['scarceWeapons'] = function() return ScarceWeaponState() end,
-        ['godWeapons'] = function() return GodWeaponState() end,
-        ['shop'] = function() return ShopState() end,
-        ['weaponInfo'] = function() return WeaponInfo() end,
-        ['itemDescriptions'] = function() return ItemDescriptions() end,
-        ['spin'] = function() return SpinState() end,
-        ['planetLevel'] = function() return PlanetLevel() end,
-        ['weaponSelect'] = function() return WeaponSelect() end,
-        ['game'] = function() return GameState() end,
-        ['lose'] = function() return LoseState() end,
-        ['stageSelect'] = function() return StageSelect() end,
-        ['win'] = function() return WinState() end,
-        ['pause'] = function() return PauseState() end,
-        ['levelSpin'] = function() return LevelSpin() end,
-        ['profileChoose'] = function() return ProfileChoose() end,
-        ['alienInfo'] = function() return AlienInfo() end
-    }
-    gStateMachine:change('loading')
-
-
-    love.keyboard.keysPressed = {}
-	weaponDictionary()
-	saveData()
+    weaponDictionary()
     alienDictionary()
     makeLevel()
-    data.profile = gTextures['playerIcon']
-    temphours = data.hours
-    tempmins = data.mins
-    end
+    saveData()
+    ui.initBackground()
+    sessionStart = {hours = data.hours, mins = data.mins}
 
-function love.resize(w, h)
-    push:resize(w, h)
+    gStateMachine = StateMachine {
+        loading     = function() return Loading() end,
+        home        = function() return Home() end,
+        aliens      = function() return AliensScreen() end,
+        weapons     = function() return WeaponsScreen() end,
+        shop        = function() return Shop() end,
+        items       = function() return Items() end,
+        settings    = function() return Settings() end,
+        profile     = function() return Profile() end,
+        howToPlay   = function() return HowToPlay() end,
+        planetMap   = function() return PlanetMap() end,
+        loadout     = function() return Loadout() end,
+        stageSelect = function() return StageSelect() end,
+        battle      = function() return GameState() end,
+        pause       = function() return Pause() end,
+        result      = function() return Result() end,
+        reward      = function() return Reward() end,
+    }
+    gStateMachine:change('loading')
+    love.keyboard.keysPressed = {}
 end
 
+function love.resize(w, h) push:resize(w, h) end
+
 function love.update(dt)
-    -- total playtime = what was saved + minutes since this launch
-    local totalMins = temphours * 60 + tempmins + math.floor(love.timer.getTime() / 60)
-    data.hours = math.floor(totalMins / 60)
-    data.mins = totalMins % 60
-    data.time = string.format("%02d:%02d", data.hours, data.mins)
+    dt = math.min(dt, 1 / 30)
+    local totalMins = sessionStart.hours * 60 + sessionStart.mins + math.floor(love.timer.getTime() / 60)
+    data.hours, data.mins = math.floor(totalMins / 60), totalMins % 60
+    data.time = string.format('%02d:%02d', data.hours, data.mins)
 
     saveTimer = saveTimer + dt
-    if saveTimer >= 60 then
-        saveData()
-        saveTimer = 0
-    end
+    if saveTimer >= 60 then saveData(); saveTimer = 0 end
+
+    ui.update(dt)
     gStateMachine:update(dt)
     love.keyboard.keysPressed = {}
 end
 
+function love.draw()
+    push:apply('start')
+    gStateMachine:render()
+    ui.drawToasts()
+    ui.brightness()
+    ui.drawFade()
+    push:apply('end')
+    ui.endFrame()
+end
+
+function love.mousepressed(x, y, button)
+    x, y = push:toGame(x, y)
+    if x and y and button == 1 then
+        ui.click(x, y)
+        gStateMachine:mousePressed(x, y, button)
+    end
+end
+
 function love.keypressed(key)
     love.keyboard.keysPressed[key] = true
-    if key == 'escape' then
-    	love.event.quit()
-    end
+    gStateMachine:keyPressed(key)
 end
 
-function love.keyboard.wasPressed(key)
-    if love.keyboard.keysPressed[key] then
-        return true
-    else
-        return false
-    end
-end
+function love.keyboard.wasPressed(key) return love.keyboard.keysPressed[key] == true end
 
-function love.draw()
-	push:apply('start')
-    
-	local backgroundWidth = gTextures['loadingScreen']:getWidth()
-    local backgroundHeight = gTextures['loadingScreen']:getHeight()
-    love.graphics.draw(gTextures['loadingScreen'],0,0,0,VIRTUAL_WIDTH / (backgroundWidth - 1), VIRTUAL_HEIGHT / (backgroundHeight - 1))
+function love.quit() saveData() end
 
-	gStateMachine:render()
-
-    push:apply('end')
-end
-
--- convert window coords to the 1280x720 virtual screen; nil when outside the letterboxed area
-function love.mousepressed(x, y)
-    x, y = push:toGame(x, y)
-    if x and y then gStateMachine:mousePressed(x, y) end
-end
-
-function love.mousemoved(x, y)
-    x, y = push:toGame(x, y)
-    if x and y then gStateMachine:mouseMoved(x, y) end
-end
-
-function love.quit()
-    saveData()
-end
-
-
-function love.clicked(x,y,x1,x2,y1,y2)
-        if(x>x1 and x<x2 and y>y1 and y<y2) then
-            return true
-        end
-end
-
-function love.bottomClicked(x,y)
-
-    if love.clicked(x,y,0,290,570,720) then
-        gStateMachine:change('aliens')
-    end
-
-    if love.clicked(x,y,330,620,570,720) then
-        gStateMachine:change('home')
-    end
-
-    if love.clicked(x,y,660,950,570,720) then 
-        gStateMachine:change('weapons')
-    end
-    if love.clicked(x,y,990,1280,570,720) then
-        gStateMachine:change('shop')
-    end
-
-end
-
-function love.drawBottom(x)
-    push:apply('start')
-    love.graphics.setLineWidth(3)
-
-    love.graphics.setColor(52/255,52/255,52/255,1)
-    love.graphics.rectangle('fill', 0, 570, 290,150)
-    love.graphics.setColor(255/255,28/255,28/255)
-    love.graphics.setFont(gFonts['bottomHome'])
-    love.graphics.printf('Aliens', 0, 630, 290,'center')
-    if x~=1 then
-        love.graphics.setColor(1,1,1,1)
-    end
-    love.graphics.rectangle('line', 0, 570, 290,150)
-
-    
-
-    love.graphics.setColor(52/255,52/255,52/255,1)
-    love.graphics.rectangle('fill', 330, 570, 290,150)
-    love.graphics.setColor(238/255,243/255,11/255)
-    love.graphics.setFont(gFonts['bottomHome'])
-    love.graphics.printf('Home', 330, 630, 290,'center')
-    if(x ~= 2) then
-        love.graphics.setColor(1,1,1,1)
-    end
-    love.graphics.rectangle('line', 330, 570, 290,150)
-
-
-    love.graphics.setColor(52/255,52/255,52/255,1)
-    love.graphics.rectangle('fill', 660, 570, 290,150)
-    love.graphics.setColor(120/255,255/255,240/255)
-    love.graphics.setFont(gFonts['bottomHome'])
-    love.graphics.printf('Weapons', 660, 630, 290,'center')
-    if x ~= 3 then
-        love.graphics.setColor(1,1,1,1)
-    end
-    love.graphics.rectangle('line', 660, 570, 290,150)
-
-    love.graphics.setColor(52/255,52/255,52/255,1)
-    love.graphics.rectangle('fill', 990, 570, 290,150)
-    love.graphics.setColor(17/255,249/255,171/255)
-    love.graphics.setFont(gFonts['bottomHome'])
-    love.graphics.printf('Shop', 990, 630, 290,'center')
-    if x ~= 4 then
-        love.graphics.setColor(1,1,1,1)
-    end
-    love.graphics.rectangle('line', 990, 570, 290,150)
-
-    
-    push:apply('end')
-end
-
-function love.drawBack()
-    love.graphics.setFont(gFonts['back'])
-    love.graphics.setColor(0,0,0)
-    love.graphics.printf('Back',0,27,150,'center')
-    local w = gTextures['back']:getWidth()
-    local h = gTextures['back']:getHeight()
-    love.graphics.draw(gTextures['back'],160,30,0,72 / (w - 1), 54 / (h - 1))
-end
-
-function love.setBright()
-    love.graphics.setColor(0,0,0,1-(data.brightness/100))
-	love.graphics.rectangle('fill', 0,0,VIRTUAL_WIDTH,VIRTUAL_HEIGHT)
-end
-
-function setColor(r,g,b)
-    love.graphics.setColor(r,g,b)
-end
-
-function math.round(num) 
-    return math.floor(num+0.5)
-end
+function math.round(n) return math.floor(n + 0.5) end
+function setColor(r, g, b, a) love.graphics.setColor(r, g, b, a) end
