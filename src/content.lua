@@ -152,7 +152,7 @@ function makeLevel()
 	Levels['4-26'] = newLevelObject({Morpher=38,Fusion=67,CommonCrippler=86,Splashfest=97,Virus=100},{first = 42,second = 47, third = 57})
 	Levels['4-27'] = newLevelObject({Morpher=31,Fusion=63,CommonCrippler=83,Splashfest=95,Virus=100},{first = 43,second = 48, third = 58})
 	Levels['4-28'] = newLevelObject({Morpher=25,Fusion=60,CommonCrippler=81,Splashfest=94,Virus=100},{first = 43,second = 48, third = 58})
-	Levels['4-40'] = newLevelObject({Morpher=19,Fusion=57,CommonCrippler=79,Splashfest=93,Virus=100},{first = 44,second = 49, third = 59})
+	Levels['4-29'] = newLevelObject({Morpher=19,Fusion=57,CommonCrippler=79,Splashfest=93,Virus=100},{first = 44,second = 49, third = 59})
 	Levels['4-30'] = newLevelObject({Morpher=13,Fusion=54,CommonCrippler=77,Splashfest=92,Virus=100},{first = 46,second = 51, third = 61})
 
 	Levels['5-1'] = newLevelObject({Morpher=7,Fusion=51,CommonCrippler=75,Splashfest=91,Virus=100},{first = 35,second = 40, third = 50})

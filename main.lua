@@ -28,7 +28,8 @@ require 'src/states/Reward'
 local sessionStart = 0
 local saveTimer = 0
 
-function love.load()
+function love.load(args)
+    if args and args[1] == '--test' then TESTING = true; require 'src/tests'; love.event.quit(); return end
     love.window.setTitle('Gods Of Space')
     love.graphics.setDefaultFilter('linear', 'linear')
     math.randomseed(os.time())
@@ -106,7 +107,7 @@ end
 
 function love.keyboard.wasPressed(key) return love.keyboard.keysPressed[key] == true end
 
-function love.quit() saveData() end
+function love.quit() if not TESTING then saveData() end end
 
 function math.round(n) return math.floor(n + 0.5) end
 function setColor(r, g, b, a) love.graphics.setColor(r, g, b, a) end
