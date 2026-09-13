@@ -17,6 +17,7 @@ local function newState()
         rarityBuff = {common = 1, rare = 1, scarce = 1, god = 1},
         aim = nil, lockedLane = nil, result = nil,
         events = {}, nextUid = 1,
+        freeze = false, lastKilled = nil,
     }
 end
 
@@ -87,6 +88,7 @@ local function place(i, j, def, health)
     s.grid[i][j] = a
     if BUFF[def.name] then BUFF[def.name](true) end
     emit({type = 'spawn', uid = a.uid, i = i, j = j, a = a})
+    if data.seen and not data.seen[def.name] then data.seen[def.name] = true; emit({type = 'discover', name = def.name}) end
     return a
 end
 
@@ -106,6 +108,19 @@ local function kill(i, j)
     if not a then return end
     s.kills = s.kills + 1
     data.aliensKilled = data.aliensKilled + 1
+    if a.name ~= 'Splitter' then s.lastKilled = Aliens[a.name] end
+    if a.name == 'Splitter' then
+        local def = Aliensrand[math.max(1, (Aliens.Splitter.tier or 2) - 1)]
+        local spots = {}
+        for _, c in ipairs({{i, j - 1}, {i, j + 1}, {i - 1, j}, {i + 1, j}}) do
+            if c[1] >= 1 and c[1] <= B.ROWS and c[2] >= 1 and c[2] <= B.LANES and not s.grid[c[1]][c[2]] then spots[#spots + 1] = c end
+        end
+        emit({type = 'ability', uid = a.uid, name = a.name, i = i, j = j, text = 'splits apart'})
+        for n = 1, math.min(2, #spots) do
+            local c = table.remove(spots, math.random(#spots))
+            B.spawn(c[1], c[2], def, def.health * 0.5)
+        end
+    end
 end
 B.kill = kill
 
@@ -116,11 +131,12 @@ local function move(fi, fj, ti, tj)
     emit({type = 'move', uid = a.uid, from = {fi, fj}, to = {ti, tj}})
 end
 
+-- aliens that belong at the current level (first appear at or before it)
 local function randomUnlocked(hevaltenOnly)
+    local here = levelIndex(data.currentLevel)
     local pool = {}
-    for k = 1, math.min(data.aliensUnlocked, #Aliensrand) do
-        local d = Aliensrand[k]
-        if not hevaltenOnly or (d.hevalten and d.name ~= 'TheHevalGod' and d.name ~= 'GodOfSpace') then pool[#pool + 1] = d end
+    for _, d in ipairs(Aliensrand) do
+        if (d.intro or 0) <= here and (not hevaltenOnly or (d.hevalten and d.name ~= 'TheHevalGod' and d.name ~= 'GodOfSpace' and d.name ~= 'VoidTitan')) then pool[#pool + 1] = d end
     end
     if #pool == 0 then pool[1] = Aliensrand[1] end
     return pool[math.random(#pool)]
@@ -203,6 +219,9 @@ local function hit(i, j, amount, weapon, kind, opts)
         dmg = dmg * B.damageMultiplier(weapon)
         if (kind == 'tile' or kind == 'splash' or kind == 'first') and a.name == 'Protected' then dmg = dmg * 0.5 end
     end
+    if a.marked then dmg = dmg * 1.25 end
+    if a.name == 'Phaser' then dmg = dmg * ((kind == 'lane') and 0.5 or (kind ~= 'field') and 2 or 1) end
+    if a.name == 'VoidTitan' and dmg > 5000 then dmg = 5000; emit({type = 'blocked', uid = a.uid, i = i, j = j, text = 'capped'}) end
     if dmg <= 0 then return 0 end
     a.health = a.health - dmg
     emit({type = 'hit', uid = a.uid, i = i, j = j, amount = dmg, killed = a.health <= 0})
@@ -234,6 +253,11 @@ local function hitBox(row, lane, amount, weapon)
 end
 
 local function canStun(a) return a.name ~= 'GodOfSpace' end
+local function anchored(lane)
+    for i = 1, B.ROWS do local a = s.grid[i][lane]; if a and a.name == 'Anchor' then return true end end
+    return false
+end
+B.anchored = anchored
 local function canPoison(a) return a.name ~= 'GodOfSpace' and a.name ~= 'Guardian' end
 local function canHypno(a) return a.name ~= 'GodOfSpace' and a.name ~= 'Guardian' end
 
@@ -247,7 +271,7 @@ end
 
 local function knockback(lane)
     local a, i = firstInLane(lane)
-    if not a or a.name == 'GodOfSpace' or a.immune > 0 or guardianIn(lane) then return end
+    if not a or a.name == 'GodOfSpace' or a.immune > 0 or guardianIn(lane) or anchored(lane) then return end
     if i > 1 and not s.grid[i - 1][lane] then
         move(i, lane, i - 1, lane)
     elseif i > 1 then
@@ -309,7 +333,7 @@ W.FreshStart = {kind = 'tile', shots = 1, run = function(w, row, lane)
     for i = math.max(1, row - 1), math.min(B.ROWS, row + 1) do
         for j = math.max(1, lane - 1), math.min(B.LANES, lane + 1) do
             local a = s.grid[i][j]
-            if a and a.name ~= 'Guardian' and a.name ~= 'GodOfSpace' and i > 3 then
+            if a and a.name ~= 'Guardian' and a.name ~= 'GodOfSpace' and i > 3 and not anchored(j) then
                 for r = 1, 3 do if not s.grid[r][j] then move(i, j, r, j); break end end
             end
         end
@@ -333,7 +357,7 @@ end}
 W.GrenadeLauncher = {kind = 'field', run = function(w)
     for _, i in ipairs({B.ROWS, 1}) do for j = 1, B.LANES do if s.grid[i][j] then hit(i, j, w.damage, w, 'splash') end end end
 end}
-W.Protected = {kind = 'lane', run = function(w, lane) hitLane(lane, w.damageLane, w); s.buff = s.buff * 1.0125 end}
+W.Protected = {kind = 'lane', run = function(w, lane) hitLane(lane, w.damageLane, w); s.buff = s.buff * 1.025 end}
 W.Hypnosis = {kind = 'field', run = function(w)
     for lane = 1, B.LANES do
         local a = firstInLane(lane)
@@ -356,7 +380,113 @@ W.CelestialDisruption = {kind = 'lane', run = function(w, lane)
         if a and n < 4 and not a.hevalten and a.immune == 0 and not a.fly then a.health = 1; n = n + 1 end
     end
 end}
-W.QuantumFlux = {kind = 'field', run = function(w) hitField(w.damage, w) end}
+-- common
+W.GravityWell = {kind = 'lane', run = function(w, lane)
+    if anchored(lane) then emit({type = 'blocked', i = 1, j = lane, text = 'anchored'}); return end
+    for i = 2, B.ROWS do -- top first so the row above is already free
+        local a = s.grid[i][lane]
+        if a and not s.grid[i - 1][lane] and a.name ~= 'GodOfSpace' and a.name ~= 'Guardian' then move(i, lane, i - 1, lane) end
+    end
+end}
+W.Ricochet = {kind = 'lane', run = function(w, lane)
+    local a, i = firstInLane(lane)
+    if a then hit(i, lane, w.damage, w, 'first') end
+    local best
+    for _, l in ipairs({lane - 1, lane + 1}) do
+        if l >= 1 and l <= B.LANES then
+            local b, bi = firstInLane(l)
+            if b and (not best or bi > best[2]) then best = {b, bi, l} end
+        end
+    end
+    if best then emit({type = 'redirect', from = {i or B.ROWS, lane}, to = {best[2], best[3]}}); hit(best[2], best[3], 200, w, 'first') end
+end}
+W.Scanner = {kind = 'field', run = function(w)
+    each(function(a, i, j) a.marked = true; emit({type = 'status', uid = a.uid, i = i, j = j, kind = 'mark'}) end)
+end}
+-- rare
+W.ChainLightning = {kind = 'tile', shots = 1, run = function(w, row, lane)
+    local from = {row, lane}
+    local dmg = w.damage
+    local done = {}
+    if s.grid[row][lane] then done[s.grid[row][lane].uid] = true end
+    hit(row, lane, dmg, w, 'tile')
+    for _ = 1, 4 do
+        local best, bd
+        each(function(a, i, j)
+            if not done[a.uid] then
+                local d = math.abs(i - from[1]) + math.abs(j - from[2])
+                if not best or d < bd then best, bd = {a, i, j}, d end
+            end
+        end)
+        if not best then break end
+        dmg = dmg * 0.8
+        done[best[1].uid] = true
+        emit({type = 'arc', from = from, to = {best[2], best[3]}})
+        hit(best[2], best[3], dmg, w, 'splash')
+        from = {best[2], best[3]}
+    end
+end}
+W.TimeWarp = {kind = 'self', run = function(w) s.freeze = true end}
+W.Barricade = {kind = 'tile', shots = 1, run = function(w, row, lane)
+    if row >= 2 and not s.grid[row][lane] then s.walls[row][lane] = 3; emit({type = 'wall', i = row, j = lane, hp = 3}) end
+end}
+-- scarce
+W.Plague = {kind = 'lane', run = function(w, lane)
+    for i = 1, B.ROWS do
+        local a = s.grid[i][lane]
+        if a and canPoison(a) and a.immune == 0 then a.plague = w.poison * upgrade(w); emit({type = 'status', uid = a.uid, i = i, j = lane, kind = 'plague'}) end
+    end
+end}
+W.Overclock = {kind = 'self', run = function(w)
+    for n, slot in ipairs(s.slots) do
+        if Weapons[slot.id] ~= w then slot.used = false; slot.cd = 0 end
+    end
+end}
+W.Executioner = {kind = 'lane', run = function(w, lane)
+    local a, i = firstInLane(lane)
+    if not a then return end
+    if a.health < a.maxHealth * 0.5 and a.immune == 0 and not a.fly and not guardianIn(lane) then
+        emit({type = 'hit', uid = a.uid, i = i, j = lane, amount = a.health, killed = true})
+        kill(i, lane)
+    else
+        hit(i, lane, w.damage, w, 'first')
+    end
+end}
+-- god
+W.Supernova = {kind = 'field', run = function(w)
+    each(function(a, i, j) hit(i, j, a.maxHealth * 0.2, w, 'field', {ignoreBuffs = true}) end)
+end}
+W.DoomsdayClock = {kind = 'tile', shots = 1, run = function(w, row, lane)
+    local a = s.grid[row][lane]
+    if a then a.doom = 2; emit({type = 'status', uid = a.uid, i = row, j = lane, kind = 'doom'}) end
+end}
+W.MeteorStorm = {kind = 'field', run = function(w)
+    for _ = 1, 6 do
+        local i, j = math.random(B.ROWS), math.random(B.LANES)
+        emit({type = 'meteor', i = i, j = j})
+        if s.grid[i][j] then hit(i, j, w.damage, w, 'tile') end
+    end
+end}
+W.QuantumFlux = {kind = 'field', run = function(w)
+    local queue = {}
+    each(function(a, i, j)
+        local before = s.grid[i][j]
+        hit(i, j, w.damage, w, 'field')
+        if before and not s.grid[i][j] then queue[#queue + 1] = {i, j} end
+    end)
+    local seen = {}
+    while #queue > 0 do
+        local c = table.remove(queue, 1)
+        emit({type = 'explode', i = c[1], j = c[2]})
+        for _, n in ipairs({{c[1] - 1, c[2]}, {c[1] + 1, c[2]}, {c[1], c[2] - 1}, {c[1], c[2] + 1}}) do
+            if n[1] >= 1 and n[1] <= B.ROWS and n[2] >= 1 and n[2] <= B.LANES and s.grid[n[1]][n[2]] then
+                local before = s.grid[n[1]][n[2]]
+                hit(n[1], n[2], 1500, w, 'splash')
+                if before and not s.grid[n[1]][n[2]] and not seen[before.uid] then seen[before.uid] = true; queue[#queue + 1] = {n[1], n[2]} end
+            end
+        end
+    end
+end}
 B.WEAPON_RULES = W
 
 -- ---------------------------------------------------------------- turn structure
@@ -447,8 +577,8 @@ end
 function B.aimTile(row, lane)
     if s.aim and s.aim.kind == 'wall' then
         if not B.wallAllowed(row, lane) then return false end
-        s.walls[row][lane] = true
-        emit({type = 'wall', i = row, j = lane})
+        s.walls[row][lane] = 1
+        emit({type = 'wall', i = row, j = lane, hp = 1})
         s.aim = nil
         return true
     end
@@ -521,6 +651,11 @@ local function advance()
                     if a.giantWait then blocked = true; emit({type = 'rest', uid = a.uid, i = i, j = j, text = 'catches its breath'}) end
                 end
                 if a.fly then blocked = false end
+                if s.freeze then blocked = true end
+                local steps = (a.name == 'Swarmling') and 2 or 1
+                if not blocked and steps == 2 and i + 2 <= B.ROWS and not s.grid[i + 1][j] and not s.grid[i + 2][j] and not s.walls[i + 1][j] and not s.walls[i + 2][j] then
+                    move(i, j, i + 2, j); blocked = true
+                end
                 if not blocked then
                     local dest = i + 1
                     if dest > B.ROWS then
@@ -532,8 +667,9 @@ local function advance()
                                 while r <= B.ROWS and s.walls[r][j] do r = r + 1 end
                                 if r > B.ROWS then lost = true elseif not s.grid[r][j] then emit({type = 'jump', uid = a.uid}); move(i, j, r, j) end
                             else
-                                s.walls[dest][j] = false -- wall absorbs the move
-                                emit({type = 'wallbreak', uid = a.uid, i = dest, j = j})
+                                local left = (tonumber(s.walls[dest][j]) or 1) - 1 -- wall absorbs the move
+                                s.walls[dest][j] = left > 0 and left or false
+                                emit({type = 'wallbreak', uid = a.uid, i = dest, j = j, left = left})
                             end
                         else
                             move(i, j, dest, j)
@@ -553,6 +689,54 @@ local function tickStatuses()
     end)
 end
 
+local function supportAbilities()
+    each(function(a, i, j)
+        if a.name == 'Shieldbearer' and i < B.ROWS and s.grid[i + 1][j] then
+            local t = s.grid[i + 1][j]
+            ability(a, i, j, 'shields ' .. (Aliens[t.name].title))
+            t.immune = math.max(t.immune, 2) -- ticks down once this turn, so it holds through the player's next turn
+            emit({type = 'status', uid = t.uid, i = i + 1, j = j, kind = 'shield'})
+        elseif a.name == 'Medic' then
+            local healed = false
+            each(function(b, bi, bj)
+                if b ~= a and b.health < b.maxHealth then
+                    local amt = math.min(b.maxHealth * 0.1, b.maxHealth - b.health)
+                    b.health = b.health + amt; healed = true
+                    emit({type = 'heal', uid = b.uid, i = bi, j = bj, amount = amt})
+                end
+            end)
+            if healed then ability(a, i, j, 'heals the others') end
+        elseif a.name == 'Thief' then
+            local stolen = math.min(5, data.gold)
+            if stolen > 0 then data.gold = data.gold - stolen; ability(a, i, j, 'steals ' .. stolen .. ' gold') end
+        elseif a.name == 'Necromancer' then
+            a.necro = (a.necro or 0) + 1
+            if a.necro >= 3 and s.lastKilled then
+                local free = {}
+                for c = 1, B.LANES do if not s.grid[i][c] then free[#free + 1] = c end end
+                if #free > 0 then
+                    a.necro = 0
+                    ability(a, i, j, 'raises ' .. s.lastKilled.title)
+                    B.spawn(i, free[math.random(#free)], s.lastKilled, s.lastKilled.health * 0.5)
+                end
+            end
+        end
+    end)
+end
+
+local function doomTicks()
+    each(function(a, i, j)
+        if a.doom then
+            a.doom = a.doom - 1
+            if a.doom <= 0 then
+                ability(a, i, j, 'meets its doom')
+                emit({type = 'hit', uid = a.uid, i = i, j = j, amount = a.health, killed = true})
+                kill(i, j)
+            end
+        end
+    end)
+end
+
 local function flightToggles()
     each(function(a, i, j)
         if a.name == 'Spaceship' then a.fly = not a.fly; ability(a, i, j, a.fly and 'takes flight' or 'lands') end
@@ -560,13 +744,26 @@ local function flightToggles()
 end
 
 local function applyPoison()
+    local spread = {}
     each(function(a, i, j)
-        if a.poison > 0 and a.immune == 0 and not guardianIn(j) then
-            a.health = a.health - a.poison * s.buff
-            emit({type = 'hit', uid = a.uid, i = i, j = j, amount = a.poison * s.buff, killed = a.health <= 0, poison = true})
+        local dot = (a.poison or 0) + (a.plague or 0)
+        if dot > 0 and a.immune == 0 and not guardianIn(j) then
+            a.health = a.health - dot * s.buff
+            emit({type = 'hit', uid = a.uid, i = i, j = j, amount = dot * s.buff, killed = a.health <= 0, poison = true})
+            if a.plague and a.plague > 0 then
+                for _, n in ipairs({{i - 1, j}, {i + 1, j}, {i, j - 1}, {i, j + 1}}) do
+                    if n[1] >= 1 and n[1] <= B.ROWS and n[2] >= 1 and n[2] <= B.LANES then
+                        local b = s.grid[n[1]][n[2]]
+                        if b and not b.plague and canPoison(b) then spread[#spread + 1] = {b, n[1], n[2], a.plague} end
+                    end
+                end
+            end
             if a.health <= 0 then kill(i, j) end
         end
     end)
+    for _, sp in ipairs(spread) do
+        if not sp[1].plague then sp[1].plague = sp[4]; emit({type = 'status', uid = sp[1].uid, i = sp[2], j = sp[3], kind = 'plague'}) end
+    end
 end
 
 local function morphs()
@@ -598,8 +795,10 @@ end
 function B.endTurn()
     if s.aim then B.cancelAim() end
     s.turn = s.turn + 1
+    each(function(a) a.marked = nil end)
     emit({type = 'phase', name = 'poison'})
     applyPoison()
+    doomTicks()
     if s.stellar then
         s.stellar.turns = s.stellar.turns - 1
         if s.stellar.turns == 2 then s.stellar.mult = 1.1 * (s.stellar.mult / 1.2) end
@@ -608,12 +807,14 @@ function B.endTurn()
     -- aliens with abilities act first, one at a time
     emit({type = 'phase', name = 'abilities'})
     albotSpawns()
+    supportAbilities()
     morphs()
     flightToggles()
     hypnoTurn()
     -- then everyone marches
-    emit({type = 'phase', name = 'move'})
+    emit({type = 'phase', name = 'move', frozen = s.freeze})
     local lost = advance()
+    s.freeze = false
     tickStatuses()
     if lost then emit({type = 'lose'}); s.result = 'lose'; return 'lose' end
     emit({type = 'phase', name = 'spawn'})

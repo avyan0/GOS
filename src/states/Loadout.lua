@@ -76,13 +76,13 @@ function Loadout:render()
         tx = tx + 160
     end
 
-    local cw, ch, gap = 176, 178, 14
+    local cw, ch, gap = 176, 118, 8
     local i = 0
     for _, id in ipairs(WEAPON_ORDER) do
         local w = Weapons[id]
         if w.rarity == self.tab then
             local col, row = i % 4, math.floor(i / 4)
-            local x, y = 40 + col * (cw + gap), 262 + row * (ch + gap)
+            local x, y = 40 + col * (cw + gap), 258 + row * (ch + gap)
             local inSlot = slotHas(id)
             if drawWeaponCard(w, x, y, cw, ch, inSlot ~= nil, {equipped = inSlot ~= nil}) then
                 self.preview = id

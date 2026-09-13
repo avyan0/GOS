@@ -83,7 +83,7 @@ local function apply(ev, instant)
         if instant then fx.vis[ev.uid] = nil else v.fading = 0 end
     elseif ev.type == 'status' and v and not instant then
         v.statusPulse = {kind = ev.kind, t = 0}
-        local c = ({stun = ui.c.warn, poison = ui.c.good, hypno = ui.rarity.scarce})[ev.kind]
+        local c = ({stun = ui.c.warn, poison = ui.c.good, hypno = ui.rarity.scarce, mark = ui.c.accent, plague = ui.rarity.scarce, shield = ui.c.gold, doom = ui.c.danger})[ev.kind] or ui.c.muted
         burst(v.x, v.y, c, 10, 70, 0.45, 2)
     elseif ev.type == 'blocked' and v and not instant then
         popup(v.x + 60, v.y - 14, ev.text:upper(), ui.c.muted, 14)
@@ -104,6 +104,22 @@ local function apply(ev, instant)
             lines[#lines + 1] = {x1 = va.x, y1 = va.y, x2 = vb.x, y2 = vb.y, t = 0, color = ui.rarity.scarce}
             shake = math.max(shake, 5)
         end
+    elseif ev.type == 'discover' and not instant then
+        ui.toast('New alien discovered: ' .. (Aliens[ev.name] and Aliens[ev.name].title or ev.name), ui.c.accent)
+    elseif ev.type == 'arc' and not instant then
+        local x1, y1 = cellCenter(ev.from[1], ev.from[2]); local x2, y2 = cellCenter(ev.to[1], ev.to[2])
+        lines[#lines + 1] = {x1 = x1 - 56, y1 = y1, x2 = x2 - 56, y2 = y2, t = 0, color = ui.rarity.rare, jag = true}
+    elseif ev.type == 'meteor' and not instant then
+        local cx, cy = cellCenter(ev.i, ev.j)
+        burst(cx - 56, cy, ui.rarity.god, 16, 150, 0.5, 3); shake = math.max(shake, 5)
+        lines[#lines + 1] = {x1 = cx + 60, y1 = cy - 120, x2 = cx - 56, y2 = cy, t = 0, color = ui.rarity.god}
+    elseif ev.type == 'explode' and not instant then
+        local cx, cy = cellCenter(ev.i, ev.j)
+        burst(cx - 56, cy, ui.rarity.god, 20, 180, 0.5, 3); shake = math.max(shake, 4)
+    elseif ev.type == 'heal' and v and not instant then
+        v.hpTarget = (v.hpTarget or v.hp) + ev.amount
+        popup(v.x + 60, v.y - 14, '+' .. math.round(ev.amount), ui.c.good, 16)
+        burst(v.x, v.y, ui.c.good, 6, 50, 0.4, 2)
     elseif ev.type == 'morphed' and v and not instant then
         burst(v.x, v.y, ui.rarity.scarce, 14, 100, 0.5, 2)
         v.scale = 0.2
@@ -198,6 +214,8 @@ function fx.spotlight() -- uid of the alien currently performing an ability, plu
     if current and current.kind == 'ability' then return current.ev.uid, current.ev.text, current.t / current.dur end
 end
 
+function fx.frozen() return current and current.kind == 'move' and current.ev and current.ev.frozen end
+
 -- ---------------------------------------------------------------- status visuals
 local S = {}
 S.stun = function(x, y, t, c)
@@ -231,6 +249,25 @@ end
 S.fly = function(x, y, t, c)
     ui.color(ui.c.black, 0.35); g.ellipse('fill', x, y + 24, 16, 5)
 end
+S.plague = function(x, y, t, c)
+    ui.color(c, 0.14); g.circle('fill', x, y, 24)
+    for k = 0, 4 do
+        local a = t * 1.5 + k * 1.257
+        local r = 18 + math.sin(t * 3 + k) * 5
+        ui.color(c, 0.8); g.circle('fill', x + math.cos(a) * r, y + math.sin(a) * r * 0.6, 3)
+    end
+end
+S.mark = function(x, y, t, c)
+    g.setLineWidth(2); ui.color(c, 0.9)
+    local r = 26 + math.sin(t * 8) * 2
+    for k = 0, 3 do local a = k * math.pi / 2 + math.pi / 4; g.line(x + math.cos(a) * r, y + math.sin(a) * r, x + math.cos(a) * (r - 8), y + math.sin(a) * (r - 8)) end
+    g.circle('line', x, y, 6)
+end
+S.doom = function(x, y, t, c, turns)
+    g.setLineWidth(3); ui.color(c, 0.6 + 0.4 * math.sin(t * 6))
+    g.arc('line', 'open', x, y, 27, -math.pi / 2, -math.pi / 2 + math.pi * 2 * (turns / 2))
+    ui.color(c, 0.9); g.rectangle('fill', x - 3, y - 36, 6, 8)
+end
 fx.status = S
 
 function fx.drawStatuses(v, t)
@@ -240,15 +277,19 @@ function fx.drawStatuses(v, t)
     if a.poison > 0 then S.poison(v.x, v.y, t, ui.c.good) end
     if a.hypno then S.hypno(v.x, v.y, t, ui.rarity.scarce) end
     if a.immune > 0 then S.immune(v.x, v.y, t, ui.c.gold) end
+    if a.plague and a.plague > 0 then S.plague(v.x, v.y, t, ui.rarity.scarce) end
+    if a.marked then S.mark(v.x, v.y, t, ui.c.accent) end
+    if a.doom then S.doom(v.x, v.y, t, ui.c.danger, a.doom) end
     if v.statusPulse then
         local p = v.statusPulse.t / 0.6
-        local c = ({stun = ui.c.warn, poison = ui.c.good, hypno = ui.rarity.scarce, block = ui.c.muted})[v.statusPulse.kind]
+        local c = ({stun = ui.c.warn, poison = ui.c.good, hypno = ui.rarity.scarce, block = ui.c.muted, mark = ui.c.accent, plague = ui.rarity.scarce, shield = ui.c.gold, doom = ui.c.danger})[v.statusPulse.kind] or ui.c.muted
         g.setLineWidth(3 * (1 - p)); ui.color(c, 1 - p); g.circle('line', v.x, v.y, 16 + p * 30)
     end
 end
 
 -- ---------------------------------------------------------------- weapon effects
-local STYLE = {rain = 'streaks', sun = 'rays', flux = 'rays', ring = 'rays', burst = 'rings', skull = 'lanefall', freeze = 'rings', eye = 'rays',
+local STYLE = {well = 'pull', bounce = 'projectile', scan = 'rays', chain = 'target', clock = 'rings', barricade = 'lift', plague = 'wave', gear = 'rays', guillotine = 'projectile', nova = 'rays', hourglass = 'target', meteors = 'streaks',
+               rain = 'streaks', sun = 'rays', flux = 'rays', ring = 'rays', burst = 'rings', skull = 'lanefall', freeze = 'rings', eye = 'rays',
                arrow = 'projectile', dagger = 'projectile', axe = 'projectile', hammer = 'projectile', ram = 'projectile',
                bolt = 'lightning', jolt = 'lightning', orb = 'lightning',
                laser = 'beam', beam = 'beam', blade = 'beam', block = 'lock', comet = 'impact', cannon = 'impact', star = 'cross',
@@ -330,6 +371,11 @@ function fx.drawWeapon(t)
         elseif style == 'lock' then
             g.setLineWidth(4); ui.color(ui.rarity.scarce, 0.8 * (1 - p)); g.rectangle('line', x + 6, y + 6, lw - 12, lh - 12, 8, 8)
             for k = 0, 4 do ui.color(ui.rarity.scarce, 0.5 * (1 - p)); g.line(x + 6, y + 6 + k * lh / 5, x + lw - 6, y + 6 + k * lh / 5) end
+        elseif style == 'pull' then
+            for k = 0, 3 do
+                local q = ((p * 1.3) + k * 0.25) % 1
+                ui.color(c, (1 - q) * 0.9); g.polygon('fill', cx, y + lh - q * lh - 20, cx + 14, y + lh - q * lh, cx - 14, y + lh - q * lh)
+            end
         elseif style == 'wave' then
             for k = 0, 3 do
                 local q = ((p * 1.5) + k * 0.25) % 1
@@ -399,7 +445,7 @@ function fx.drawOverlay()
     end
     for _, l in ipairs(lines) do
         local a = 1 - l.t / 0.5
-        g.setLineWidth(3); ui.color(l.color, a); g.line(l.x1, l.y1, l.x2, l.y2)
+        if l.jag then drawLightning(l.x1, l.y1, l.x2, l.y2, l.color, 2 * a) else g.setLineWidth(3); ui.color(l.color, a); g.line(l.x1, l.y1, l.x2, l.y2) end
         ui.color(l.color, a); g.circle('fill', l.x2, l.y2, 6)
     end
     for _, p in ipairs(popups) do

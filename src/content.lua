@@ -26,7 +26,16 @@ alienNames = {
 	"Interdimentional",
 	"Scarce",
 	"TheHevalGod",
-	"GodOfSpace"
+	"GodOfSpace",
+	"Swarmling",
+	"Shieldbearer",
+	"Phaser",
+	"Medic",
+	"Thief",
+	"Splitter",
+	"Anchor",
+	"Necromancer",
+	"VoidTitan"
 }
 
 function makeLevel()
@@ -281,23 +290,29 @@ function weaponDictionary()
     Weapons, WEAPON_ORDER = {}, {}
     local function add(w) Weapons[w.id] = w; WEAPON_ORDER[#WEAPON_ORDER + 1] = w.id end
     -- common
-    add(makeWeapon('AstroidRain', 'common', 'Asteroid Rain', 'rain', 'Deals 175 damage to every alien on the field.', {aoe = 'all', all = 175, dmg = 175, cd = 3}))
+    add(makeWeapon('AstroidRain', 'common', 'Asteroid Rain', 'rain', 'Deals 175 damage to every alien on the field.', {aoe = 'all', all = 175, dmg = 175, cd = 2}))
     add(makeWeapon('PoisonArrow', 'common', 'Poison Arrow', 'arrow', 'Deals 150 damage to a lane and poisons every alien in it for 55 damage per turn.', {aoe = 'lane', lane = 150, dmg = 150, poison = 55, cd = 1}))
     add(makeWeapon('TripleThreat', 'common', 'Triple Threat', 'crosshair', 'Deals 200 damage to three tiles of your choice.', {aoe = 'tile', tile = 200, dmg = 200, attacks = 3}))
     add(makeWeapon('CosmicFire', 'common', 'Cosmic Fire', 'flame', 'Deals 250 damage to every alien in a lane.', {aoe = 'lane', lane = 250, dmg = 250}))
-    add(makeWeapon('Astrobolt', 'common', 'Astrobolt', 'bolt', 'Deals 100 damage to a lane and stuns the two closest aliens for one turn.', {aoe = 'lane', lane = 100, dmg = 100, stun = 2, stunTurns = 1}))
+    add(makeWeapon('Astrobolt', 'common', 'Astrobolt', 'bolt', 'Deals 150 damage to a lane and stuns the two closest aliens for one turn.', {aoe = 'lane', lane = 150, dmg = 150, stun = 2, stunTurns = 1}))
     add(makeWeapon('StarBlast', 'common', 'Star Blast', 'star', 'Deals 160 damage in a cross around a tile of your choice.', {aoe = 'tile', dmg = 160, attacks = 1}))
-    add(makeWeapon('LaserKill', 'common', 'Laser Kill', 'laser', 'Instantly kills every alien in a lane with 375 health or less. Ignores buffs.', {aoe = 'lane', dmg = 375}))
+    add(makeWeapon('LaserKill', 'common', 'Laser Kill', 'laser', 'Instantly kills every alien in a lane with 600 health or less. Ignores buffs.', {aoe = 'lane', dmg = 600}))
     add(makeWeapon('StellarBoost', 'common', 'Stellar Boost', 'boost', 'All weapons deal +20% damage this turn and +10% for the next two.', {aoe = 'buff', cd = 3}))
+    add(makeWeapon('GravityWell', 'common', 'Gravity Well', 'well', 'Drags every alien in a lane one row back toward the top of the field.', {aoe = 'lane', cd = 2}))
+    add(makeWeapon('Ricochet', 'common', 'Ricochet', 'bounce', 'Deals 300 damage to the closest alien in a lane, then bounces into a neighbouring lane for 200 more.', {aoe = 'lane', dmg = 300}))
+    add(makeWeapon('Scanner', 'common', 'Scanner', 'scan', 'Marks every alien on the field. Marked aliens take 25% more damage until the end of the turn.', {aoe = 'buff', cd = 2}))
     -- rare
     add(makeWeapon('ThunderStrike', 'rare', 'Thunder Strike', 'orb', 'Deals 700 damage to a lane. 33% chance to stun the closest alien, and to keep chaining down the lane.', {aoe = 'lane', lane = 700, dmg = 700}))
     add(makeWeapon('BattleRam', 'rare', 'Battle Ram', 'ram', 'Deals 1050 damage to the closest alien in a lane and knocks it back one tile.', {aoe = 'lane', dmg = 1050, knockback = 1}))
     add(makeWeapon('ElectroJolt', 'rare', 'Electro Jolt', 'jolt', 'Stuns every alien in a lane for one turn.', {aoe = 'lane', cd = 2, stun = 10, stunTurns = 1}))
     add(makeWeapon('DaggerThrow', 'rare', 'Dagger Throw', 'dagger', 'Deals 900 damage to every alien in a lane.', {aoe = 'lane', lane = 900, dmg = 900}))
     add(makeWeapon('Hevalstruck', 'rare', 'Hevalbane', 'hammer', 'Deals 1200 damage to the closest alien in a lane. Double damage against Hevalten.', {aoe = 'lane', dmg = 1200}))
-    add(makeWeapon('RecursiveExplosion', 'rare', 'Recursive Explosion', 'burst', 'Deals 425 damage to every alien on the field.', {aoe = 'all', all = 425, dmg = 425}))
+    add(makeWeapon('RecursiveExplosion', 'rare', 'Recursive Explosion', 'burst', 'Deals 500 damage to every alien on the field.', {aoe = 'all', all = 500, dmg = 500}))
     add(makeWeapon('Dueltroid', 'rare', 'Dueltroid', 'duel', 'Randomly stuns either the closest alien in a lane for 4 turns, or the two closest for 2 turns.', {aoe = 'lane'}))
     add(makeWeapon('FreshStart', 'rare', 'Fresh Start', 'restart', 'Sends a 3x3 block of aliens back to the start of the field.', {aoe = 'tile', cd = 2, attacks = 1}))
+    add(makeWeapon('ChainLightning', 'rare', 'Chain Lightning', 'chain', 'Deals 800 damage to a tile, then arcs to the four nearest aliens anywhere on the field, losing 20% per jump.', {aoe = 'tile', dmg = 800, attacks = 1, cd = 1}))
+    add(makeWeapon('TimeWarp', 'rare', 'Time Warp', 'clock', 'Freezes time: no alien moves at the end of this turn. Works on everything, even shielded aliens.', {aoe = 'buff', cd = 3}))
+    add(makeWeapon('Barricade', 'rare', 'Barricade', 'barricade', 'Builds a reinforced wall on a tile of your choice. It takes three hits before it breaks.', {aoe = 'tile', attacks = 1, cd = 3}))
     -- scarce
     add(makeWeapon('SantaAxe', 'scarce', 'Santa Axe', 'axe', 'Deals 2200 damage to every alien in a lane.', {aoe = 'lane', lane = 2200, dmg = 2200}))
     add(makeWeapon('Respawn', 'scarce', 'Lockdown', 'block', 'Nothing can spawn in the lane you choose next turn. Hevalten ignore it.', {aoe = 'lane', cd = 2}))
@@ -305,8 +320,11 @@ function weaponDictionary()
     add(makeWeapon('LaserBeam', 'scarce', 'Laser Beam', 'beam', 'Instantly kills every alien in a lane with 6000 health or less. Ignores buffs.', {aoe = 'lane', dmg = 6000}))
     add(makeWeapon('MindBlast', 'scarce', 'Mind Blast', 'brain', 'Deals 7001 damage to the closest alien in a lane. If it survives, it is hypnotised and fights for you.', {aoe = 'lane', dmg = 7001, cd = 2}))
     add(makeWeapon('GrenadeLauncher', 'scarce', 'Grenade Launcher', 'grenade', 'Deals 3950 damage to every alien in the front and back rows.', {aoe = 'row', dmg = 3950}))
-    add(makeWeapon('Protected', 'scarce', 'Bulwark', 'wall', 'Deals 400 damage to a lane and permanently raises all damage by 1.25% for the rest of the stage.', {aoe = 'lane', lane = 400, dmg = 400, cd = 2}))
+    add(makeWeapon('Protected', 'scarce', 'Bulwark', 'wall', 'Deals 1500 damage to a lane and permanently raises all damage by 2.5% for the rest of the stage.', {aoe = 'lane', lane = 1500, dmg = 1500, cd = 2}))
     add(makeWeapon('Hypnosis', 'scarce', 'Hypnosis', 'eye', 'Hypnotises the closest alien in every lane. They turn and attack their own side.', {aoe = 'all', cd = 3}))
+    add(makeWeapon('Plague', 'scarce', 'Plague', 'plague', 'Infects a lane with a plague that deals 400 damage per turn and spreads to every neighbouring alien each turn.', {aoe = 'lane', poison = 400, cd = 2}))
+    add(makeWeapon('Overclock', 'scarce', 'Overclock', 'gear', 'Instantly readies your other two weapons, even if they are recharging.', {aoe = 'buff', cd = 3}))
+    add(makeWeapon('Executioner', 'scarce', 'Executioner', 'guillotine', 'Deals 3000 damage to the closest alien in a lane. If that alien is below half health, it dies outright instead.', {aoe = 'lane', dmg = 3000, cd = 1}))
     -- god
     add(makeWeapon('GalacticBeam', 'god', 'Galactic Beam', 'blade', 'Deals 8000 damage to every alien in a lane.', {aoe = 'lane', lane = 8000, dmg = 8000}))
     add(makeWeapon('SolarFlare', 'god', 'Solar Flare', 'sun', 'Deals 3000 damage to every alien on the field.', {aoe = 'all', all = 3000, dmg = 3000}))
@@ -314,7 +332,10 @@ function weaponDictionary()
     add(makeWeapon('DeathVirus', 'god', 'Death Virus', 'skull', 'Wipes out every alien in a random lane.', {aoe = 'Random Lane', cd = 3}))
     add(makeWeapon('VoidBurst', 'god', 'Void Burst', 'cannon', 'Deals 11000 damage to three tiles of your choice.', {aoe = 'tile', tile = 11000, dmg = 11000, attacks = 3}))
     add(makeWeapon('CelestialDisruption', 'god', 'Celestial Disruption', 'ring', 'Drops four non-Hevalten aliens in a lane to 1 health.', {aoe = 'lane'}))
-    add(makeWeapon('QuantumFlux', 'god', 'Quantum Flux', 'flux', 'Deals 3000 damage to every alien on the field.', {aoe = 'all', all = 3000, dmg = 3000}))
+    add(makeWeapon('QuantumFlux', 'god', 'Quantum Flux', 'flux', 'Deals 3000 damage to every alien. Every alien it kills explodes for 1500 damage to its neighbours, which can chain.', {aoe = 'all', all = 3000, dmg = 3000}))
+    add(makeWeapon('Supernova', 'god', 'Supernova', 'nova', 'Burns away 20% of the maximum health of every alien on the field.', {aoe = 'all', cd = 3}))
+    add(makeWeapon('DoomsdayClock', 'god', 'Doomsday Clock', 'hourglass', 'Marks an alien for death. Two turns later it dies, no matter what protects it.', {aoe = 'tile', attacks = 1, cd = 3}))
+    add(makeWeapon('MeteorStorm', 'god', 'Meteor Storm', 'meteors', 'Six meteors strike random tiles for 6000 damage each.', {aoe = 'all', dmg = 6000, cd = 2}))
 
     -- upgrades are keyed by weapon id; migrate saves that used the old display names
     local OLD_NAMES = {AstroidRain = 'Astroid Rain', Hevalstruck = 'Hevalstruck', Respawn = 'Respawn', Offguard = 'Offguard', Protected = 'Protected'}
@@ -336,6 +357,22 @@ local function makeAlien(key, health, hevalten, title, desc, spec)
     spec.hevalten = hevalten
     return {name = key, health = health, speed = 1, hevalten = hevalten, title = title, desc = desc, spec = spec}
 end
+
+-- Order aliens were unlocked in before discovery-by-encounter existed (save migration)
+OLD_ALIEN_ORDER = {'Joe','Gen57','President','King','DJ','SpaceFence','Spaceship','VRWorkout','OldGranny','Albot','Jumper','Giant','Gardener','Army','Morpher','Fusion','CommonCrippler','Splashfest','Virus','Guardian','DarkArts','Rare','Protected','Interdimentional','Scarce','TheHevalGod','GodOfSpace'}
+
+-- New aliens are mixed into existing spawn tables: {name, first level, last level, share of spawns}
+NEW_SPAWNS = {
+    {'Swarmling',    '1-10', '2-12', 22},
+    {'Shieldbearer', '2-8',  '3-14', 15},
+    {'Phaser',       '2-22', '3-30', 15},
+    {'Medic',        '3-6',  '4-18', 12},
+    {'Thief',        '3-20', '5-6',  12},
+    {'Splitter',     '4-4',  '5-16', 14},
+    {'Anchor',       '4-20', '6-6',  12},
+    {'Necromancer',  '5-10', '6-30', 10},
+    {'VoidTitan',    '6-20', '6-30', 6},
+}
 
 function alienDictionary()
     Aliens, Aliensrand = {}, {}
@@ -367,6 +404,66 @@ function alienDictionary()
     add(makeAlien('Scarce',           40000, true,  'Scarcebane',     'Hevalten. Scarce weapons deal 20% less damage while it lives.',                   {shape = 'hex',     eyes = 1, hue = 0.8}))
     add(makeAlien('TheHevalGod',      46700, true,  'Heval God',      'Hevalten. Every time it takes damage, a random Hevalten spawns in the first three rows.', {shape = 'hex', eyes = 3, hue = 0.0, aura = true, crown = true}))
     add(makeAlien('GodOfSpace',       50000, true,  'God of Space',   'Hevalten. Spawns three more aliens on arrival. Immune to knockback, poison and hypnosis.', {shape = 'round', eyes = 3, hue = 0.15, aura = true, crown = true}))
+    -- newer arrivals
+    add(makeAlien('Swarmling',        400,   false, 'Swarmling',      'Tiny and fast: moves two rows every turn.',                                        {shape = 'tri',     eyes = 1, hue = 0.45}))
+    add(makeAlien('Shieldbearer',     3200,  false, 'Shieldbearer',   'Each turn, shields the alien directly ahead of it for one turn.',                  {shape = 'square',  eyes = 2, hue = 0.13}))
+    add(makeAlien('Phaser',           4200,  false, 'Phaser',         'Half damage from lane attacks. Double damage from tile and single-target attacks.', {shape = 'diamond', eyes = 2, hue = 0.5, sat = 0.9}))
+    add(makeAlien('Medic',            6000,  false, 'Medic',          'Each turn, heals every other alien for 10% of its maximum health.',                 {shape = 'round',   eyes = 2, hue = 0.0, sat = 0.2}))
+    add(makeAlien('Thief',            7500,  false, 'Thief',          'Steals 5 gold from you every turn it is alive.',                                     {shape = 'diamond', eyes = 2, hue = 0.16, sat = 0.9}))
+    add(makeAlien('Splitter',         11000, false, 'Splitter',       'When it dies, splits into two weaker aliens at half health.',                       {shape = 'hex',     eyes = 4, hue = 0.35}))
+    add(makeAlien('Anchor',           16000, false, 'Anchor',         'Nothing in its lane can be knocked back, pulled or moved by your weapons.',          {shape = 'square',  eyes = 1, hue = 0.6, sat = 0.3}))
+    add(makeAlien('Necromancer',      22000, true,  'Necromancer',    'Hevalten. Every third turn, raises the last alien you killed at half health in its row.', {shape = 'diamond', eyes = 3, hue = 0.82, aura = true}))
+    add(makeAlien('VoidTitan',        60000, true,  'Void Titan',     'Hevalten. No single hit can deal more than 5000 damage to it.',                     {shape = 'hex',     eyes = 3, hue = 0.68, aura = true, crown = true}))
+    table.sort(Aliensrand, function(a, b) return a.health < b.health end)
+    for k, a in ipairs(Aliensrand) do a.tier = k end
+end
+
+-- level key -> sortable number
+function levelIndex(key)
+    local p, l = key:match('(%d+)%-(%d+)')
+    return tonumber(p) * 100 + tonumber(l)
+end
+
+-- Mix NEW_SPAWNS into the cumulative spawn tables, then record each alien's first level.
+function applyNewSpawns()
+    for key, L in pairs(Levels) do
+        local idx = levelIndex(key)
+        -- cumulative thresholds -> weights
+        local names, weights, prev = {}, {}, 0
+        for _, name in ipairs(alienNames) do
+            local v = L[name] or 0
+            if v > prev then names[#names + 1] = name; weights[#weights + 1] = v - prev; prev = v end
+        end
+        local extra = 0
+        for _, ns in ipairs(NEW_SPAWNS) do
+            if idx >= levelIndex(ns[2]) and idx <= levelIndex(ns[3]) then names[#names + 1] = ns[1]; weights[#weights + 1] = ns[4]; extra = extra + ns[4] end
+        end
+        if extra > 0 then
+            local scale = (100 - extra) / (100 - 0)
+            local total = 0
+            for k, name in ipairs(names) do
+                local w = weights[k]
+                local isNew = false
+                for _, ns in ipairs(NEW_SPAWNS) do if ns[1] == name then isNew = true end end
+                if not isNew then w = w * scale end
+                total = total + w
+                L[name] = total
+            end
+            -- fix rounding so the last entry is exactly 100
+            L[names[#names]] = 100
+            for _, name in ipairs(alienNames) do if L[name] == nil then L[name] = 0 end end
+        end
+    end
+    for _, a in ipairs(Aliensrand) do
+        a.intro = 9999
+        for key, L in pairs(Levels) do
+            local prevMax = 0
+            for _, name in ipairs(alienNames) do
+                if name == a.name and (L[name] or 0) > prevMax then a.intro = math.min(a.intro, levelIndex(key)) end
+                prevMax = math.max(prevMax, L[name] or 0)
+            end
+        end
+    end
 end
 
 -- ========================= ITEMS / PLANETS / SHOP =========================
@@ -427,7 +524,7 @@ function defaultSave()
 		walls = 0, retreat = 0, zap = 0, bomb = 0, doubleGold = 0,
 		teleporter = 0, electricity = 0, protection = 0,
 		aliensUnlocked = 2, goldBuff = 1, turn = false,
-		weapons = {}, items = {}, upgrades = {},
+		weapons = {}, items = {}, upgrades = {}, seen = {Joe = true, Gen57 = true},
 	}
 	for _, w in ipairs(ALL_WEAPONS) do d.weapons[w] = false end
 	for _, i in ipairs(ITEMS) do d.items[i] = false end
@@ -479,6 +576,7 @@ function loadData()
 	end
 	if loaded then
 		data = fillDefaults(loaded, defaultSave())
+		for k = 1, math.min(loaded.aliensUnlocked or 0, #OLD_ALIEN_ORDER) do data.seen[OLD_ALIEN_ORDER[k]] = true end
 	else
 		createNewSave()
 	end

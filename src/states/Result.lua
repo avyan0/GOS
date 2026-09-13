@@ -11,15 +11,6 @@ local SPIN_AT = {
     {[5] = 'Rare', [11] = 'Scarce', [17] = 'Scarce', [23] = 'Scarce', [29] = 'God'},
     {[5] = 'Scarce', [11] = 'Scarce', [17] = 'God', [23] = 'Scarce', [29] = 'God'},
 }
-local ALIEN_UNLOCK = { -- planet -> {level = alienCount}
-    {[7] = 3, [14] = 4, [21] = 5, [28] = 6},
-    {[5] = 7, [12] = 8, [19] = 9, [26] = 10},
-    {[3] = 11, [10] = 12, [17] = 13, [24] = 14},
-    {[1] = 15, [8] = 16, [14] = 17, [20] = 18, [26] = 19},
-    {[2] = 20, [8] = 21, [14] = 22, [20] = 23, [26] = 24},
-    {[2] = 25, [8] = 26, [14] = 27},
-}
-
 function Result:init() self.t = 0 end
 function Result:update(dt) self.t = self.t + dt end
 
@@ -46,11 +37,6 @@ function Result:applyWin()
         self.advanced = true
         local p, l = data.planet, data.level
         self.spin = SPIN_AT[p] and SPIN_AT[p][l]
-        local unlock = ALIEN_UNLOCK[p] and ALIEN_UNLOCK[p][l]
-        if unlock and data.aliensUnlocked < unlock then
-            data.aliensUnlocked = unlock
-            self.newAlien = Aliensrand[unlock]
-        end
         if data.level >= 30 then
             data.level = 0
             if data.planet < 6 then data.planet = data.planet + 1; self.newPlanet = PLANETS[data.planet] end
@@ -77,7 +63,6 @@ function Result:render()
             ui.text(txt, px, y, pw, 'center', 'body', 18, c or ui.c.text); y = y + 34
         end
         if self.newPlanet then line('New world unlocked: ' .. self.newPlanet.name, ui.c.accent) end
-        if self.newAlien then line('New alien discovered: ' .. self.newAlien.title, ui.c.accent) end
         if self.spin then line('Bonus ' .. self.spin .. ' prize wheel earned!', ui.c.gold) end
         if not self.advanced then line('Replayed level  -  no progress change', ui.c.muted) end
     else

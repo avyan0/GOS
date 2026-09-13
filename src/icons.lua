@@ -190,6 +190,60 @@ W.spin = function(x, y, s)
     end
 end
 
+W.well = function(x, y, s)
+    for k = 3, 1, -1 do ring(x, y, s * 0.15 * k, 2) end
+    for i = 0, 3 do local a = i * math.pi / 2; poly('fill', x + math.cos(a) * s * 0.48, y + math.sin(a) * s * 0.48, x + math.cos(a + 0.25) * s * 0.3, y + math.sin(a + 0.25) * s * 0.3, x + math.cos(a - 0.25) * s * 0.3, y + math.sin(a - 0.25) * s * 0.3) end
+end
+W.bounce = function(x, y, s)
+    seg(x - s * 0.45, y + s * 0.4, x - s * 0.05, y - s * 0.35, 3); seg(x - s * 0.05, y - s * 0.35, x + s * 0.2, y + s * 0.2, 3); seg(x + s * 0.2, y + s * 0.2, x + s * 0.45, y - s * 0.3, 3)
+    g.circle('fill', x + s * 0.45, y - s * 0.3, s * 0.08)
+end
+W.scan = function(x, y, s)
+    ring(x, y, s * 0.42, 2); ring(x, y, s * 0.22, 2)
+    g.setLineWidth(4); g.arc('line', 'open', x, y, s * 0.42, -0.6, 0.6)
+    seg(x, y, x + s * 0.4, y - s * 0.25, 2)
+end
+W.chain = function(x, y, s)
+    seg(x - s * 0.45, y - s * 0.35, x - s * 0.15, y + s * 0.05, 3); seg(x - s * 0.15, y + s * 0.05, x + s * 0.1, y - s * 0.2, 3); seg(x + s * 0.1, y - s * 0.2, x + s * 0.45, y + s * 0.4, 3)
+    for _, p in ipairs({{-0.45, -0.35}, {-0.15, 0.05}, {0.1, -0.2}, {0.45, 0.4}}) do g.circle('fill', x + p[1] * s, y + p[2] * s, s * 0.07) end
+end
+W.clock = function(x, y, s)
+    ring(x, y, s * 0.42, 3)
+    seg(x, y, x, y - s * 0.28, 3); seg(x, y, x + s * 0.2, y + s * 0.1, 3)
+    g.circle('fill', x, y, s * 0.05)
+end
+W.barricade = function(x, y, s)
+    for r = 0, 2 do g.rectangle('fill', x - s * 0.45 + (r % 2) * s * 0.1, y - s * 0.4 + r * s * 0.28, s * 0.9 - (r % 2) * s * 0.2, s * 0.22, 2, 2) end
+    g.setColor(0, 0, 0, 0.3); seg(x - s * 0.45, y - s * 0.45, x + s * 0.45, y + s * 0.45, 3)
+end
+W.plague = function(x, y, s)
+    g.circle('fill', x, y, s * 0.24)
+    for i = 0, 5 do local a = i * math.pi / 3; g.circle('fill', x + math.cos(a) * s * 0.4, y + math.sin(a) * s * 0.4, s * 0.1); seg(x + math.cos(a) * s * 0.24, y + math.sin(a) * s * 0.24, x + math.cos(a) * s * 0.4, y + math.sin(a) * s * 0.4, 2) end
+end
+W.gear = function(x, y, s)
+    for i = 0, 7 do local a = i * math.pi / 4; g.rectangle('fill', x + math.cos(a) * s * 0.36 - s * 0.07, y + math.sin(a) * s * 0.36 - s * 0.07, s * 0.14, s * 0.14) end
+    g.circle('fill', x, y, s * 0.3); g.setColor(0, 0, 0, 0.5); g.circle('fill', x, y, s * 0.12)
+end
+W.guillotine = function(x, y, s)
+    seg(x - s * 0.35, y - s * 0.45, x - s * 0.35, y + s * 0.45, 3); seg(x + s * 0.35, y - s * 0.45, x + s * 0.35, y + s * 0.45, 3)
+    poly('fill', x - s * 0.3, y - s * 0.3, x + s * 0.3, y - s * 0.3, x + s * 0.3, y + s * 0.05, x - s * 0.3, y - s * 0.12)
+end
+W.nova = function(x, y, s)
+    g.circle('fill', x, y, s * 0.18)
+    for i = 0, 7 do local a = i * math.pi / 4; local r = (i % 2 == 0) and s * 0.5 or s * 0.32; seg(x + math.cos(a) * s * 0.22, y + math.sin(a) * s * 0.22, x + math.cos(a) * r, y + math.sin(a) * r, 3) end
+end
+W.hourglass = function(x, y, s)
+    poly('fill', x - s * 0.3, y - s * 0.45, x + s * 0.3, y - s * 0.45, x, y - s * 0.02)
+    poly('fill', x - s * 0.3, y + s * 0.45, x + s * 0.3, y + s * 0.45, x, y + s * 0.02)
+    seg(x - s * 0.36, y - s * 0.45, x + s * 0.36, y - s * 0.45, 3); seg(x - s * 0.36, y + s * 0.45, x + s * 0.36, y + s * 0.45, 3)
+end
+W.meteors = function(x, y, s)
+    for _, m in ipairs({{-0.3, 0.1, 0.16}, {0.2, 0.3, 0.13}, {0.3, -0.25, 0.1}}) do
+        g.circle('fill', x + m[1] * s, y + m[2] * s, m[3] * s)
+        seg(x + m[1] * s, y + m[2] * s, x + m[1] * s + s * 0.3, y + m[2] * s - s * 0.35, 3)
+    end
+end
+
 function icons.weapon(shape, x, y, s, color)
     if color then g.setColor(color) end
     local f = W[shape] or W.orb

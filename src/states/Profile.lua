@@ -38,7 +38,7 @@ function Profile:render()
     local stats = {
         {'Wins', data.wins}, {'Matches played', data.matchesPlayed},
         {'Aliens defeated', data.aliensKilled}, {'Time played', data.time},
-        {'Planet reached', PLANETS[math.min(6, data.planet)].name}, {'Aliens discovered', data.aliensUnlocked .. ' / ' .. #Aliensrand},
+        {'Planet reached', PLANETS[math.min(6, data.planet)].name}, {'Aliens discovered', (function() local n = 0; for _, a in ipairs(Aliensrand) do if data.seen[a.name] then n = n + 1 end end; return n end)() .. ' / ' .. #Aliensrand},
     }
     local sx, sy, sw, sh = 460, 110, 380, 92
     for i, s in ipairs(stats) do

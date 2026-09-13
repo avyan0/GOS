@@ -134,7 +134,9 @@ local function drawAlien(v, t, spotUid)
     if a.stun > 0 then ui.text('STUN ' .. a.stun, gx, y + 18, 60, 'left', 'hud', 10, ui.c.warn, alpha); gx = gx + 42 end
     if a.poison > 0 then ui.text('PSN', gx, y + 18, 30, 'left', 'hud', 10, ui.c.good, alpha); gx = gx + 26 end
     if a.hypno then ui.text('HYP', gx, y + 18, 30, 'left', 'hud', 10, ui.rarity.scarce, alpha); gx = gx + 26 end
-    if a.immune > 0 then ui.text('SHLD', gx, y + 18, 40, 'left', 'hud', 10, ui.c.gold, alpha) end
+    if a.immune > 0 then ui.text('SHLD', gx, y + 18, 40, 'left', 'hud', 10, ui.c.gold, alpha); gx = gx + 34 end
+    if a.plague and a.plague > 0 then ui.text('PLG', gx, y + 18, 30, 'left', 'hud', 10, ui.rarity.scarce, alpha); gx = gx + 26 end
+    if a.doom then ui.text('DOOM ' .. a.doom, gx, y + 18, 50, 'left', 'hud', 10, ui.c.danger, alpha) end
 end
 
 function GameState:render(dimmed)
@@ -158,8 +160,11 @@ function GameState:render(dimmed)
             ui.color(ui.c.panel, ((i + j) % 2 == 0) and 0.8 or 0.55)
             love.graphics.rectangle('fill', x + 1, y + 1, LANE_W - 2, ROW_H - 2, 4, 4)
             if s.walls[i][j] then
-                ui.color(ui.c.warn, 0.9); love.graphics.rectangle('fill', x + 6, y + ROW_H - 14, LANE_W - 12, 8, 3, 3)
+                local hp = tonumber(s.walls[i][j]) or 1
+                local wc = hp > 1 and ui.rarity.rare or ui.c.warn
+                ui.color(wc, 0.9); love.graphics.rectangle('fill', x + 6, y + ROW_H - 10 - hp * 3, LANE_W - 12, 6 + hp * 3, 3, 3)
                 ui.color(ui.c.bg, 0.5); for k = 0, 3 do love.graphics.rectangle('fill', x + 12 + k * 44, y + ROW_H - 12, 2, 4) end
+                if hp > 1 then ui.pips(x + LANE_W / 2 - 12, y + ROW_H - 26, 3, hp, wc, 5, 3) end
             end
             if aiming and s.aim.kind == 'wall' then
                 local ok = B.wallAllowed(i, j)
@@ -276,7 +281,7 @@ function GameState:render(dimmed)
     elseif busy then
         ui.panel(SIDE_X + 12, py, SIDE_W - 24, 64, {fill = ui.c.bg2, radius = 10})
         local spot = select(2, fx.spotlight())
-        ui.textBox(spot and 'Alien ability' or 'Resolving...', SIDE_X + 12, py, SIDE_W - 24, 64, 'display', 17, ui.c.muted)
+        ui.textBox(spot and 'Alien ability' or (fx.frozen() and 'Time frozen') or 'Resolving...', SIDE_X + 12, py, SIDE_W - 24, 64, 'display', 17, fx.frozen() and ui.c.accent or ui.c.muted)
     else
         if ui.button('End turn', SIDE_X + 12, py, SIDE_W - 24, 64, {size = 22, id = 'endturn', disabled = dimmed}) and not dimmed then endTurn() end
     end

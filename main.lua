@@ -39,7 +39,7 @@ function love.load(args)
     loadData()
     weaponDictionary()
     alienDictionary()
-    makeLevel()
+    makeLevel(); applyNewSpawns()
     saveData()
     ui.initBackground()
     sessionStart = {hours = data.hours, mins = data.mins}

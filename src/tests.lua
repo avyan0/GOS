@@ -1,7 +1,7 @@
 -- Headless rules tests:  "C:\Program Files\LOVE\lovec.exe" . --test
 local B = require 'src/battle'
 data = defaultSave()
-weaponDictionary(); alienDictionary(); makeLevel()
+weaponDictionary(); alienDictionary(); makeLevel(); applyNewSpawns()
 
 local passed, failed = 0, 0
 local current = ''
@@ -118,9 +118,9 @@ test('Star Blast hits a cross around the tile', function()
     check(near(B.alienAt(5, 1).health, 1550) and near(B.alienAt(8, 3).health, 1550), 'outside cross untouched')
 end)
 
-test('Laser Kill kills aliens at or under 375, Laser Beam under 6000, both ignore buffs', function()
+test('Laser Kill kills aliens at or under 600, Laser Beam under 6000, both ignore buffs', function()
     local s = setup({w1 = 'LaserKill', w2 = 'LaserBeam'})
-    put(2, 1, 'Joe', 300); put(4, 1, 'Gen57', 375); put(6, 1, 'King'); put(8, 1, 'Giant', 6000); put(9, 1, 'Giant', 6001)
+    put(2, 1, 'Joe'); put(4, 1, 'Gen57', 600); put(6, 1, 'King'); put(8, 1, 'Giant', 6000); put(9, 1, 'Giant', 6001)
     s.buff = 0.1
     B.fire(1); B.aimLane(1)
     check(B.alienAt(2, 1) == nil and B.alienAt(4, 1) == nil, 'weak aliens killed')
@@ -147,8 +147,8 @@ test('Cooldowns: 3-turn weapon is back on the 4th turn; 0-cooldown weapon back n
     put(1, 1, 'Giant', 50000)
     B.fire(1); B.fire(2); B.aimLane(1)
     B.endTurn(); check(s.slots[2].used == false, 'cosmic fire ready next turn'); check(s.slots[1].used, 'rain recharging 1')
-    B.endTurn(); B.endTurn(); check(s.slots[1].used, 'rain still recharging after 3')
-    B.endTurn(); check(s.slots[1].used == false, 'rain ready on 4th')
+    B.endTurn(); check(s.slots[1].used, 'rain still recharging after 2')
+    B.endTurn(); check(s.slots[1].used == false, 'rain ready on 3rd')
 end)
 
 test('Thunder Strike deals 700 to the lane', function()
@@ -179,7 +179,7 @@ test('Hevalbane doubles against Hevalten', function()
 end)
 
 test('Recursive Explosion / Solar Flare / Quantum Flux hit the field', function()
-    for _, c in ipairs({{'RecursiveExplosion', 425}, {'SolarFlare', 3000}, {'QuantumFlux', 3000}}) do
+    for _, c in ipairs({{'RecursiveExplosion', 500}, {'SolarFlare', 3000}, {'QuantumFlux', 3000}}) do
         setup({w1 = c[1]}); put(1, 1, 'Giant', 50000); put(10, 5, 'Giant', 50000)
         B.fire(1)
         check(near(B.alienAt(1, 1).health, 50000 - c[2]) and near(B.alienAt(10, 5).health, 50000 - c[2]), c[1])
@@ -257,11 +257,11 @@ test('Grenade Launcher hits front and back rows', function()
     check(near(B.alienAt(5, 3).health, 12700), 'middle untouched')
 end)
 
-test('Bulwark: 400 to lane and permanent +1.25%', function()
+test('Bulwark: 1500 to lane and permanent +2.5%', function()
     local s = setup({w1 = 'Protected'}); put(4, 2, 'Giant')
     B.fire(1); B.aimLane(2)
-    check(near(B.alienAt(4, 2).health, 12700 - 400), '400 damage (buff applied after)')
-    check(near(s.buff, 1.0125), 'buff raised')
+    check(near(B.alienAt(4, 2).health, 12700 - 1500), '1500 damage (buff applied after)')
+    check(near(s.buff, 1.025), 'buff raised')
 end)
 
 test('Hypnosis hypnotises the closest alien in every lane', function()
@@ -441,7 +441,7 @@ test('Bunker halves targeted damage', function()
 end)
 
 test('Heval God spawns a Hevalten in the first three rows when hurt', function()
-    setup({w1 = 'CosmicFire'}); put(8, 1, 'TheHevalGod')
+    setup({w1 = 'CosmicFire', level = '6-1'}); put(8, 1, 'TheHevalGod')
     B.fire(1); B.aimLane(1)
     local spawned
     B.each(function(a, i) if a.name ~= 'TheHevalGod' then spawned = {a, i} end end)
@@ -470,7 +470,7 @@ test('Items: zap, electricity, teleporter, protection, gold, walls', function()
     B.useItem('gold'); check(data.goldBuff == 2, 'double gold flag')
     check(B.useItem('walls') == 'aim', 'wall asks for a tile')
     check(B.aimTile(4, 1) == false, 'cannot place on an alien'); check(B.aimTile(1, 2) == false, 'cannot place on row 1')
-    check(B.aimTile(6, 2) == true and s.walls[6][2] == true and s.aim == nil, 'wall placed where chosen')
+    check(B.aimTile(6, 2) == true and s.walls[6][2] == 1 and s.aim == nil, 'wall placed where chosen')
     s = setup({}); s.needed = 0; put(3, 1, 'King'); s.walls[4][1] = true
     B.drain(); B.endTurn()
     local sawBreak = false
@@ -483,6 +483,173 @@ test('Items: retreat / bomb skip stages, win on the last', function()
     check(B.useItem('bomb') == 'win', 'bomb on stage 2 wins')
     s = setup({}); check(B.useItem('bomb') == 'stage' and B.state().stage == 3, 'bomb on stage 1 -> stage 3')
     check(B.useItem('retreat') == 'win', 'retreat on stage 3 wins')
+end)
+
+-- ======================================================================= new weapons
+test('Gravity Well drags a lane back one row; Anchor blocks it', function()
+    setup({w1 = 'GravityWell'}); put(4, 1, 'King'); put(5, 1, 'King'); put(9, 1, 'King'); put(1, 1, 'King')
+    B.fire(1); B.aimLane(1)
+    check(B.alienAt(1, 1) ~= nil and B.alienAt(3, 1) ~= nil and B.alienAt(4, 1) ~= nil and B.alienAt(8, 1) ~= nil and B.count() == 4, 'everything that could move went up one')
+    setup({w1 = 'GravityWell'}); put(6, 2, 'Anchor'); put(9, 2, 'King')
+    B.fire(1); B.aimLane(2); check(B.alienAt(9, 2) ~= nil, 'anchored lane did not move')
+end)
+
+test('Ricochet hits the closest alien then bounces to a neighbouring lane', function()
+    setup({w1 = 'Ricochet'}); put(7, 3, 'Giant'); put(5, 2, 'Giant'); put(9, 4, 'Giant')
+    B.fire(1); B.aimLane(3)
+    check(near(B.alienAt(7, 3).health, 12700 - 300), 'primary took 300')
+    check(near(B.alienAt(9, 4).health, 12700 - 200), 'bounced to the closest neighbour (lane 4)')
+    check(near(B.alienAt(5, 2).health, 12700), 'other neighbour untouched')
+end)
+
+test('Scanner marks aliens for +25% damage until end of turn', function()
+    setup({w1 = 'Scanner', w2 = 'CosmicFire'}); put(3, 1, 'Anchor')
+    B.fire(1); B.fire(2); B.aimLane(1)
+    check(near(B.alienAt(3, 1).health, 16000 - 312.5), 'marked alien took 250 * 1.25')
+    B.endTurn(); check(not B.alienAt(4, 1).marked, 'mark cleared next turn')
+end)
+
+test('Chain Lightning arcs to the four nearest aliens losing 20% per jump', function()
+    setup({w1 = 'ChainLightning'}); put(5, 3, 'Giant'); put(5, 4, 'Giant'); put(6, 3, 'Giant'); put(9, 1, 'Giant'); put(1, 5, 'Giant'); put(2, 1, 'Giant')
+    B.fire(1); B.aimTile(5, 3)
+    check(near(B.alienAt(5, 3).health, 12700 - 800), 'target 800')
+    local hit = 0
+    B.each(function(a) if a.health < 12700 then hit = hit + 1 end end)
+    check(hit == 5, 'target + 4 jumps (' .. hit .. ')')
+    check(near(B.alienAt(5, 4).health, 12700 - 640) or near(B.alienAt(6, 3).health, 12700 - 640), 'first jump 640')
+end)
+
+test('Time Warp stops every alien moving for one turn', function()
+    local s = setup({w1 = 'TimeWarp'}); s.needed = 0; put(3, 1, 'King'); put(3, 2, 'Swarmling'); put(3, 3, 'Giant')
+    B.fire(1); B.endTurn()
+    check(B.alienAt(3, 1) and B.alienAt(3, 2) and B.alienAt(3, 3), 'nobody moved')
+    B.endTurn(); check(B.alienAt(4, 1) ~= nil, 'moving again next turn')
+end)
+
+test('Barricade is a 3-hit wall', function()
+    local s = setup({w1 = 'Barricade'}); s.needed = 0; put(3, 1, 'King')
+    B.fire(1); B.aimTile(4, 1); check(s.walls[4][1] == 3, 'placed with 3 hits')
+    B.endTurn(); B.endTurn(); B.endTurn()
+    check(B.alienAt(3, 1) ~= nil and s.walls[4][1] == false, 'held for three turns then broke')
+    B.endTurn(); check(B.alienAt(4, 1) ~= nil, 'moved through afterwards')
+end)
+
+test('Plague spreads to neighbours each turn', function()
+    local s = setup({w1 = 'Plague'}); s.needed = 0
+    put(5, 2, 'Anchor'); put(5, 3, 'Anchor'); put(5, 4, 'Anchor')
+    B.fire(1); B.aimLane(2)
+    B.endTurn()
+    check(near(B.alienAt(6, 2).health, 16000 - 400), 'infected alien took 400')
+    check(B.alienAt(6, 3).plague == 400 and not B.alienAt(6, 4).plague, 'spread one step')
+    B.endTurn(); check(B.alienAt(7, 4).plague == 400, 'spread another step')
+end)
+
+test('Overclock readies the other two weapons', function()
+    local s = setup({w1 = 'AstroidRain', w2 = 'Overclock', w3 = 'SolarFlare'}); put(1, 1, 'Giant', 50000)
+    B.fire(1); B.fire(3); check(s.slots[1].used and s.slots[3].used, 'both used')
+    B.fire(2); check(not s.slots[1].used and not s.slots[3].used and s.slots[2].used, 'others readied, overclock spent')
+end)
+
+test('Executioner kills below half health, otherwise 3000', function()
+    setup({w1 = 'Executioner'}); put(8, 1, 'Giant', 6000); put(8, 2, 'Giant')
+    B.fire(1); B.aimLane(1); check(B.alienAt(8, 1) == nil, 'executed')
+    B.state().slots[1].used = false
+    B.fire(1); B.aimLane(2); check(near(B.alienAt(8, 2).health, 12700 - 3000), '3000 when healthy')
+end)
+
+test('Supernova burns 20% max health, ignores buffs, respects the Void Titan cap', function()
+    local s = setup({w1 = 'Supernova'}); put(3, 1, 'Giant'); put(3, 2, 'King'); put(3, 3, 'VoidTitan')
+    s.buff = 0.5
+    B.fire(1)
+    check(near(B.alienAt(3, 1).health, 12700 * 0.8) and near(B.alienAt(3, 2).health, 1550 * 0.8), '20% each')
+    check(near(B.alienAt(3, 3).health, 60000 - 5000), 'titan capped at 5000')
+end)
+
+test('Doomsday Clock kills two turns later no matter what', function()
+    local s = setup({w1 = 'DoomsdayClock'}); s.needed = 0; put(5, 1, 'Guardian'); put(6, 1, 'GodOfSpace')
+    for i = 1, 3 do for j = 1, 5 do if B.alienAt(i, j) then s.grid[i][j] = nil end end end
+    B.fire(1); B.aimTile(6, 1)
+    B.endTurn(); check(B.count() == 2, 'still alive after one turn')
+    B.endTurn(); local god; B.each(function(a) if a.name == 'GodOfSpace' then god = a end end)
+    check(B.count() == 1 and god == nil, 'god of space dead, guardian could not save it')
+end)
+
+test('Meteor Storm strikes six random tiles', function()
+    local s = setup({w1 = 'MeteorStorm'})
+    for i = 1, 10 do for j = 1, 5 do put(i, j, 'Giant', 50000) end end
+    B.fire(1)
+    local hits = 0
+    B.each(function(a) hits = hits + math.round((50000 - a.health) / 6000) end)
+    check(hits == 6, 'six meteors landed (' .. hits .. ')')
+end)
+
+test('Quantum Flux kills chain-explode into neighbours', function()
+    local s = setup({w1 = 'QuantumFlux'})
+    put(5, 3, 'Joe'); put(5, 2, 'King'); put(5, 4, 'Giant'); put(4, 2, 'Joe')
+    B.fire(1)
+    check(s.kills >= 3, 'joe died, exploded into king (dies), king exploded into neighbour joe (' .. s.kills .. ')')
+    check(near(B.alienAt(5, 4).health, 12700 - 3000 - 1500), 'giant took the flux plus one explosion')
+end)
+
+-- ======================================================================= new aliens
+test('Swarmling moves two rows per turn', function()
+    local s = setup({}); s.needed = 0; put(2, 1, 'Swarmling'); B.endTurn(); check(B.alienAt(4, 1) ~= nil, 'moved two')
+end)
+
+test('Shieldbearer shields the alien ahead of it', function()
+    local s = setup({w1 = 'SolarFlare'}); s.needed = 0; put(3, 1, 'Shieldbearer'); put(4, 1, 'King')
+    B.endTurn()
+    local k = B.alienAt(5, 1); check(k and k.immune > 0, 'king shielded')
+end)
+
+test('Phaser: half from lane, double from tile', function()
+    setup({w1 = 'CosmicFire', w2 = 'TripleThreat'}); put(4, 1, 'Phaser')
+    B.fire(1); B.aimLane(1); check(near(B.alienAt(4, 1).health, 4200 - 125), 'lane halved')
+    B.fire(2); B.aimTile(4, 1); check(near(B.alienAt(4, 1).health, 4200 - 125 - 400), 'tile doubled')
+end)
+
+test('Medic heals every other alien 10% per turn', function()
+    local s = setup({}); s.needed = 0; put(3, 1, 'Medic'); put(3, 2, 'Anchor', 5000)
+    B.endTurn(); check(near(B.alienAt(4, 2).health, 6600), 'healed 1600')
+end)
+
+test('Thief steals 5 gold per turn', function()
+    local s = setup({}); s.needed = 0; data.gold = 12; put(3, 1, 'Thief')
+    B.endTurn(); check(data.gold == 7, 'stole 5'); B.endTurn(); check(data.gold == 2, 'stole 5 more'); B.endTurn(); check(data.gold == 0, 'cannot go negative')
+end)
+
+test('Splitter splits into two weaker aliens on death', function()
+    local s = setup({w1 = 'VoidBurst'}); put(5, 3, 'Splitter', 5000)
+    B.fire(1); B.aimTile(5, 3); B.cancelAim()
+    check(B.count() == 2, 'two children (' .. B.count() .. ')')
+    local child; B.each(function(a) child = a end)
+    check(child and child.name ~= 'Splitter' and near(child.health, child.maxHealth * 0.5), 'children are weaker at half health')
+end)
+
+test('Anchor stops knockback in its lane', function()
+    setup({w1 = 'BattleRam'}); put(3, 1, 'Anchor'); put(8, 1, 'King')
+    B.fire(1); B.aimLane(1); check(B.alienAt(8, 1) ~= nil, 'not knocked back')
+end)
+
+test('Necromancer raises the last kill every third turn', function()
+    local s = setup({w1 = 'GalacticBeam'}); s.needed = 0
+    put(2, 5, 'Giant', 5000); put(1, 1, 'Necromancer')
+    B.fire(1); B.aimLane(5); check(B.count() == 1, 'giant dead')
+    B.endTurn(); B.endTurn(); check(B.count() == 1, 'nothing yet')
+    B.endTurn()
+    local raised; B.each(function(a) if a.name == 'Giant' then raised = a end end)
+    check(raised and near(raised.health, 12700 * 0.5), 'giant raised at half health')
+end)
+
+test('Void Titan caps every hit at 5000', function()
+    setup({w1 = 'VoidBurst'}); put(5, 1, 'VoidTitan')
+    B.fire(1); B.aimTile(5, 1); B.aimTile(1, 1); B.aimTile(2, 2)
+    check(near(B.alienAt(5, 1).health, 55000), '11000 became 5000')
+end)
+
+test('Discovery: aliens are marked seen when they first appear', function()
+    setup({}); data.seen = {}
+    put(3, 1, 'Medic'); check(data.seen.Medic == true, 'medic seen')
 end)
 
 -- ======================================================================= events
