@@ -476,25 +476,32 @@ local function albotSpawns()
     end)
 end
 
+-- Hypnotised aliens turn around and fight for you: each turn they attack the
+-- closest alien above them in the lane. Both sides lose health equal to the
+-- other's health, so the stronger one survives with the difference.
 local function hypnoTurn()
     for j = 1, B.LANES do
-        for i = 1, B.ROWS do -- top to bottom so a hypno alien moves at most once
+        for i = 1, B.ROWS do -- top to bottom so a hypno alien acts at most once
             local a = s.grid[i][j]
             if a and a.hypno then
-                ability(a, i, j, 'fights for you')
-                if i == 1 then
-                    remove(i, j) -- walked off the top
+                local ei
+                for r = i - 1, 1, -1 do if s.grid[r][j] and not s.grid[r][j].hypno then ei = r; break end end
+                if ei then
+                    local e = s.grid[ei][j]
+                    ability(a, i, j, 'attacks ' .. (Aliens[e.name] and Aliens[e.name].title or e.name))
+                    local ah, eh = a.health, e.health
+                    a.health, e.health = ah - eh, eh - ah
+                    emit({type = 'fight', a = a.uid, b = e.uid, ai = i, bi = ei, j = j})
+                    emit({type = 'hit', uid = e.uid, i = ei, j = j, amount = ah, killed = e.health <= 0})
+                    emit({type = 'hit', uid = a.uid, i = i, j = j, amount = eh, killed = a.health <= 0})
+                    if e.health <= 0 then kill(ei, j) end
+                    if a.health <= 0 then remove(i, j)
+                    elseif i > 1 and not s.grid[i - 1][j] then move(i, j, i - 1, j) end
+                elseif i > 1 then
+                    ability(a, i, j, 'advances for you')
+                    if not s.grid[i - 1][j] then move(i, j, i - 1, j) end
                 else
-                    local e = s.grid[i - 1][j]
-                    if not e then
-                        move(i, j, i - 1, j)
-                    elseif not e.hypno then
-                        local ah, eh = a.health, e.health
-                        a.health, e.health = ah - eh, eh - ah
-                        if e.health <= 0 then kill(i - 1, j) end
-                        if a.health <= 0 then remove(i, j)
-                        elseif not s.grid[i - 1][j] then move(i, j, i - 1, j) end
-                    end
+                    ability(a, i, j, 'stands guard') -- holds the top of the lane until something spawns
                 end
             end
         end

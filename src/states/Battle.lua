@@ -114,7 +114,7 @@ local function drawAlien(v, t, spotUid)
     local def = Aliens[a.name]
     local alpha = v.alpha
     if spotUid and spotUid ~= a.uid then alpha = alpha * 0.45 end
-    local x, y = v.x, v.y - (v.hop or 0)
+    local x, y = v.x + (v.lungeX or 0), v.y - (v.hop or 0) + (v.lungeY or 0)
     local bob = a.fly and math.sin(t * 6 + v.x) * 3 or 0
     love.graphics.push()
     love.graphics.translate(x, y + bob)

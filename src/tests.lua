@@ -33,6 +33,7 @@ end
 
 local function test(name, fn)
     current = name
+    if os.getenv('TEST_VERBOSE') then print('> ' .. name); io.stdout:flush() end
     local ok, err = pcall(fn)
     if not ok then failed = failed + 1; print('  ERROR [' .. name .. '] ' .. tostring(err)) end
 end
@@ -218,13 +219,35 @@ test('Off Guard stuns everything for one turn', function()
     check(B.alienAt(1, 1).stun == 1 and B.alienAt(5, 3).stun == 1 and B.alienAt(9, 5).stun == 1, 'all stunned')
 end)
 
-test('Mind Blast deals 7001 and hypnotises the survivor; hypno alien walks up and fights', function()
-    local s = setup({w1 = 'MindBlast'}); put(9, 1, 'Giant'); put(7, 1, 'King')
+test('Mind Blast deals 7001 and hypnotises the survivor', function()
+    local s = setup({w1 = 'MindBlast'}); put(9, 1, 'Giant')
     B.fire(1); B.aimLane(1)
     local g = B.alienAt(9, 1)
     check(g and near(g.health, 12700 - 7001) and g.hypno, 'giant hypnotised')
+end)
+
+test('Hypnotised aliens fight: both lose the other health, stronger survives and advances', function()
+    local s = setup({}); s.needed = 0
+    local h = put(8, 1, 'Giant'); h.hypno = true; h.health = 5000
+    put(5, 1, 'King') -- 1550, two rows up with a gap
     B.endTurn()
-    check(B.alienAt(8, 1) ~= nil and B.alienAt(8, 1).hypno, 'hypno alien moved up (king moved down to 8? no - fight)')
+    check(B.alienAt(5, 1) == nil, 'king died')
+    check(s.kills == 1, 'counts as a kill')
+    local g = B.alienAt(7, 1) or B.alienAt(8, 1)
+    check(g and g.hypno and near(g.health, 5000 - 1550), 'giant lost the king health and stepped up (' .. tostring(g and g.health) .. ')')
+    -- weaker hypno alien dies instead
+    s = setup({}); s.needed = 0
+    h = put(8, 2, 'Joe'); h.hypno = true
+    put(7, 2, 'King')
+    B.endTurn()
+    local k = B.alienAt(8, 2) or B.alienAt(7, 2)
+    check(B.count() == 1 and k and not k.hypno, 'joe died')
+    check(k and near(k.health, 1550 - 500), 'king weakened but alive')
+    -- with nothing to fight it moves up and holds the top
+    s = setup({}); s.needed = 0
+    h = put(2, 3, 'Giant'); h.hypno = true
+    B.endTurn(); check(B.alienAt(1, 3) and B.alienAt(1, 3).hypno, 'moved to the top')
+    B.endTurn(); check(B.alienAt(1, 3) and B.alienAt(1, 3).hypno, 'stands guard at the top')
 end)
 
 test('Grenade Launcher hits front and back rows', function()

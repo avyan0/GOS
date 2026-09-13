@@ -95,6 +95,15 @@ local function apply(ev, instant)
         local cx, cy = cellCenter(ev.i, ev.j); burst(cx, cy + 20, ui.c.warn, 12, 60, 0.4, 3)
     elseif ev.type == 'wallbreak' and not instant then
         local cx, cy = cellCenter(ev.i, ev.j); burst(cx, cy + 20, ui.c.warn, 18, 140, 0.6, 3); shake = math.max(shake, 3)
+    elseif ev.type == 'fight' and not instant then
+        local va, vb = fx.vis[ev.a], fx.vis[ev.b]
+        if va and vb then
+            local mx, my = (va.x + vb.x) / 2, (va.y + vb.y) / 2
+            va.lunge = {tx = mx, ty = my, t = 0}; vb.lunge = {tx = mx, ty = my, t = 0}
+            burst(mx, my, ui.c.white, 14, 160, 0.4, 3); burst(mx, my, ui.rarity.scarce, 10, 120, 0.5, 2)
+            lines[#lines + 1] = {x1 = va.x, y1 = va.y, x2 = vb.x, y2 = vb.y, t = 0, color = ui.rarity.scarce}
+            shake = math.max(shake, 5)
+        end
     elseif ev.type == 'morphed' and v and not instant then
         burst(v.x, v.y, ui.rarity.scarce, 14, 100, 0.5, 2)
         v.scale = 0.2
@@ -157,6 +166,12 @@ function fx.update(dt)
             v.y = v.move.fy + (v.move.ty - v.move.fy) * p
             v.hop = math.sin(p * math.pi) * (v.jumpNext and 26 or 6)
             if v.move.t >= v.move.dur then v.move = nil; v.hop = 0; v.jumpNext = nil end
+        end
+        if v.lunge then
+            v.lunge.t = v.lunge.t + dt
+            local p = math.sin(math.min(1, v.lunge.t / 0.35) * math.pi)
+            v.lungeX, v.lungeY = (v.lunge.tx - v.x) * 0.6 * p, (v.lunge.ty - v.y) * 0.6 * p
+            if v.lunge.t >= 0.35 then v.lunge = nil; v.lungeX, v.lungeY = 0, 0 end
         end
         if v.scale < 1 then v.scale = math.min(1, v.scale + dt * 5) end
         v.flash = math.max(0, v.flash - dt * 6)
