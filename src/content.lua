@@ -371,7 +371,7 @@ end
 
 -- ========================= ITEMS / PLANETS / SHOP =========================
 ITEMS = {
-    {key = 'Wall',        stat = 'walls',       name = 'Wall',        desc = 'Places a wall on a random open tile. Blocks an alien for one turn before it breaks through.'},
+    {key = 'Wall',        stat = 'walls',       name = 'Wall',        desc = 'Places a wall on a tile you choose. Blocks an alien for one turn before it breaks through.'},
     {key = 'Zap',         stat = 'zap',         name = 'Zap',         desc = 'Stuns every alien in a random lane for three turns.'},
     {key = 'DoubleGold',  stat = 'doubleGold',  name = 'Double Gold', desc = 'Doubles the gold you earn from the current level.'},
     {key = 'Electricity', stat = 'electricity', name = 'Electricity', desc = 'Stuns every alien on the field for one turn.'},

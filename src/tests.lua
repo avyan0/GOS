@@ -445,8 +445,14 @@ test('Items: zap, electricity, teleporter, protection, gold, walls', function()
     B.useItem('teleporter'); check(B.count() == 4 and s.kills == 1, 'teleporter removed one')
     B.useItem('protection'); check(near(s.buff, 1.5), 'protection +50%')
     B.useItem('gold'); check(data.goldBuff == 2, 'double gold flag')
-    check(B.useItem('walls') == true, 'wall placed'); local w = 0
-    for i = 1, 10 do for j = 1, 5 do if s.walls[i][j] then w = w + 1 end end end; check(w == 1, 'one wall')
+    check(B.useItem('walls') == 'aim', 'wall asks for a tile')
+    check(B.aimTile(4, 1) == false, 'cannot place on an alien'); check(B.aimTile(1, 2) == false, 'cannot place on row 1')
+    check(B.aimTile(6, 2) == true and s.walls[6][2] == true and s.aim == nil, 'wall placed where chosen')
+    s = setup({}); s.needed = 0; put(3, 1, 'King'); s.walls[4][1] = true
+    B.drain(); B.endTurn()
+    local sawBreak = false
+    for _, e in ipairs(B.drain()) do if e.type == 'wallbreak' then sawBreak = true end end
+    check(sawBreak and s.walls[4][1] == false and B.alienAt(3, 1) ~= nil, 'wall absorbed the move and broke')
 end)
 
 test('Items: retreat / bomb skip stages, win on the last', function()
@@ -454,6 +460,22 @@ test('Items: retreat / bomb skip stages, win on the last', function()
     check(B.useItem('bomb') == 'win', 'bomb on stage 2 wins')
     s = setup({}); check(B.useItem('bomb') == 'stage' and B.state().stage == 3, 'bomb on stage 1 -> stage 3')
     check(B.useItem('retreat') == 'win', 'retreat on stage 3 wins')
+end)
+
+-- ======================================================================= events
+test('End turn emits abilities before moves before spawns', function()
+    local s = setup({}); s.needed = 5
+    put(4, 1, 'Albot'); put(6, 2, 'King'); put(5, 3, 'Spaceship')
+    B.drain(); B.endTurn()
+    local order = {}
+    for _, e in ipairs(B.drain()) do
+        if e.type == 'phase' then order[#order + 1] = e.name
+        elseif e.type == 'ability' or e.type == 'move' or e.type == 'spawn' then order[#order + 1] = e.type end
+    end
+    local seq = table.concat(order, ' ')
+    check(seq:find('abilities ability spawn') ~= nil, 'albot ability then its spawn: ' .. seq)
+    check(seq:find('abilities.*ability.*move.*move') ~= nil and not seq:find('move.*abilities'), 'all abilities before moves: ' .. seq)
+    check(seq:find('move.*spawn spawn') ~= nil or seq:find('move.*spawn$') ~= nil, 'wave spawn after moves: ' .. seq)
 end)
 
 -- ======================================================================= flow

@@ -16,8 +16,13 @@ local function newState()
         slots = {}, buff = 1, stellar = nil, targetBuff = 1,
         rarityBuff = {common = 1, rare = 1, scarce = 1, god = 1},
         aim = nil, lockedLane = nil, result = nil,
+        events = {}, nextUid = 1,
     }
 end
+
+-- events describe what happened so the screen can animate it
+local function emit(ev) s.events[#s.events + 1] = ev; return ev end
+function B.drain() local e = s.events; s.events = {}; return e end
 
 function B.state() return s end
 
@@ -75,11 +80,13 @@ end
 -- ---------------------------------------------------------------- spawning / removal
 local function place(i, j, def, health)
     local a = {
-        name = def.name, hevalten = def.hevalten, health = health or def.health, maxHealth = def.health,
+        uid = s.nextUid, name = def.name, hevalten = def.hevalten, health = health or def.health, maxHealth = def.health,
         stun = 0, poison = 0, hypno = false, immune = 0, fly = false, giantWait = false, morph = def.name == 'Morpher',
     }
+    s.nextUid = s.nextUid + 1
     s.grid[i][j] = a
     if BUFF[def.name] then BUFF[def.name](true) end
+    emit({type = 'spawn', uid = a.uid, i = i, j = j, a = a})
     return a
 end
 
@@ -88,11 +95,14 @@ local function remove(i, j)
     if not a then return end
     s.grid[i][j] = nil
     if BUFF[a.name] then BUFF[a.name](false) end
+    emit({type = 'remove', uid = a.uid, i = i, j = j})
     return a
 end
 
 local function kill(i, j)
-    local a = remove(i, j)
+    local a = s.grid[i][j]
+    if a then emit({type = 'kill', uid = a.uid, i = i, j = j}) end
+    a = remove(i, j)
     if not a then return end
     s.kills = s.kills + 1
     data.aliensKilled = data.aliensKilled + 1
@@ -100,8 +110,10 @@ end
 B.kill = kill
 
 local function move(fi, fj, ti, tj)
-    s.grid[ti][tj] = s.grid[fi][fj]
+    local a = s.grid[fi][fj]
+    s.grid[ti][tj] = a
     s.grid[fi][fj] = nil
+    emit({type = 'move', uid = a.uid, from = {fi, fj}, to = {ti, tj}})
 end
 
 local function randomUnlocked(hevaltenOnly)
@@ -153,12 +165,19 @@ local function spawnInto(def, rowMax)
     return B.spawn(c[1], c[2], def)
 end
 
+local function ability(a, i, j, text) emit({type = 'ability', uid = a.uid, name = a.name, i = i, j = j, text = text}) end
+
+local PASSIVE = {Army = 'weakens your damage 2%', Interdimentional = 'weakens your damage 7.5%', CommonCrippler = 'cripples common weapons',
+                 Rare = 'weakens rare weapons', Scarce = 'weakens scarce weapons', Guardian = 'guards its lane', Virus = 'slows your cooldowns',
+                 Gardener = 'blocks walls in its lane', Splashfest = 'immune to splash', Protected = 'halves targeted damage'}
+
 function B.spawn(i, j, def, health)
     local a = place(i, j, def, health)
-    if def.name == 'SpaceFence' then a.immune = 1 end
-    if def.name == 'DarkArts' then upgradeAll(i, j) end
-    if def.name == 'Fusion' then fuse(i, j) end
-    if def.name == 'GodOfSpace' then for _ = 1, 3 do spawnInto(randomUnlocked(false), 3) end end
+    if def.name == 'SpaceFence' then a.immune = 1; ability(a, i, j, 'raises a shield') end
+    if PASSIVE[def.name] then ability(a, i, j, PASSIVE[def.name]) end
+    if def.name == 'DarkArts' then ability(a, i, j, 'empowers every alien'); upgradeAll(i, j) end
+    if def.name == 'Fusion' then ability(a, i, j, 'fuses two aliens'); fuse(i, j) end
+    if def.name == 'GodOfSpace' then ability(a, i, j, 'summons reinforcements'); for _ = 1, 3 do spawnInto(randomUnlocked(false), 3) end end
     return a
 end
 
@@ -169,14 +188,14 @@ local function hit(i, j, amount, weapon, kind, opts)
     opts = opts or {}
     local a = s.grid[i][j]
     if not a then return 0 end
-    if a.immune > 0 then return 0 end
-    if a.fly and kind ~= 'field' then return 0 end
-    if a.name == 'Splashfest' and (kind == 'field' or kind == 'splash') then return 0 end
+    if a.immune > 0 then emit({type = 'blocked', uid = a.uid, i = i, j = j, text = 'shielded'}); return 0 end
+    if a.fly and kind ~= 'field' then emit({type = 'blocked', uid = a.uid, i = i, j = j, text = 'flying'}); return 0 end
+    if a.name == 'Splashfest' and (kind == 'field' or kind == 'splash') then emit({type = 'blocked', uid = a.uid, i = i, j = j, text = 'immune'}); return 0 end
 
     -- Guardian soaks everything aimed at its lane
     if not opts.noRedirect and a.name ~= 'Guardian' then
         local g, gi = guardianIn(j)
-        if g then return hit(gi, j, amount, weapon, kind, {noRedirect = true, ignoreBuffs = opts.ignoreBuffs}) end
+        if g then emit({type = 'redirect', from = {i, j}, to = {gi, j}}); return hit(gi, j, amount, weapon, kind, {noRedirect = true, ignoreBuffs = opts.ignoreBuffs}) end
     end
 
     local dmg = amount
@@ -186,13 +205,14 @@ local function hit(i, j, amount, weapon, kind, opts)
     end
     if dmg <= 0 then return 0 end
     a.health = a.health - dmg
+    emit({type = 'hit', uid = a.uid, i = i, j = j, amount = dmg, killed = a.health <= 0})
     if a.health <= 0 then
         kill(i, j)
         return dmg
     end
     -- reactions
-    if a.name == 'OldGranny' and i < B.ROWS and not s.grid[i + 1][j] then move(i, j, i + 1, j) end
-    if a.name == 'TheHevalGod' then spawnInto(randomUnlocked(true), 3) end
+    if a.name == 'OldGranny' and i < B.ROWS and not s.grid[i + 1][j] then ability(a, i, j, 'lurches forward'); move(i, j, i + 1, j) end
+    if a.name == 'TheHevalGod' then ability(a, i, j, 'calls a Hevalten'); spawnInto(randomUnlocked(true), 3) end
     return dmg
 end
 B.hit = hit
@@ -221,7 +241,7 @@ local function stunLane(lane, n, turns)
     local c = 0
     for i = B.ROWS, 1, -1 do
         local a = s.grid[i][lane]
-        if a and c < n and a.immune == 0 and not a.fly and canStun(a) then a.stun = math.max(a.stun, turns); c = c + 1 end
+        if a and c < n and a.immune == 0 and not a.fly and canStun(a) then a.stun = math.max(a.stun, turns); emit({type = 'status', uid = a.uid, i = i, j = lane, kind = 'stun'}); c = c + 1 end
     end
 end
 
@@ -243,7 +263,7 @@ local W = {}
 W.AstroidRain = {kind = 'field', run = function(w) hitField(w.damage, w) end}
 W.PoisonArrow = {kind = 'lane', run = function(w, lane)
     hitLane(lane, w.damageLane, w)
-    for i = 1, B.ROWS do local a = s.grid[i][lane]; if a and canPoison(a) and a.immune == 0 then a.poison = w.poison * upgrade(w) end end
+    for i = 1, B.ROWS do local a = s.grid[i][lane]; if a and canPoison(a) and a.immune == 0 then a.poison = w.poison * upgrade(w); emit({type = 'status', uid = a.uid, i = i, j = lane, kind = 'poison'}) end end
 end}
 W.TripleThreat = {kind = 'tile', shots = 3, run = function(w, row, lane) hit(row, lane, w.damageTile, w, 'tile') end}
 W.CosmicFire = {kind = 'lane', run = function(w, lane) hitLane(lane, w.damageLane, w) end}
@@ -266,7 +286,7 @@ W.ThunderStrike = {kind = 'lane', run = function(w, lane)
     for i = B.ROWS, 1, -1 do
         local a = s.grid[i][lane]
         if a and a.immune == 0 and not a.fly then
-            if math.random(3) == 1 and canStun(a) then a.stun = math.max(a.stun, math.round(2 * upgrade(w))) else break end
+            if math.random(3) == 1 and canStun(a) then a.stun = math.max(a.stun, math.round(2 * upgrade(w))); emit({type = 'status', uid = a.uid, i = i, j = lane, kind = 'stun'}) else break end
         end
     end
 end}
@@ -298,7 +318,7 @@ end}
 
 W.SantaAxe = {kind = 'lane', run = function(w, lane) hitLane(lane, w.damageLane, w) end}
 W.Respawn = {kind = 'lane', run = function(w, lane) s.lockedLane = lane end}
-W.Offguard = {kind = 'field', run = function(w) each(function(a) if a.immune == 0 and canStun(a) then a.stun = math.max(a.stun, 1) end end) end}
+W.Offguard = {kind = 'field', run = function(w) each(function(a, i, j) if a.immune == 0 and canStun(a) then a.stun = math.max(a.stun, 1); emit({type = 'status', uid = a.uid, i = i, j = j, kind = 'stun'}) end end) end}
 W.LaserBeam = {kind = 'lane', run = function(w, lane)
     local cap = w.damage * upgrade(w)
     for i = B.ROWS, 1, -1 do local a = s.grid[i][lane]; if a and a.health <= cap and a.immune == 0 and not a.fly then kill(i, lane) end end
@@ -308,7 +328,7 @@ W.MindBlast = {kind = 'lane', run = function(w, lane)
     if not a then return end
     hit(i, lane, w.damage, w, 'first')
     local still = s.grid[i][lane]
-    if still == a and canHypno(a) and not guardianIn(lane) then a.hypno = true end
+    if still == a and canHypno(a) and not guardianIn(lane) then a.hypno = true; emit({type = 'status', uid = a.uid, i = i, j = lane, kind = 'hypno'}) end
 end}
 W.GrenadeLauncher = {kind = 'field', run = function(w)
     for _, i in ipairs({B.ROWS, 1}) do for j = 1, B.LANES do if s.grid[i][j] then hit(i, j, w.damage, w, 'splash') end end end
@@ -317,7 +337,7 @@ W.Protected = {kind = 'lane', run = function(w, lane) hitLane(lane, w.damageLane
 W.Hypnosis = {kind = 'field', run = function(w)
     for lane = 1, B.LANES do
         local a = firstInLane(lane)
-        if a and a.immune == 0 and canHypno(a) and not guardianIn(lane) then a.hypno = true end
+        if a and a.immune == 0 and canHypno(a) and not guardianIn(lane) then a.hypno = true; emit({type = 'status', uid = a.uid, kind = 'hypno'}) end
     end
 end}
 
@@ -398,12 +418,14 @@ function B.fire(n)
         s.aim = {kind = rule.kind, weapon = w, rule = rule, slot = n, remaining = rule.shots or 1, last = nil}
         return rule.kind
     end
+    emit({type = 'weapon', id = w.id, kind = rule.kind})
     rule.run(w)
     return true
 end
 
 function B.cancelAim()
     if not s.aim then return end
+    if s.aim.kind == 'wall' then s.aim = nil; return 'wall' end
     if s.aim.remaining == (s.aim.rule.shots or 1) then s.slots[s.aim.slot].used = false end -- nothing fired yet
     s.aim = nil
 end
@@ -411,13 +433,28 @@ end
 function B.aimLane(lane)
     if not s.aim or s.aim.kind ~= 'lane' then return false end
     local a = s.aim; s.aim = nil
+    emit({type = 'weapon', id = a.weapon.id, kind = 'lane', lane = lane})
     a.rule.run(a.weapon, lane)
     return true
 end
 
+function B.wallAllowed(row, lane)
+    if row < 2 or s.grid[row][lane] or s.walls[row][lane] then return false end
+    for i = 1, B.ROWS do local a = s.grid[i][lane]; if a and a.name == 'Gardener' then return false end end
+    return true
+end
+
 function B.aimTile(row, lane)
+    if s.aim and s.aim.kind == 'wall' then
+        if not B.wallAllowed(row, lane) then return false end
+        s.walls[row][lane] = true
+        emit({type = 'wall', i = row, j = lane})
+        s.aim = nil
+        return true
+    end
     if not s.aim or s.aim.kind ~= 'tile' then return false end
     if s.aim.last and s.aim.last[1] == row and s.aim.last[2] == lane then return false end
+    emit({type = 'weapon', id = s.aim.weapon.id, kind = 'tile', row = row, lane = lane})
     s.aim.rule.run(s.aim.weapon, row, lane)
     s.aim.last = {row, lane}
     s.aim.remaining = s.aim.remaining - 1
@@ -431,6 +468,7 @@ local function albotSpawns()
             local free = {}
             for c = 1, B.LANES do if not s.grid[i][c] then free[#free + 1] = c end end
             if #free > 0 then
+                ability(a, i, j, 'builds an ally')
                 local def = Aliensrand[math.random(math.min(STARTER_TIERS, #Aliensrand))]
                 B.spawn(i, free[math.random(#free)], def)
             end
@@ -443,6 +481,7 @@ local function hypnoTurn()
         for i = 1, B.ROWS do -- top to bottom so a hypno alien moves at most once
             local a = s.grid[i][j]
             if a and a.hypno then
+                ability(a, i, j, 'fights for you')
                 if i == 1 then
                     remove(i, j) -- walked off the top
                 else
@@ -472,7 +511,7 @@ local function advance()
                 local blocked = a.stun > 0
                 if a.name == 'Giant' then
                     a.giantWait = not a.giantWait
-                    if a.giantWait then blocked = true end
+                    if a.giantWait then blocked = true; emit({type = 'rest', uid = a.uid, i = i, j = j, text = 'catches its breath'}) end
                 end
                 if a.fly then blocked = false end
                 if not blocked then
@@ -484,9 +523,10 @@ local function advance()
                             if a.name == 'Jumper' then
                                 local r = dest
                                 while r <= B.ROWS and s.walls[r][j] do r = r + 1 end
-                                if r > B.ROWS then lost = true elseif not s.grid[r][j] then move(i, j, r, j) end
+                                if r > B.ROWS then lost = true elseif not s.grid[r][j] then emit({type = 'jump', uid = a.uid}); move(i, j, r, j) end
                             else
                                 s.walls[dest][j] = false -- wall absorbs the move
+                                emit({type = 'wallbreak', uid = a.uid, i = dest, j = j})
                             end
                         else
                             move(i, j, dest, j)
@@ -503,7 +543,12 @@ local function tickStatuses()
     each(function(a)
         if a.stun > 0 then a.stun = a.stun - 1 end
         if a.immune > 0 then a.immune = a.immune - 1 end
-        if a.name == 'Spaceship' then a.fly = not a.fly end
+    end)
+end
+
+local function flightToggles()
+    each(function(a, i, j)
+        if a.name == 'Spaceship' then a.fly = not a.fly; ability(a, i, j, a.fly and 'takes flight' or 'lands') end
     end)
 end
 
@@ -511,6 +556,7 @@ local function applyPoison()
     each(function(a, i, j)
         if a.poison > 0 and a.immune == 0 and not guardianIn(j) then
             a.health = a.health - a.poison * s.buff
+            emit({type = 'hit', uid = a.uid, i = i, j = j, amount = a.poison * s.buff, killed = a.health <= 0, poison = true})
             if a.health <= 0 then kill(i, j) end
         end
     end)
@@ -519,6 +565,7 @@ end
 local function morphs()
     each(function(a, i, j)
         if a.morph then
+            ability(a, i, j, 'morphs')
             local def = randomUnlocked(false)
             local pct = a.health / a.maxHealth
             local keep = {stun = a.stun, poison = a.poison, hypno = a.hypno}
@@ -544,18 +591,26 @@ end
 function B.endTurn()
     if s.aim then B.cancelAim() end
     s.turn = s.turn + 1
+    emit({type = 'phase', name = 'poison'})
     applyPoison()
     if s.stellar then
         s.stellar.turns = s.stellar.turns - 1
         if s.stellar.turns == 2 then s.stellar.mult = 1.1 * (s.stellar.mult / 1.2) end
         if s.stellar.turns <= 0 then s.stellar = nil end
     end
+    -- aliens with abilities act first, one at a time
+    emit({type = 'phase', name = 'abilities'})
     albotSpawns()
-    hypnoTurn()
-    if advance() then s.result = 'lose'; return 'lose' end
-    tickStatuses()
-    B.spawnWave()
     morphs()
+    flightToggles()
+    hypnoTurn()
+    -- then everyone marches
+    emit({type = 'phase', name = 'move'})
+    local lost = advance()
+    tickStatuses()
+    if lost then emit({type = 'lose'}); s.result = 'lose'; return 'lose' end
+    emit({type = 'phase', name = 'spawn'})
+    B.spawnWave()
     tickCooldowns()
     return B.checkStage()
 end
@@ -582,29 +637,25 @@ end
 function B.useItem(key)
     if key == 'zap' then
         local lane = math.random(B.LANES)
-        for i = 1, B.ROWS do local a = s.grid[i][lane]; if a and canStun(a) and a.immune == 0 then a.stun = math.max(a.stun, 3) end end
+        emit({type = 'item', key = key, lane = lane})
+        for i = 1, B.ROWS do local a = s.grid[i][lane]; if a and canStun(a) and a.immune == 0 then a.stun = math.max(a.stun, 3); emit({type = 'status', uid = a.uid, i = i, j = lane, kind = 'stun'}) end end
     elseif key == 'electricity' then
-        each(function(a) if canStun(a) and a.immune == 0 then a.stun = math.max(a.stun, 1) end end)
+        emit({type = 'item', key = key})
+        each(function(a, i, j) if canStun(a) and a.immune == 0 then a.stun = math.max(a.stun, 1); emit({type = 'status', uid = a.uid, i = i, j = j, kind = 'stun'}) end end)
     elseif key == 'teleporter' then
         local cells = {}
         each(function(a, i, j) if a.name ~= 'GodOfSpace' then cells[#cells + 1] = {i, j} end end)
-        if #cells > 0 then local c = cells[math.random(#cells)]; kill(c[1], c[2]) end
+        if #cells > 0 then local c = cells[math.random(#cells)]; emit({type = 'item', key = key, i = c[1], j = c[2]}); kill(c[1], c[2]) end
     elseif key == 'gold' then
         data.goldBuff = 2
     elseif key == 'protection' then
         s.buff = s.buff * 1.5
     elseif key == 'walls' then
-        local lanes = {}
-        for j = 1, B.LANES do
-            local ok = true
-            for i = 1, B.ROWS do local a = s.grid[i][j]; if a and a.name == 'Gardener' then ok = false end end
-            if ok then lanes[#lanes + 1] = j end
-        end
-        local spots = {}
-        for _, j in ipairs(lanes) do for i = 2, B.ROWS do if not s.walls[i][j] and not s.grid[i][j] then spots[#spots + 1] = {i, j} end end end
-        if #spots == 0 then return false end
-        local c = spots[math.random(#spots)]
-        s.walls[c[1]][c[2]] = true
+        local any = false
+        for j = 1, B.LANES do for i = 2, B.ROWS do if B.wallAllowed(i, j) then any = true end end end
+        if not any then return false end
+        s.aim = {kind = 'wall'}
+        return 'aim'
     elseif key == 'retreat' then
         if s.stage >= 3 then s.result = 'win'; return 'win' end
         s.stage = s.stage + 1; B.newStage(); return 'stage'
