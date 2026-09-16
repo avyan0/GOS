@@ -42,7 +42,13 @@ function love.load(args)
 
     loadData()
     if data.fullscreen then love.window.setFullscreen(true); push:resize(love.graphics.getDimensions()) end
-    sfx.init()
+    pcall(sfx.init) -- no audio device is not fatal
+    -- window icon: a Hevalten-red planet drawn with our own icon code
+    local c = love.graphics.newCanvas(64, 64)
+    love.graphics.setCanvas(c); love.graphics.clear(0, 0, 0, 0)
+    icons.planet(32, 32, 24, PLANETS[6].hue, false)
+    love.graphics.setCanvas()
+    love.window.setIcon(c:newImageData())
     weaponDictionary()
     alienDictionary()
     makeLevel(); applyNewSpawns()
