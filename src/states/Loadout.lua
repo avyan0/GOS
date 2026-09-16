@@ -50,7 +50,7 @@ function drawSlots(x, y, w, selectedSlot, t)
             local pulse = 0.5 + 0.5 * math.sin((t or 0) * 3)
             ui.color(ui.c.accent, 0.3 + 0.3 * pulse); love.graphics.setLineWidth(2)
             love.graphics.circle('line', sx + 44, y + 58, 20)
-            ui.text('Empty  -  choose a weapon', sx + 78, y + 48, sw - 90, 'left', 'body', 15, ui.c.muted)
+            ui.text('Empty slot', sx + 78, y + 48, sw - 90, 'left', 'body', 15, ui.c.muted)
         end
         if ui.hit(sx, y, sw, 96) then clicked = i; clickedId = w_ and id or nil end
     end

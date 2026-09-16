@@ -554,8 +554,10 @@ function createNewSave()
 	data = defaultSave()
 	-- 3 distinct random common weapons + StellarBoost to start
 	local pool = {unpack(COMMON_WEAPONS)}
-	for _ = 1, 3 do
-		data.weapons[table.remove(pool, math.random(#pool))] = true
+	for n = 1, 3 do
+		local id = table.remove(pool, math.random(#pool))
+		data.weapons[id] = true
+		data['weaponChoose' .. n] = id -- start equipped so the first battle is one click away
 	end
 	data.weapons['StellarBoost'] = true
 end

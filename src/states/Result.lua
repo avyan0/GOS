@@ -88,6 +88,7 @@ function Result:render()
 end
 
 function Result:keyPressed(k)
+    if self.t < 1 then return end -- so mashing Enter through the last turn does not skip the summary
     if k == 'return' or k == 'space' then
         if self.won and self.advanced then data.currentLevel = data.planet .. '-' .. math.min(30, data.level + 1) end
         gStateMachine:change(self.spin and 'reward' or 'loadout', self.spin and {tier = self.spin} or nil)

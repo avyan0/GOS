@@ -305,10 +305,12 @@ function GameState:render(dimmed)
             local status
             if isAiming then status = 'AIMING'
             elseif not slot.used then status = 'READY   -   ' .. KEYS[n]
-            elseif w.cooldown > 0 then status = 'RECHARGING ' .. slot.cd .. '/' .. w.cooldown
+            elseif w.cooldown > 0 and slot.cd > 0 then
+                local left = math.max(1, w.cooldown - slot.cd + 1)
+                status = 'RECHARGING - ' .. left .. (left == 1 and ' TURN' or ' TURNS')
             else status = 'USED THIS TURN' end
             ui.text(status, SIDE_X + 24, y + 80, SIDE_W - 48, 'left', 'hud', 12, lit and color or ui.c.dim)
-            if w.cooldown > 0 then ui.pips(SIDE_X + SIDE_W - 24 - w.cooldown * 12, y + 84, w.cooldown, slot.used and slot.cd or w.cooldown, color, 7, 5) end
+            if w.cooldown > 0 then ui.pips(SIDE_X + SIDE_W - 24 - w.cooldown * 12, y + 84, w.cooldown, slot.used and math.max(0, slot.cd - 1) or w.cooldown, color, 7, 5) end
         end
         if not dimmed and ready and ui.hit(SIDE_X + 12, y, SIDE_W - 24, 108) then fire(n) end
     end

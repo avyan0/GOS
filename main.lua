@@ -32,6 +32,8 @@ local saveTimer = 0
 function love.load(args)
     if args and args[1] == '--test' then TESTING = true; require 'src/tests'; love.event.quit(); return end
     if args and args[1] == '--sim' then TESTING = true; SIM_ARGS = {args[2], args[3], args[4], args[5], args[6], args[7], args[8]}; require 'src/sim'; love.event.quit(); return end
+    -- `lovec . --profile name` plays with a separate save (dev/testing)
+    if args and args[1] == '--profile' and args[2] then love.filesystem.setIdentity('GodsOfSpace-' .. args[2]) end
     love.window.setTitle('Gods Of Space')
     love.graphics.setDefaultFilter('linear', 'linear')
     math.randomseed(os.time())

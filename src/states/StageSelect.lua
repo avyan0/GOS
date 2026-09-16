@@ -46,4 +46,6 @@ function StageSelect:render()
     end
 end
 
-function StageSelect:keyPressed() end -- no leaving mid-battle
+function StageSelect:keyPressed(k) -- no leaving mid-battle; Enter starts the stage
+    if (k == 'return' or k == 'kpenter') and self:ready() and self.t > 0.5 then saveData(); gStateMachine:change('battle') end
+end
