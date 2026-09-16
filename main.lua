@@ -31,6 +31,7 @@ local saveTimer = 0
 
 function love.load(args)
     if args and args[1] == '--test' then TESTING = true; require 'src/tests'; love.event.quit(); return end
+    if args and args[1] == '--sim' then TESTING = true; SIM_ARGS = {args[2], args[3], args[4], args[5], args[6], args[7], args[8]}; require 'src/sim'; love.event.quit(); return end
     love.window.setTitle('Gods Of Space')
     love.graphics.setDefaultFilter('linear', 'linear')
     math.randomseed(os.time())
@@ -38,6 +39,7 @@ function love.load(args)
     push:setupScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, {vsync = true, fullscreen = false, resizable = true})
 
     loadData()
+    if data.fullscreen then love.window.setFullscreen(true); push:resize(love.graphics.getDimensions()) end
     sfx.init()
     weaponDictionary()
     alienDictionary()
@@ -102,7 +104,14 @@ function love.mousepressed(x, y, button)
     end
 end
 
+function toggleFullscreen()
+    data.fullscreen = not love.window.getFullscreen()
+    love.window.setFullscreen(data.fullscreen)
+    push:resize(love.graphics.getDimensions())
+end
+
 function love.keypressed(key)
+    if key == 'f11' then toggleFullscreen(); return end
     love.keyboard.keysPressed[key] = true
     gStateMachine:keyPressed(key)
 end

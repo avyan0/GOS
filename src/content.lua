@@ -360,6 +360,7 @@ end
 -- key = internal name used by battle logic; title = display name; spec = icon look.
 local function makeAlien(key, health, hevalten, title, desc, spec)
     spec.hevalten = hevalten
+    health = math.floor(health * (HP_SCALE or 1) + 0.5) -- HP_SCALE: balance probe knob (src/sim.lua)
     return {name = key, health = health, speed = 1, hevalten = hevalten, title = title, desc = desc, spec = spec}
 end
 
@@ -386,39 +387,39 @@ function alienDictionary()
     add(makeAlien('Gen57',            700,   false, 'Gen-57',         'Mass-produced clone. No ability.',                                                 {shape = 'square',  eyes = 2, hue = 0.55}))
     add(makeAlien('President',        1100,  false, 'President',      'Elected, somehow. No ability.',                                                    {shape = 'round',   eyes = 2, hue = 0.62}))
     add(makeAlien('King',             1550,  false, 'King',           'Rules by birthright. No ability.',                                                 {shape = 'hex',     eyes = 2, hue = 0.12, crown = true}))
-    add(makeAlien('DJ',               2150,  false, 'DJ',             'Loud. No ability.',                                                                {shape = 'round',   eyes = 1, hue = 0.85}))
-    add(makeAlien('SpaceFence',       2950,  false, 'Space Fence',    'Spawns with a one-turn shield that blocks all damage.',                            {shape = 'square',  eyes = 3, hue = 0.5}))
-    add(makeAlien('Spaceship',        3000,  false, 'Spaceship',      'Takes flight every second turn. While flying it is immune to almost everything.', {shape = 'diamond', eyes = 1, hue = 0.58}))
-    add(makeAlien('VRWorkout',        3500,  false, 'VR Workout',     'Very fit. No ability.',                                                            {shape = 'round',   eyes = 2, hue = 0.05}))
-    add(makeAlien('OldGranny',        3700,  false, 'Old Granny',     'If she was hurt this turn, lurches an extra tile forward before everyone moves.',                           {shape = 'round',   eyes = 2, hue = 0.9,  sat = 0.3}))
-    add(makeAlien('Albot',            3000,  true,  'Albot',          'Hevalten. Spawns a random alien in its row every turn.',                          {shape = 'square',  eyes = 3, hue = 0.0}))
-    add(makeAlien('Jumper',           4900,  false, 'Jumper',         'Leaps over any wall in its way.',                                                  {shape = 'tri',     eyes = 2, hue = 0.28}))
-    add(makeAlien('Giant',            12700, false, 'Giant',          'Enormous, but only moves every other turn.',                                       {shape = 'hex',     eyes = 2, hue = 0.08, sat = 0.5}))
-    add(makeAlien('Gardener',         8200,  false, 'Gardener',       'Walls cannot be placed in any lane the Gardener occupies.',                        {shape = 'round',   eyes = 2, hue = 0.25}))
-    add(makeAlien('Army',             9400,  true,  'Army',           'Hevalten. Every Army on the field lowers all of your damage by 2%.',              {shape = 'square',  eyes = 2, hue = 0.2,  sat = 0.4}))
-    add(makeAlien('Morpher',          5700,  false, 'Morpher',        'Turns into a different alien every turn, keeping its health percentage.',          {shape = 'diamond', eyes = 3, hue = 0.75}))
-    add(makeAlien('Fusion',           10000, false, 'Fusion',         'On spawn, fuses two aliens into one with 1.5x their combined health.',             {shape = 'hex',     eyes = 1, hue = 0.95}))
-    add(makeAlien('CommonCrippler',   13300, false, 'Crippler',       'Common weapons deal 25% less damage while it lives.',                             {shape = 'tri',     eyes = 2, hue = 0.4}))
-    add(makeAlien('Splashfest',       15500, false, 'Splashfest',     'Immune to all splash damage.',                                                     {shape = 'round',   eyes = 3, hue = 0.52}))
-    add(makeAlien('Virus',            17600, false, 'Virus',          'All of your weapon cooldowns last one turn longer.',                               {shape = 'diamond', eyes = 1, hue = 0.3}))
-    add(makeAlien('Guardian',         28800, true,  'Guardian',       'Hevalten. Absorbs all damage aimed at its lane. Immune to poison, knockback and hypnosis.', {shape = 'hex', eyes = 2, hue = 0.6, aura = true}))
-    add(makeAlien('DarkArts',         20000, true,  'Dark Arts',      'Hevalten. On spawn, upgrades every alien on the field to a stronger one.',        {shape = 'diamond', eyes = 2, hue = 0.78, sat = 0.9}))
-    add(makeAlien('Rare',             23000, false, 'Rarebane',       'Rare weapons deal 20% less damage while it lives.',                               {shape = 'square',  eyes = 1, hue = 0.6}))
-    add(makeAlien('Protected',        26000, false, 'Bunker',         'All targeted damage against it is halved.',                                        {shape = 'square',  eyes = 2, hue = 0.1,  sat = 0.3}))
-    add(makeAlien('Interdimentional', 34200, false, 'Interdimensional', 'Every one on the field reduces all damage by 7.5%.',                            {shape = 'diamond', eyes = 3, hue = 0.7}))
-    add(makeAlien('Scarce',           40000, true,  'Scarcebane',     'Hevalten. Scarce weapons deal 20% less damage while it lives.',                   {shape = 'hex',     eyes = 1, hue = 0.8}))
-    add(makeAlien('TheHevalGod',      46700, true,  'Heval God',      'Hevalten. If it was hurt this turn, calls a random Hevalten into the first three rows.', {shape = 'hex', eyes = 3, hue = 0.0, aura = true, crown = true}))
-    add(makeAlien('GodOfSpace',       50000, true,  'God of Space',   'Hevalten. Spawns three more aliens on arrival. Immune to knockback, poison and hypnosis.', {shape = 'round', eyes = 3, hue = 0.15, aura = true, crown = true}))
+    add(makeAlien('DJ',               1600,  false, 'DJ',             'Loud. No ability.',                                                                {shape = 'round',   eyes = 1, hue = 0.85}))
+    add(makeAlien('SpaceFence',       1700,  false, 'Space Fence',    'Spawns with a one-turn shield that blocks all damage.',                            {shape = 'square',  eyes = 3, hue = 0.5}))
+    add(makeAlien('Spaceship',        1800,  false, 'Spaceship',      'Takes flight every second turn. While flying it is immune to almost everything.', {shape = 'diamond', eyes = 1, hue = 0.58}))
+    add(makeAlien('VRWorkout',        2000,  false, 'VR Workout',     'Very fit. No ability.',                                                            {shape = 'round',   eyes = 2, hue = 0.05}))
+    add(makeAlien('OldGranny',        2100,  false, 'Old Granny',     'If she was hurt this turn, lurches an extra tile forward before everyone moves.',                           {shape = 'round',   eyes = 2, hue = 0.9,  sat = 0.3}))
+    add(makeAlien('Albot',            1650,  true,  'Albot',          'Hevalten. Spawns a random alien in its row every turn.',                          {shape = 'square',  eyes = 3, hue = 0.0}))
+    add(makeAlien('Jumper',           3400,  false, 'Jumper',         'Leaps over any wall in its way.',                                                  {shape = 'tri',     eyes = 2, hue = 0.28}))
+    add(makeAlien('Giant',            5500,  false, 'Giant',          'Enormous, but only moves every other turn.',                                       {shape = 'hex',     eyes = 2, hue = 0.08, sat = 0.5}))
+    add(makeAlien('Gardener',         5000,  false, 'Gardener',       'Walls cannot be placed in any lane the Gardener occupies.',                        {shape = 'round',   eyes = 2, hue = 0.25}))
+    add(makeAlien('Army',             5500,  true,  'Army',           'Hevalten. Every Army on the field lowers all of your damage by 2%.',              {shape = 'square',  eyes = 2, hue = 0.2,  sat = 0.4}))
+    add(makeAlien('Morpher',          3800,  false, 'Morpher',        'Turns into a different alien every turn, keeping its health percentage.',          {shape = 'diamond', eyes = 3, hue = 0.75}))
+    add(makeAlien('Fusion',           4500,  false, 'Fusion',         'On spawn, fuses two aliens into one with 1.5x their combined health.',             {shape = 'hex',     eyes = 1, hue = 0.95}))
+    add(makeAlien('CommonCrippler',   6000,  false, 'Crippler',       'Common weapons deal 25% less damage while it lives.',                             {shape = 'tri',     eyes = 2, hue = 0.4}))
+    add(makeAlien('Splashfest',       6500,  false, 'Splashfest',     'Immune to all splash damage.',                                                     {shape = 'round',   eyes = 3, hue = 0.52}))
+    add(makeAlien('Virus',            7500,  false, 'Virus',          'Every weapon that has a cooldown takes one turn longer to recharge.',                               {shape = 'diamond', eyes = 1, hue = 0.3}))
+    add(makeAlien('Guardian',         11000, true,  'Guardian',       'Hevalten. Absorbs all damage aimed at its lane. Immune to poison, knockback and hypnosis.', {shape = 'hex', eyes = 2, hue = 0.6, aura = true}))
+    add(makeAlien('DarkArts',         8000,  true,  'Dark Arts',      'Hevalten. On spawn, upgrades the three aliens closest to your base into stronger ones.',        {shape = 'diamond', eyes = 2, hue = 0.78, sat = 0.9}))
+    add(makeAlien('Rare',             9000,  false, 'Rarebane',       'Rare weapons deal 20% less damage while it lives.',                               {shape = 'square',  eyes = 1, hue = 0.6}))
+    add(makeAlien('Protected',        10000, false, 'Bunker',         'All targeted damage against it is halved.',                                        {shape = 'square',  eyes = 2, hue = 0.1,  sat = 0.3}))
+    add(makeAlien('Interdimentional', 12500, false, 'Interdimensional', 'Every one on the field reduces all damage by 7.5%.',                            {shape = 'diamond', eyes = 3, hue = 0.7}))
+    add(makeAlien('Scarce',           30000, true,  'Scarcebane',     'Hevalten. Scarce weapons deal 20% less damage while it lives.',                   {shape = 'hex',     eyes = 1, hue = 0.8}))
+    add(makeAlien('TheHevalGod',      38000, true,  'Heval God',      'Hevalten. If it was hurt this turn, calls a random Hevalten into the first three rows.', {shape = 'hex', eyes = 3, hue = 0.0, aura = true, crown = true}))
+    add(makeAlien('GodOfSpace',       42000, true,  'God of Space',   'Hevalten. Spawns three more aliens on arrival. Immune to knockback, poison and hypnosis.', {shape = 'round', eyes = 3, hue = 0.15, aura = true, crown = true}))
     -- newer arrivals
     add(makeAlien('Swarmling',        400,   false, 'Swarmling',      'Tiny and fast: moves two rows every turn.',                                        {shape = 'tri',     eyes = 1, hue = 0.45}))
-    add(makeAlien('Shieldbearer',     3200,  false, 'Shieldbearer',   'Each turn, shields the alien directly ahead of it for one turn.',                  {shape = 'square',  eyes = 2, hue = 0.13}))
-    add(makeAlien('Phaser',           4200,  false, 'Phaser',         'Half damage from lane attacks. Double damage from tile and single-target attacks.', {shape = 'diamond', eyes = 2, hue = 0.5, sat = 0.9}))
-    add(makeAlien('Medic',            6000,  false, 'Medic',          'Each turn, heals every other alien for 10% of its maximum health.',                 {shape = 'round',   eyes = 2, hue = 0.0, sat = 0.2}))
-    add(makeAlien('Thief',            7500,  false, 'Thief',          'Steals 5 gold from you every turn it is alive.',                                     {shape = 'diamond', eyes = 2, hue = 0.16, sat = 0.9}))
-    add(makeAlien('Splitter',         11000, false, 'Splitter',       'When it dies, splits into two weaker aliens at half health.',                       {shape = 'hex',     eyes = 4, hue = 0.35}))
-    add(makeAlien('Anchor',           16000, false, 'Anchor',         'Nothing in its lane can be knocked back, pulled or moved by your weapons.',          {shape = 'square',  eyes = 1, hue = 0.6, sat = 0.3}))
-    add(makeAlien('Necromancer',      22000, true,  'Necromancer',    'Hevalten. Every third turn, raises the last alien you killed at half health in its row.', {shape = 'diamond', eyes = 3, hue = 0.82, aura = true}))
-    add(makeAlien('VoidTitan',        60000, true,  'Void Titan',     'Hevalten. No single hit can deal more than 5000 damage to it.',                     {shape = 'hex',     eyes = 3, hue = 0.68, aura = true, crown = true}))
+    add(makeAlien('Shieldbearer',     1900,  false, 'Shieldbearer',   'Each turn, shields the alien directly ahead of it for one turn.',                  {shape = 'square',  eyes = 2, hue = 0.13}))
+    add(makeAlien('Phaser',           2300,  false, 'Phaser',         'Half damage from lane attacks. Double damage from tile and single-target attacks.', {shape = 'diamond', eyes = 2, hue = 0.5, sat = 0.9}))
+    add(makeAlien('Medic',            4000,  false, 'Medic',          'Each turn, heals every other alien for 10% of its maximum health.',                 {shape = 'round',   eyes = 2, hue = 0.0, sat = 0.2}))
+    add(makeAlien('Thief',            4500,  false, 'Thief',          'Steals 5 gold from you every turn it is alive.',                                     {shape = 'diamond', eyes = 2, hue = 0.16, sat = 0.9}))
+    add(makeAlien('Splitter',         5000,  false, 'Splitter',       'When it dies, splits into two weaker aliens at half health.',                       {shape = 'hex',     eyes = 4, hue = 0.35}))
+    add(makeAlien('Anchor',           7000,  false, 'Anchor',         'Nothing in its lane can be knocked back, pulled or moved by your weapons.',          {shape = 'square',  eyes = 1, hue = 0.6, sat = 0.3}))
+    add(makeAlien('Necromancer',      8500,  true,  'Necromancer',    'Hevalten. Every third turn, raises the last alien you killed at half health in its row.', {shape = 'diamond', eyes = 3, hue = 0.82, aura = true}))
+    add(makeAlien('VoidTitan',        55000, true,  'Void Titan',     'Hevalten. No single hit can deal more than 5000 damage to it.',                     {shape = 'hex',     eyes = 3, hue = 0.68, aura = true, crown = true}))
     table.sort(Aliensrand, function(a, b) return a.health < b.health end)
     for k, a in ipairs(Aliensrand) do a.tier = k end
 end
@@ -494,7 +495,7 @@ PLANETS = {
 
 SPIN_TIERS = {
     {key = 'Common', rarity = 'common', price = 25,  unlock = function() return true end},
-    {key = 'Rare',   rarity = 'rare',   price = 45,  unlock = function() return (data.planet == 2 and data.level >= 15) or data.planet > 2 end},
+    {key = 'Rare',   rarity = 'rare',   price = 45,  unlock = function() return data.planet >= 2 end},
     {key = 'Scarce', rarity = 'scarce', price = 100, unlock = function() return data.planet >= 4 end},
     {key = 'God',    rarity = 'god',    price = 270, unlock = function() return (data.planet == 5 and data.level >= 15) or data.planet > 5 end},
     {key = 'Item',   rarity = nil,      price = 25,  unlock = function() return true end},
@@ -524,8 +525,8 @@ function defaultSave()
 		gold = 0, gems = 0, time = '00:00', hours = 0, mins = 0,
 		planet = 1, name = 'Player', currentLevel = '',
 		weaponChoose1 = '', weaponChoose2 = '', weaponChoose3 = '',
-		aliensKilled = 0, wins = 0, matchesPlayed = 0, level = 1,
-		brightness = 100, volume = 100, sfx = 100,
+		aliensKilled = 0, wins = 0, matchesPlayed = 0, level = 0,
+		brightness = 100, volume = 100, sfx = 100, fullscreen = false,
 		walls = 0, retreat = 0, zap = 0, bomb = 0, doubleGold = 0,
 		teleporter = 0, electricity = 0, protection = 0,
 		aliensUnlocked = 2, goldBuff = 1, turn = false,

@@ -142,19 +142,28 @@ local function randomUnlocked(hevaltenOnly)
     return pool[math.random(#pool)]
 end
 
--- promote every other alien one tier, keeping its health percentage
+-- highest tier that belongs at the current level
+local function maxTier()
+    local here = levelIndex(data.currentLevel)
+    local top = 1
+    for k, d in ipairs(Aliensrand) do if (d.intro or 0) <= here then top = k end end
+    return top
+end
+
+-- Dark Arts: promote the three aliens closest to the base one tier, keeping
+-- their health percentage. Never promotes past what this level can spawn.
 local function upgradeAll(exceptI, exceptJ)
+    local top, n = maxTier(), 0
     each(function(a, i, j)
-        if i == exceptI and j == exceptJ then return end
-        for k = 1, #Aliensrand - 1 do
-            if Aliensrand[k].name == a.name then
-                local pct = a.health / a.maxHealth
-                local keep = {stun = a.stun, poison = a.poison, hypno = a.hypno}
-                remove(i, j)
-                local n = place(i, j, Aliensrand[k + 1], Aliensrand[k + 1].health * pct)
-                n.stun, n.poison, n.hypno = keep.stun, keep.poison, keep.hypno
-                return
-            end
+        if n >= 3 or (i == exceptI and j == exceptJ) then return end
+        local k = Aliens[a.name].tier
+        if k and k < top then
+            local pct = a.health / a.maxHealth
+            local keep = {stun = a.stun, poison = a.poison, hypno = a.hypno}
+            remove(i, j)
+            local up = place(i, j, Aliensrand[k + 1], Aliensrand[k + 1].health * pct)
+            up.stun, up.poison, up.hypno = keep.stun, keep.poison, keep.hypno
+            n = n + 1
         end
     end)
 end
@@ -167,8 +176,9 @@ local function fuse(selfI, selfJ)
     local x = table.remove(others, math.random(#others))
     local y = table.remove(others, math.random(#others))
     local hp = (x[3].health + y[3].health) * 1.5
-    local def = Aliensrand[#Aliensrand]
-    for k = 1, #Aliensrand do if Aliensrand[k].health >= hp then def = Aliensrand[k]; break end end
+    local top = maxTier() -- never fuse into something this level cannot spawn
+    local def = Aliensrand[top]
+    for k = 1, top do if Aliensrand[k].health >= hp then def = Aliensrand[k]; break end end
     remove(x[1], x[2]); remove(y[1], y[2])
     place(x[1], x[2], def, math.min(hp, def.health))
 end
@@ -191,7 +201,7 @@ function B.spawn(i, j, def, health)
     local a = place(i, j, def, health)
     if def.name == 'SpaceFence' then a.immune = 1; ability(a, i, j, 'raises a shield') end
     if PASSIVE[def.name] then ability(a, i, j, PASSIVE[def.name]) end
-    if def.name == 'DarkArts' then ability(a, i, j, 'empowers every alien'); upgradeAll(i, j) end
+    if def.name == 'DarkArts' then ability(a, i, j, 'empowers the front line'); upgradeAll(i, j) end
     if def.name == 'Fusion' then ability(a, i, j, 'fuses two aliens'); fuse(i, j) end
     if def.name == 'GodOfSpace' then ability(a, i, j, 'summons reinforcements'); for _ = 1, 3 do spawnInto(randomUnlocked(false), 3) end end
     return a
@@ -503,9 +513,12 @@ local function loadSlots()
     for n, k in ipairs(SLOT_KEYS) do s.slots[n] = {id = data[k], used = false, cd = 0} end
 end
 
+-- kills required this stage. The level tables were written for one spawn per
+-- turn; waves are bigger now so quotas are scaled to keep levels ~15-25 turns.
+B.QUOTA_SCALE = 0.25
 function B.needed()
     local L = assert(Levels[data.currentLevel], 'no level ' .. tostring(data.currentLevel))
-    return ({L.first, L.second, L.third})[s.stage]
+    return math.ceil(({L.first, L.second, L.third})[s.stage] * B.QUOTA_SCALE)
 end
 
 function B.start()
@@ -530,16 +543,21 @@ local function rollAlien()
     return Aliens[alienNames[1]]
 end
 
+-- aliens arriving per turn, by stage; later stages come in waves
+B.WAVE = {1, 2, 3}
+
 function B.spawnWave()
-    if s.kills + count() >= s.needed then return end -- enough on the field already
-    local def = rollAlien()
-    local lanes = {}
-    for j = 1, B.LANES do
-        if not s.grid[1][j] and (def.hevalten or j ~= s.lockedLane) then lanes[#lanes + 1] = j end
+    for _ = 1, B.WAVE[s.stage] or 1 do
+        if s.kills + count() >= s.needed then break end -- enough on the field already
+        local def = rollAlien()
+        local lanes = {}
+        for j = 1, B.LANES do
+            if not s.grid[1][j] and (def.hevalten or j ~= s.lockedLane) then lanes[#lanes + 1] = j end
+        end
+        if #lanes == 0 then break end
+        B.spawn(1, lanes[math.random(#lanes)], def)
     end
     s.lockedLane = nil
-    if #lanes == 0 then return end
-    B.spawn(1, lanes[math.random(#lanes)], def)
 end
 
 -- fire a slot. Returns 'lane' / 'tile' when aiming is required, true when fired, false when unavailable.
@@ -799,8 +817,9 @@ local function tickCooldowns()
     for _, slot in ipairs(s.slots) do
         local w = Weapons[slot.id]
         if slot.used then
+            local cd = w and w.cooldown or 0
             slot.cd = slot.cd + 1
-            if slot.cd > (w and w.cooldown or 0) + virus then slot.used = false; slot.cd = 0 end
+            if slot.cd > cd + (cd > 0 and virus or 0) then slot.used = false; slot.cd = 0 end -- Virus only slows weapons that recharge
         end
     end
 end

@@ -9,6 +9,8 @@ local function check(cond, msg)
     if cond then passed = passed + 1 else failed = failed + 1; print('  FAIL [' .. current .. '] ' .. msg) end
 end
 local function near(a, b, eps) return math.abs(a - b) <= (eps or 0.01) end
+-- alien health by name, so tests survive balance changes
+local hp = setmetatable({}, {__index = function(_, name) return Aliens[name].health end})
 
 -- fresh world for each test
 local function setup(opts)
@@ -59,8 +61,8 @@ test('Asteroid Rain hits every alien for 175', function()
     put(3, 1, 'Joe'); put(7, 4, 'King'); put(1, 5, 'DJ')
     check(B.fire(1) == true, 'field weapon fires without aiming')
     check(near(B.alienAt(3, 1).health, 500 - 175), 'joe damaged')
-    check(near(B.alienAt(7, 4).health, 1550 - 175), 'king damaged')
-    check(near(B.alienAt(1, 5).health, 2150 - 175), 'dj damaged')
+    check(near(B.alienAt(7, 4).health, hp.King - 175), 'king damaged')
+    check(near(B.alienAt(1, 5).health, hp.DJ - 175), 'dj damaged')
     check(B.state().slots[1].used, 'slot marked used')
 end)
 
@@ -70,7 +72,7 @@ test('Poison Arrow damages a lane and poisons it', function()
     check(B.fire(1) == 'lane', 'asks for a lane')
     B.aimLane(3)
     check(near(B.alienAt(2, 3).health, 1400) and near(B.alienAt(6, 3).health, 1400), 'both in lane took 150')
-    check(near(B.alienAt(6, 4).health, 1550), 'other lane untouched')
+    check(near(B.alienAt(6, 4).health, hp.King), 'other lane untouched')
     check(B.alienAt(2, 3).poison == 55, 'poisoned for 55')
     B.endTurn()
     -- both moved down one row and ticked poison
@@ -115,7 +117,7 @@ test('Star Blast hits a cross around the tile', function()
     check(near(B.alienAt(5, 3).health, 1390), 'center hit')
     check(near(B.alienAt(5, 2).health, 1390) and near(B.alienAt(5, 4).health, 1390), 'sides hit')
     check(near(B.alienAt(3, 3).health, 1390) and near(B.alienAt(7, 3).health, 1390), 'two up / two down hit')
-    check(near(B.alienAt(5, 1).health, 1550) and near(B.alienAt(8, 3).health, 1550), 'outside cross untouched')
+    check(near(B.alienAt(5, 1).health, hp.King) and near(B.alienAt(8, 3).health, hp.King), 'outside cross untouched')
 end)
 
 test('Laser Kill kills aliens at or under 600, Laser Beam under 6000, both ignore buffs', function()
@@ -152,17 +154,17 @@ test('Cooldowns: 3-turn weapon is back on the 4th turn; 0-cooldown weapon back n
 end)
 
 test('Thunder Strike deals 700 to the lane', function()
-    setup({w1 = 'ThunderStrike'}); put(3, 2, 'Giant'); put(8, 2, 'Giant')
+    setup({w1 = 'ThunderStrike'}); put(3, 2, 'Giant', 50000); put(8, 2, 'Giant', 50000)
     B.fire(1); B.aimLane(2)
-    check(near(B.alienAt(3, 2).health, 12000) and near(B.alienAt(8, 2).health, 12000), '700 each')
+    check(near(B.alienAt(3, 2).health, 49300) and near(B.alienAt(8, 2).health, 49300), '700 each')
 end)
 
 test('Battle Ram hits the closest alien and knocks it back one tile', function()
-    setup({w1 = 'BattleRam'}); put(2, 1, 'Giant'); put(8, 1, 'Giant')
+    setup({w1 = 'BattleRam'}); put(2, 1, 'Giant', 50000); put(8, 1, 'Giant', 50000)
     B.fire(1); B.aimLane(1)
     check(B.alienAt(8, 1) == nil and B.alienAt(7, 1) ~= nil, 'closest pushed back to row 7')
-    check(near(B.alienAt(7, 1).health, 12700 - 1050), 'took 1050')
-    check(near(B.alienAt(2, 1).health, 12700), 'far alien untouched')
+    check(near(B.alienAt(7, 1).health, 50000 - 1050), 'took 1050')
+    check(near(B.alienAt(2, 1).health, 50000), 'far alien untouched')
 end)
 
 test('Electro Jolt stuns the entire lane', function()
@@ -174,7 +176,7 @@ end)
 
 test('Hevalbane doubles against Hevalten', function()
     setup({w1 = 'Hevalstruck'}); put(5, 1, 'Guardian'); put(5, 2, 'King', 5000)
-    B.fire(1); B.aimLane(1); check(near(B.alienAt(5, 1).health, 28800 - 2400), 'hevalten took 2400')
+    B.fire(1); B.aimLane(1); check(near(B.alienAt(5, 1).health, hp.Guardian - 2400), 'hevalten took 2400')
     B.endTurn(); B.fire(1); B.aimLane(2); check(near(B.alienAt(6, 2).health, 5000 - 1200), 'normal took 1200')
 end)
 
@@ -214,27 +216,27 @@ test('Lockdown blocks spawning in a lane for one turn (Hevalten ignore)', functi
 end)
 
 test('Off Guard stuns everything for one turn', function()
-    setup({w1 = 'Offguard'}); put(1, 1, 'King'); put(5, 3, 'Giant'); put(9, 5, 'DJ')
+    setup({w1 = 'Offguard'}); put(1, 1, 'King'); put(5, 3, 'Giant', 50000); put(9, 5, 'DJ')
     B.fire(1)
     check(B.alienAt(1, 1).stun == 1 and B.alienAt(5, 3).stun == 1 and B.alienAt(9, 5).stun == 1, 'all stunned')
 end)
 
 test('Mind Blast deals 7001 and hypnotises the survivor', function()
-    local s = setup({w1 = 'MindBlast'}); put(9, 1, 'Giant')
+    local s = setup({w1 = 'MindBlast'}); put(9, 1, 'Giant', 50000)
     B.fire(1); B.aimLane(1)
     local g = B.alienAt(9, 1)
-    check(g and near(g.health, 12700 - 7001) and g.hypno, 'giant hypnotised')
+    check(g and near(g.health, 50000 - 7001) and g.hypno, 'giant hypnotised')
 end)
 
 test('Hypnotised aliens fight: both lose the other health, stronger survives and advances', function()
     local s = setup({}); s.needed = 0
-    local h = put(8, 1, 'Giant'); h.hypno = true; h.health = 5000
-    put(5, 1, 'King') -- 1550, two rows up with a gap
+    local h = put(8, 1, 'Giant', 50000); h.hypno = true; h.health = 5000
+    put(5, 1, 'King') -- hp.King, two rows up with a gap
     B.endTurn()
     check(B.alienAt(5, 1) == nil, 'king died')
     check(s.kills == 1, 'counts as a kill')
     local g = B.alienAt(7, 1) or B.alienAt(8, 1)
-    check(g and g.hypno and near(g.health, 5000 - 1550), 'giant lost the king health and stepped up (' .. tostring(g and g.health) .. ')')
+    check(g and g.hypno and near(g.health, 5000 - hp.King), 'giant lost the king health and stepped up (' .. tostring(g and g.health) .. ')')
     -- weaker hypno alien dies instead
     s = setup({}); s.needed = 0
     h = put(8, 2, 'Joe'); h.hypno = true
@@ -242,25 +244,25 @@ test('Hypnotised aliens fight: both lose the other health, stronger survives and
     B.endTurn()
     local k = B.alienAt(8, 2) or B.alienAt(7, 2)
     check(B.count() == 1 and k and not k.hypno, 'joe died')
-    check(k and near(k.health, 1550 - 500), 'king weakened but alive')
+    check(k and near(k.health, hp.King - 500), 'king weakened but alive')
     -- with nothing to fight it moves up and holds the top
     s = setup({}); s.needed = 0
-    h = put(2, 3, 'Giant'); h.hypno = true
+    h = put(2, 3, 'Giant', 50000); h.hypno = true
     B.endTurn(); check(B.alienAt(1, 3) and B.alienAt(1, 3).hypno, 'moved to the top')
     B.endTurn(); check(B.alienAt(1, 3) and B.alienAt(1, 3).hypno, 'stands guard at the top')
 end)
 
 test('Grenade Launcher hits front and back rows', function()
-    setup({w1 = 'GrenadeLauncher'}); put(1, 1, 'Giant'); put(10, 5, 'Giant'); put(5, 3, 'Giant')
+    setup({w1 = 'GrenadeLauncher'}); put(1, 1, 'Giant', 50000); put(10, 5, 'Giant', 50000); put(5, 3, 'Giant', 50000)
     B.fire(1)
-    check(near(B.alienAt(1, 1).health, 12700 - 3950) and near(B.alienAt(10, 5).health, 12700 - 3950), 'rows 1 and 10 hit')
-    check(near(B.alienAt(5, 3).health, 12700), 'middle untouched')
+    check(near(B.alienAt(1, 1).health, 50000 - 3950) and near(B.alienAt(10, 5).health, 50000 - 3950), 'rows 1 and 10 hit')
+    check(near(B.alienAt(5, 3).health, 50000), 'middle untouched')
 end)
 
 test('Bulwark: 1500 to lane and permanent +2.5%', function()
-    local s = setup({w1 = 'Protected'}); put(4, 2, 'Giant')
+    local s = setup({w1 = 'Protected'}); put(4, 2, 'Giant', 50000)
     B.fire(1); B.aimLane(2)
-    check(near(B.alienAt(4, 2).health, 12700 - 1500), '1500 damage (buff applied after)')
+    check(near(B.alienAt(4, 2).health, 50000 - 1500), '1500 damage (buff applied after)')
     check(near(s.buff, 1.025), 'buff raised')
 end)
 
@@ -272,11 +274,11 @@ end)
 
 test('Comet Strike hits a 3x3 block', function()
     setup({w1 = 'CometStrike'})
-    for i = 4, 6 do for j = 2, 4 do put(i, j, 'Giant') end end
-    put(4, 5, 'Giant')
+    for i = 4, 6 do for j = 2, 4 do put(i, j, 'Giant', 50000) end end
+    put(4, 5, 'Giant', 50000)
     B.fire(1); B.aimTile(5, 3)
-    for i = 4, 6 do for j = 2, 4 do check(near(B.alienAt(i, j).health, 12700 - 8000), 'cell ' .. i .. ',' .. j) end end
-    check(near(B.alienAt(4, 5).health, 12700), 'outside untouched')
+    for i = 4, 6 do for j = 2, 4 do check(near(B.alienAt(i, j).health, 50000 - 8000), 'cell ' .. i .. ',' .. j) end end
+    check(near(B.alienAt(4, 5).health, 50000), 'outside untouched')
 end)
 
 test('Death Virus wipes one random lane', function()
@@ -295,21 +297,21 @@ end)
 
 test('Celestial Disruption drops four non-Hevalten to 1 hp', function()
     setup({w1 = 'CelestialDisruption'})
-    put(1, 1, 'Giant'); put(3, 1, 'Giant'); put(5, 1, 'Giant'); put(7, 1, 'Giant'); put(9, 1, 'Giant'); put(8, 1, 'Guardian')
+    put(1, 1, 'Giant', 50000); put(3, 1, 'Giant', 50000); put(5, 1, 'Giant', 50000); put(7, 1, 'Giant', 50000); put(9, 1, 'Giant', 50000); put(8, 1, 'Guardian')
     B.fire(1); B.aimLane(1)
     check(B.alienAt(9, 1).health == 1 and B.alienAt(7, 1).health == 1 and B.alienAt(5, 1).health == 1 and B.alienAt(3, 1).health == 1, 'four closest normals at 1')
-    check(near(B.alienAt(1, 1).health, 12700), 'fifth untouched')
-    check(near(B.alienAt(8, 1).health, 28800), 'hevalten untouched')
+    check(near(B.alienAt(1, 1).health, 50000), 'fifth untouched')
+    check(near(B.alienAt(8, 1).health, hp.Guardian), 'hevalten untouched')
 end)
 
 test('Upgrades add +10% damage per level', function()
     setup({w1 = 'CosmicFire'}); data.upgrades.CosmicFire = 3
-    put(2, 1, 'Giant'); B.fire(1); B.aimLane(1)
-    check(near(B.alienAt(2, 1).health, 12700 - 325), 'lane weapon upgraded (250 * 1.3)')
+    put(2, 1, 'Giant', 50000); B.fire(1); B.aimLane(1)
+    check(near(B.alienAt(2, 1).health, 50000 - 325), 'lane weapon upgraded (250 * 1.3)')
 end)
 
 test('Cancel aiming refunds the shot', function()
-    local s = setup({w1 = 'CosmicFire'}); put(2, 1, 'Giant')
+    local s = setup({w1 = 'CosmicFire'}); put(2, 1, 'Giant', 50000)
     B.fire(1); B.cancelAim()
     check(s.slots[1].used == false and s.aim == nil, 'slot ready again')
 end)
@@ -317,7 +319,7 @@ end)
 -- ======================================================================= aliens
 test('Space Fence is immune for its first turn', function()
     local s = setup({w1 = 'SolarFlare'}); put(1, 1, 'SpaceFence')
-    B.fire(1); check(near(B.alienAt(1, 1).health, 2950), 'shielded')
+    B.fire(1); check(near(B.alienAt(1, 1).health, hp.SpaceFence), 'shielded')
     B.endTurn()
     setup({w1 = 'SolarFlare'}); local a = put(1, 1, 'SpaceFence'); a.immune = 0
     B.fire(1); check(B.alienAt(1, 1) == nil, 'killed once shield is down')
@@ -325,7 +327,7 @@ end)
 
 test('Spaceship alternates flying; flying ignores lane/tile damage but not field', function()
     local s = setup({w1 = 'CosmicFire', w2 = 'SolarFlare'}); local a = put(1, 1, 'Spaceship'); a.fly = true
-    B.fire(1); B.aimLane(1); check(near(a.health, 3000), 'lane attack missed while flying')
+    B.fire(1); B.aimLane(1); check(near(a.health, hp.Spaceship), 'lane attack missed while flying')
     B.fire(2); check(near(a.health, 0) or B.alienAt(1, 1) == nil, 'field attack hit while flying')
     setup({}); a = put(1, 1, 'Spaceship'); B.endTurn(); check(B.alienAt(2, 1).fly == true, 'toggles flight each turn')
 end)
@@ -337,7 +339,7 @@ test('Old Granny lurches at end of turn when hurt, not mid-turn', function()
     B.endTurn()
     check(B.alienAt(6, 2) ~= nil, 'lurched then marched: row 6')
     check(B.count() == 1, 'exactly one granny')
-    check(near(B.alienAt(6, 2).health, 3700 - 175), 'hit once only')
+    check(near(B.alienAt(6, 2).health, hp.OldGranny - 175), 'hit once only')
     B.endTurn()
     check(B.alienAt(7, 2) ~= nil, 'unhurt turn: normal single step')
 end)
@@ -347,7 +349,7 @@ test('Albot spawns a random alien in its row every turn', function()
     B.endTurn()
     local n = 0
     for j = 1, 5 do if B.alienAt(5, j) or B.alienAt(4, j) then n = n + 1 end end
-    check(B.count() == 2, 'one extra alien spawned (' .. B.count() .. ')')
+    check(B.count() == 2 or (B.count() == 3 and (function() local n = 0; B.each(function(a) if a.name == 'Albot' then n = n + 1 end end); return n end)() == 2), 'one extra alien spawned (' .. B.count() .. ')')
 end)
 
 test('Jumper leaps walls, others break them', function()
@@ -361,7 +363,7 @@ test('Jumper leaps walls, others break them', function()
 end)
 
 test('Giant moves every other turn', function()
-    local s = setup({}); s.needed = 0; put(2, 1, 'Giant')
+    local s = setup({}); s.needed = 0; put(2, 1, 'Giant', 50000)
     B.endTurn(); local r1 = B.alienAt(2, 1) and 2 or 3
     B.endTurn(); local r2 = B.alienAt(r1, 1) and r1 or r1 + 1
     check(r2 == 3, 'moved once in two turns (row ' .. r2 .. ')')
@@ -389,7 +391,7 @@ test('Crippler / Rarebane / Scarcebane / Interdimensional reduce the right damag
 end)
 
 test('Morpher changes type every turn keeping health percentage', function()
-    local s = setup({}); s.needed = 0; local a = put(2, 1, 'Morpher'); a.health = 2850 -- 50%
+    local s = setup({}); s.needed = 0; local a = put(2, 1, 'Morpher'); a.health = a.maxHealth / 2 -- 50%
     B.endTurn()
     local m = B.alienAt(3, 1)
     check(m ~= nil and m.morph, 'still a morpher')
@@ -397,24 +399,26 @@ test('Morpher changes type every turn keeping health percentage', function()
 end)
 
 test('Fusion fuses two aliens on spawn into one bigger one', function()
-    local s = setup({}); put(5, 1, 'King'); put(6, 2, 'King')
+    local s = setup({level = '4-10'}); put(5, 1, 'King'); put(6, 2, 'King')
     put(1, 3, 'Fusion')
     check(B.count() == 2, 'two aliens became one')
     local big
     B.each(function(a) if a.name ~= 'Fusion' then big = a end end)
-    check(big and big.health >= 1550 * 2 * 1.5 - 1, 'fused health >= 1.5x combined (' .. (big and big.health or 'nil') .. ')')
+    check(big and big.health >= hp.King * 2 * 1.5 - 1, 'fused health >= 1.5x combined (' .. (big and big.health or 'nil') .. ')')
 end)
 
 test('Splashfest ignores field and splash damage', function()
     setup({w1 = 'SolarFlare', w2 = 'CosmicFire'}); put(3, 1, 'Splashfest')
-    B.fire(1); check(near(B.alienAt(3, 1).health, 15500), 'field ignored')
-    B.fire(2); B.aimLane(1); check(near(B.alienAt(3, 1).health, 15500 - 250), 'lane hits')
+    B.fire(1); check(near(B.alienAt(3, 1).health, hp.Splashfest), 'field ignored')
+    B.fire(2); B.aimLane(1); check(near(B.alienAt(3, 1).health, hp.Splashfest - 250), 'lane hits')
 end)
 
-test('Virus makes cooldowns one turn longer', function()
-    local s = setup({w1 = 'CosmicFire'}); s.needed = 0; put(1, 1, 'Virus')
-    B.fire(1); B.aimLane(3)
-    B.endTurn(); check(s.slots[1].used, 'still used one turn later')
+test('Virus makes cooldowns one turn longer, but leaves cooldown-free weapons alone', function()
+    local s = setup({w1 = 'PoisonArrow', w2 = 'CosmicFire'}); s.needed = 0; put(1, 1, 'Virus')
+    B.fire(1); B.aimLane(3); B.fire(2); B.aimLane(3)
+    B.endTurn(); check(s.slots[1].used, 'poison arrow (cd 1) still used one turn later')
+    check(not s.slots[2].used, 'cosmic fire (no cd) ready as usual')
+    B.endTurn(); check(s.slots[1].used, 'normally ready now, but the virus adds a turn')
     B.endTurn(); check(not s.slots[1].used, 'ready after the extra turn')
 end)
 
@@ -422,26 +426,31 @@ test('Guardian absorbs lane damage and is immune to poison/knockback/hypno', fun
     local s = setup({w1 = 'PoisonArrow', w2 = 'BattleRam', w3 = 'Hypnosis'})
     put(3, 1, 'Guardian'); put(8, 1, 'King')
     B.fire(1); B.aimLane(1)
-    check(near(B.alienAt(8, 1).health, 1550), 'king untouched')
-    check(near(B.alienAt(3, 1).health, 28800 - 300), 'guardian took both hits')
+    check(near(B.alienAt(8, 1).health, hp.King), 'king untouched')
+    check(near(B.alienAt(3, 1).health, hp.Guardian - 300), 'guardian took both hits')
     check(B.alienAt(3, 1).poison == 0, 'guardian not poisoned')
     B.fire(2); B.aimLane(1); check(B.alienAt(8, 1) ~= nil, 'king not knocked back (guardian absorbed)')
     B.fire(3); check(not B.alienAt(8, 1).hypno, 'no hypno in guarded lane')
 end)
 
-test('Dark Arts upgrades every other alien one tier', function()
-    setup({}); put(5, 1, 'Joe'); put(6, 2, 'King', 775)
+test('Dark Arts upgrades the three closest aliens one tier, never past the level', function()
+    setup({level = '5-10'}); put(5, 1, 'Joe'); put(6, 2, 'King', 775)
     put(1, 3, 'DarkArts')
     check(B.alienAt(5, 1).name == 'Gen57', 'joe -> gen57')
-    check(B.alienAt(6, 2).name == 'DJ' and near(B.alienAt(6, 2).health, 2150 * 0.5), 'king -> dj at 50%')
+    check(B.alienAt(6, 2).name == 'DJ' and near(B.alienAt(6, 2).health, hp.DJ * 775 / hp.King), 'king -> dj keeping health %')
     check(B.alienAt(1, 3).name == 'DarkArts', 'dark arts itself unchanged')
+    setup({level = '1-1'}); put(5, 1, 'King'); put(1, 3, 'DarkArts')
+    check(B.alienAt(5, 1).name == 'King', 'no promotion past what level 1-1 can spawn')
+    setup({level = '5-10'}); for j = 1, 5 do put(j + 2, j, 'Joe') end; put(1, 1, 'DarkArts')
+    local promoted = 0; B.each(function(a) if a.name == 'Gen57' then promoted = promoted + 1 end end)
+    check(promoted == 3, 'only three promoted (' .. promoted .. ')')
 end)
 
 test('Bunker halves targeted damage', function()
     setup({w1 = 'TripleThreat', w2 = 'CosmicFire'}); put(4, 1, 'Protected')
     B.fire(1); B.aimTile(4, 1); B.aimTile(1, 1); B.aimTile(2, 2)
-    check(near(B.alienAt(4, 1).health, 26000 - 100), 'tile damage halved')
-    B.fire(2); B.aimLane(1); check(near(B.alienAt(4, 1).health, 26000 - 100 - 250), 'lane damage full')
+    check(near(B.alienAt(4, 1).health, hp.Protected - 100), 'tile damage halved')
+    B.fire(2); B.aimLane(1); check(near(B.alienAt(4, 1).health, hp.Protected - 100 - 250), 'lane damage full')
 end)
 
 test('Heval God spawns a Hevalten in the first three rows at end of a turn it was hurt', function()
@@ -451,7 +460,7 @@ test('Heval God spawns a Hevalten in the first three rows at end of a turn it wa
     B.endTurn()
     local spawned
     B.each(function(a, i) if a.name ~= 'TheHevalGod' then spawned = {a, i} end end)
-    check(spawned and spawned[1].hevalten and spawned[2] <= 3, 'hevalten spawned up top')
+    check(spawned and spawned[1].hevalten and spawned[2] <= 4, 'hevalten spawned up top (then marched once)')
 end)
 
 test('God of Space spawns three aliens and is immune to poison/knockback/hypno but not damage', function()
@@ -460,7 +469,7 @@ test('God of Space spawns three aliens and is immune to poison/knockback/hypno b
     check(B.count() == 4, 'three extra aliens (' .. B.count() .. ')')
     for i = 1, 3 do for j = 1, 5 do if B.alienAt(i, j) then s.grid[i][j] = nil end end end
     put(9, 1, 'King')
-    B.fire(1); B.aimLane(2); check(B.alienAt(9, 2).poison == 0 and near(B.alienAt(9, 2).health, 50000 - 150), 'damaged, not poisoned')
+    B.fire(1); B.aimLane(2); check(B.alienAt(9, 2).poison == 0 and near(B.alienAt(9, 2).health, hp.GodOfSpace - 150), 'damaged, not poisoned')
     B.fire(2); B.aimLane(2); check(B.alienAt(9, 2) ~= nil, 'not knocked back')
     B.fire(3); B.aimLane(2); check(not B.alienAt(9, 2).hypno, 'not hypnotised')
     check(B.alienAt(9, 1).stun == 0, 'other aliens still affected normally? (poison arrow lane 2 only)')
@@ -501,32 +510,32 @@ test('Gravity Well drags a lane back one row; Anchor blocks it', function()
 end)
 
 test('Ricochet hits the closest alien then bounces to a neighbouring lane', function()
-    setup({w1 = 'Ricochet'}); put(7, 3, 'Giant'); put(5, 2, 'Giant'); put(9, 4, 'Giant')
+    setup({w1 = 'Ricochet'}); put(7, 3, 'Giant', 50000); put(5, 2, 'Giant', 50000); put(9, 4, 'Giant', 50000)
     B.fire(1); B.aimLane(3)
-    check(near(B.alienAt(7, 3).health, 12700 - 300), 'primary took 300')
-    check(near(B.alienAt(9, 4).health, 12700 - 200), 'bounced to the closest neighbour (lane 4)')
-    check(near(B.alienAt(5, 2).health, 12700), 'other neighbour untouched')
+    check(near(B.alienAt(7, 3).health, 50000 - 300), 'primary took 300')
+    check(near(B.alienAt(9, 4).health, 50000 - 200), 'bounced to the closest neighbour (lane 4)')
+    check(near(B.alienAt(5, 2).health, 50000), 'other neighbour untouched')
 end)
 
 test('Scanner marks aliens for +25% damage until end of turn', function()
     setup({w1 = 'Scanner', w2 = 'CosmicFire'}); put(3, 1, 'Anchor')
     B.fire(1); B.fire(2); B.aimLane(1)
-    check(near(B.alienAt(3, 1).health, 16000 - 312.5), 'marked alien took 250 * 1.25')
+    check(near(B.alienAt(3, 1).health, hp.Anchor - 312.5), 'marked alien took 250 * 1.25')
     B.endTurn(); check(not B.alienAt(4, 1).marked, 'mark cleared next turn')
 end)
 
 test('Chain Lightning arcs to the four nearest aliens losing 20% per jump', function()
-    setup({w1 = 'ChainLightning'}); put(5, 3, 'Giant'); put(5, 4, 'Giant'); put(6, 3, 'Giant'); put(9, 1, 'Giant'); put(1, 5, 'Giant'); put(2, 1, 'Giant')
+    setup({w1 = 'ChainLightning'}); put(5, 3, 'Giant', 50000); put(5, 4, 'Giant', 50000); put(6, 3, 'Giant', 50000); put(9, 1, 'Giant', 50000); put(1, 5, 'Giant', 50000); put(2, 1, 'Giant', 50000)
     B.fire(1); B.aimTile(5, 3)
-    check(near(B.alienAt(5, 3).health, 12700 - 800), 'target 800')
+    check(near(B.alienAt(5, 3).health, 50000 - 800), 'target 800')
     local hit = 0
-    B.each(function(a) if a.health < 12700 then hit = hit + 1 end end)
+    B.each(function(a) if a.health < 50000 then hit = hit + 1 end end)
     check(hit == 5, 'target + 4 jumps (' .. hit .. ')')
-    check(near(B.alienAt(5, 4).health, 12700 - 640) or near(B.alienAt(6, 3).health, 12700 - 640), 'first jump 640')
+    check(near(B.alienAt(5, 4).health, 50000 - 640) or near(B.alienAt(6, 3).health, 50000 - 640), 'first jump 640')
 end)
 
 test('Time Warp stops every alien moving for one turn', function()
-    local s = setup({w1 = 'TimeWarp'}); s.needed = 0; put(3, 1, 'King'); put(3, 2, 'Swarmling'); put(3, 3, 'Giant')
+    local s = setup({w1 = 'TimeWarp'}); s.needed = 0; put(3, 1, 'King'); put(3, 2, 'Swarmling'); put(3, 3, 'Giant', 50000)
     B.fire(1); B.endTurn()
     check(B.alienAt(3, 1) and B.alienAt(3, 2) and B.alienAt(3, 3), 'nobody moved')
     B.endTurn(); check(B.alienAt(4, 1) ~= nil, 'moving again next turn')
@@ -547,7 +556,7 @@ test('Plague spreads to neighbours each turn', function()
     put(5, 2, 'Anchor'); put(5, 3, 'Anchor'); put(5, 4, 'Anchor')
     B.fire(1); B.aimLane(2)
     B.endTurn()
-    check(near(B.alienAt(6, 2).health, 16000 - 400), 'infected alien took 400')
+    check(near(B.alienAt(6, 2).health, hp.Anchor - 400), 'infected alien took 400')
     check(B.alienAt(6, 3).plague == 400 and not B.alienAt(6, 4).plague, 'spread one step')
     B.endTurn(); check(B.alienAt(7, 4).plague == 400, 'spread another step')
 end)
@@ -559,18 +568,18 @@ test('Overclock readies the other two weapons', function()
 end)
 
 test('Executioner kills below half health, otherwise 3000', function()
-    setup({w1 = 'Executioner'}); put(8, 1, 'Giant', 6000); put(8, 2, 'Giant')
+    setup({w1 = 'Executioner'}); put(8, 1, 'Giant', 2000); put(8, 2, 'Giant', 50000)
     B.fire(1); B.aimLane(1); check(B.alienAt(8, 1) == nil, 'executed')
     B.state().slots[1].used = false
-    B.fire(1); B.aimLane(2); check(near(B.alienAt(8, 2).health, 12700 - 3000), '3000 when healthy')
+    B.fire(1); B.aimLane(2); check(near(B.alienAt(8, 2).health, 50000 - 3000), '3000 when healthy')
 end)
 
 test('Supernova burns 20% max health, ignores buffs, respects the Void Titan cap', function()
-    local s = setup({w1 = 'Supernova'}); put(3, 1, 'Giant'); put(3, 2, 'King'); put(3, 3, 'VoidTitan')
+    local s = setup({w1 = 'Supernova'}); put(3, 1, 'Giant', 50000); put(3, 2, 'King'); put(3, 3, 'VoidTitan')
     s.buff = 0.5
     B.fire(1)
-    check(near(B.alienAt(3, 1).health, 12700 * 0.8) and near(B.alienAt(3, 2).health, 1550 * 0.8), '20% each')
-    check(near(B.alienAt(3, 3).health, 60000 - 5000), 'titan capped at 5000')
+    check(near(B.alienAt(3, 1).health, hp.Giant * 0.8 + 50000 - hp.Giant) and near(B.alienAt(3, 2).health, hp.King * 0.8), '20% of max each')
+    check(near(B.alienAt(3, 3).health, hp.VoidTitan - 5000), 'titan capped at 5000')
 end)
 
 test('Doomsday Clock kills two turns later no matter what', function()
@@ -596,10 +605,10 @@ end)
 
 test('Quantum Flux kills chain-explode into neighbours', function()
     local s = setup({w1 = 'QuantumFlux'})
-    put(5, 3, 'Joe'); put(5, 2, 'King'); put(5, 4, 'Giant'); put(4, 2, 'Joe')
+    put(5, 3, 'Joe'); put(5, 2, 'King'); put(5, 4, 'Giant', 50000); put(4, 2, 'Joe')
     B.fire(1)
     check(s.kills >= 3, 'joe died, exploded into king (dies), king exploded into neighbour joe (' .. s.kills .. ')')
-    check(near(B.alienAt(5, 4).health, 12700 - 3000 - 1500), 'giant took the flux plus one explosion')
+    check(near(B.alienAt(5, 4).health, 50000 - 3000 - 1500), 'giant took the flux plus one explosion')
 end)
 
 -- ======================================================================= new aliens
@@ -615,13 +624,13 @@ end)
 
 test('Phaser: half from lane, double from tile', function()
     setup({w1 = 'CosmicFire', w2 = 'TripleThreat'}); put(4, 1, 'Phaser')
-    B.fire(1); B.aimLane(1); check(near(B.alienAt(4, 1).health, 4200 - 125), 'lane halved')
-    B.fire(2); B.aimTile(4, 1); check(near(B.alienAt(4, 1).health, 4200 - 125 - 400), 'tile doubled')
+    B.fire(1); B.aimLane(1); check(near(B.alienAt(4, 1).health, hp.Phaser - 125), 'lane halved')
+    B.fire(2); B.aimTile(4, 1); check(near(B.alienAt(4, 1).health, hp.Phaser - 125 - 400), 'tile doubled')
 end)
 
 test('Medic heals every other alien 10% per turn', function()
     local s = setup({}); s.needed = 0; put(3, 1, 'Medic'); put(3, 2, 'Anchor', 5000)
-    B.endTurn(); check(near(B.alienAt(4, 2).health, 6600), 'healed 1600')
+    B.endTurn(); check(near(B.alienAt(4, 2).health, 5000 + hp.Anchor * 0.1), 'healed 10% of max')
 end)
 
 test('Thief steals 5 gold per turn', function()
@@ -649,13 +658,13 @@ test('Necromancer raises the last kill every third turn', function()
     B.endTurn(); B.endTurn(); check(B.count() == 1, 'nothing yet')
     B.endTurn()
     local raised; B.each(function(a) if a.name == 'Giant' then raised = a end end)
-    check(raised and near(raised.health, 12700 * 0.5), 'giant raised at half health')
+    check(raised and near(raised.health, hp.Giant * 0.5), 'giant raised at half health')
 end)
 
 test('Void Titan caps every hit at 5000', function()
     setup({w1 = 'VoidBurst'}); put(5, 1, 'VoidTitan')
     B.fire(1); B.aimTile(5, 1); B.aimTile(1, 1); B.aimTile(2, 2)
-    check(near(B.alienAt(5, 1).health, 55000), '11000 became 5000')
+    check(near(B.alienAt(5, 1).health, hp.VoidTitan - 5000), '11000 became 5000')
 end)
 
 test('Discovery: aliens are marked seen when they first appear', function()

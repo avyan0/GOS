@@ -12,8 +12,8 @@ function StageSelect:render()
     ui.background(self.t)
     ui.header('Stage ' .. (self.stageNum - 1) .. ' cleared', 'Adjust your loadout before stage ' .. self.stageNum .. ' of 3')
 
-    local clicked = drawSlots(40, 100, 760, self.slot, self.t)
-    if clicked then self.slot = (self.slot == clicked) and nil or clicked end
+    local clicked, clickedId = drawSlots(40, 100, 760, self.slot, self.t)
+    if clicked then self:slotClicked(clicked, clickedId) end
 
     local tx = 40
     for _, r in ipairs({'common', 'rare', 'scarce', 'god'}) do

@@ -28,10 +28,10 @@ function Loadout:pick(id)
     self.slot = nil
 end
 
--- shared slot strip (also used by StageSelect). Returns clicked slot index or nil.
+-- shared slot strip (also used by StageSelect). Returns clicked slot index (and its weapon id) or nil.
 function drawSlots(x, y, w, selectedSlot, t)
     local sw = (w - 32) / 3
-    local clicked
+    local clicked, clickedId
     for i, k in ipairs(SLOT_KEYS) do
         local sx = x + (i - 1) * (sw + 16)
         local id = data[k]
@@ -52,9 +52,15 @@ function drawSlots(x, y, w, selectedSlot, t)
             love.graphics.circle('line', sx + 44, y + 58, 20)
             ui.text('Empty  -  choose a weapon', sx + 78, y + 48, sw - 90, 'left', 'body', 15, ui.c.muted)
         end
-        if ui.hit(sx, y, sw, 96) then clicked = i end
+        if ui.hit(sx, y, sw, 96) then clicked = i; clickedId = w_ and id or nil end
     end
-    return clicked
+    return clicked, clickedId
+end
+
+-- clicking a slot toggles it for replacement and previews what is in it
+function Loadout:slotClicked(clicked, id)
+    self.slot = (self.slot == clicked) and nil or clicked
+    if id then self.preview = id; self.tab = Weapons[id].rarity end
 end
 
 function Loadout:ready()
@@ -68,8 +74,8 @@ function Loadout:render()
     local planet, lvl = data.currentLevel:match('(%d+)%-(%d+)')
     if ui.header('Loadout', PLANETS[tonumber(planet)].name .. '   -   Level ' .. lvl, true) then gStateMachine:change('planetMap', tonumber(planet)) end
 
-    local clicked = drawSlots(40, 100, 760, self.slot, self.t)
-    if clicked then self.slot = (self.slot == clicked) and nil or clicked end
+    local clicked, clickedId = drawSlots(40, 100, 760, self.slot, self.t)
+    if clicked then self:slotClicked(clicked, clickedId) end
 
     local tx = 40
     for _, r in ipairs(RARITIES) do

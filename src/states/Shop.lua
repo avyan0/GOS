@@ -57,7 +57,7 @@ function Shop:renderPicker()
                 self.result = nil
             end
         else
-            local need = (t.key == 'Rare' and 'Reach Cyrene 15' or t.key == 'Scarce' and 'Reach Nyx' or 'Reach Solhara 15')
+            local need = (t.key == 'Rare' and 'Reach Cyrene' or t.key == 'Scarce' and 'Reach Nyx' or 'Reach Solhara 15')
             ui.text(need, x, y + ch - 52, cw, 'center', 'body', 15, ui.c.dim)
         end
     end

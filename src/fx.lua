@@ -159,9 +159,16 @@ function fx.play(events, cb)
         end
     end
     -- drop empty phase markers
+    local abilities = 0
     for k = #clips, 1, -1 do
         local c = clips[k]
         if (c.kind == 'abilities' or c.kind == 'poison' or c.kind == 'move' or c.kind == 'spawn' or c.kind == 'misc') and #c.fx == 0 then table.remove(clips, k) end
+        if c.kind == 'ability' then abilities = abilities + 1 end
+    end
+    -- a crowded field of abilities plays faster so a turn never drags past ~4s
+    if abilities > 4 then
+        local f = math.max(0.5, 4 / abilities)
+        for _, c in ipairs(clips) do if c.kind == 'ability' then c.dur, c.hitAt = c.dur * f, c.hitAt * f end end
     end
     onIdle = cb
     if #clips == 0 and cb then cb() end

@@ -82,10 +82,12 @@ ui.inside = inside
 
 function ui.hovered(x, y, w, h) return inside(ui.mouse.x, ui.mouse.y, x, y, w, h) end
 
--- returns true on the frame a click lands inside the rect (and consumes it)
+-- returns true on the frame a click lands inside the rect (and consumes it).
+-- Every clickable thing routes through here, so this is where the click sound lives.
 function ui.hit(x, y, w, h)
     if pendingClick and inside(pendingClick.x, pendingClick.y, x, y, w, h) then
         pendingClick = nil
+        sfx.play('click')
         return true
     end
     return false
@@ -196,8 +198,7 @@ function ui.button(label, x, y, w, h, opts)
     love.graphics.printf(label, tx, by + (h - f:getHeight()) / 2 + 1, tw, opts.align or 'center')
 
     if opts.disabled then return false end
-    if ui.hit(x, y, w, h) then sfx.play('click'); return true end
-    return false
+    return ui.hit(x, y, w, h)
 end
 
 -- small icon-only round button
@@ -209,8 +210,7 @@ function ui.iconButton(id, x, y, r, drawIcon, opts)
     ui.color(opts.border or ui.c.line, 0.6 + 0.4 * hoverT); love.graphics.circle('line', x, y, r + 2 * hoverT)
     ui.color(opts.iconColor or ui.c.text)
     drawIcon(x, y, r)
-    if ui.hit(x - r, y - r, r * 2, r * 2) then sfx.play('click'); return true end
-    return false
+    return ui.hit(x - r, y - r, r * 2, r * 2)
 end
 
 function ui.arrowLeft(x, y, r)
@@ -269,7 +269,7 @@ function ui.navbar(active)
             ui.color(ui.c.accent); love.graphics.rectangle('fill', x + w * 0.3, y, w * 0.4, 3)
         end
         ui.text(tab[2], x, y + 20, w, 'center', 'display', 22, isActive and ui.c.accent or mix(ui.c.muted, ui.c.text, hoverT))
-        if not isActive and ui.hit(x, y, w, h) then result = tab[1]; sfx.play('click') end
+        if not isActive and ui.hit(x, y, w, h) then result = tab[1] end
     end
     return result
 end

@@ -109,7 +109,7 @@ end
 local function fire(n)
     if fx.busy() then return end
     local r = B.fire(n)
-    if r == true then animate() elseif r then sfx.play('click') end
+    if r == true then animate() end
 end
 
 local function endTurn()
@@ -120,7 +120,9 @@ local function endTurn()
 end
 
 function GameState:update(dt)
-    fx.update(dt)
+    -- hold Space (or the mouse button) to fast-forward animations
+    local fast = fx.busy() and (love.keyboard.isDown('space') or love.mouse.isDown(1))
+    fx.update(dt * (fast and 3 or 1))
     if love.keyboard.wasPressed('a') then fire(1)
     elseif love.keyboard.wasPressed('s') then fire(2)
     elseif love.keyboard.wasPressed('d') then fire(3)
@@ -327,7 +329,8 @@ function GameState:render(dimmed)
     elseif busy then
         ui.panel(SIDE_X + 12, py, SIDE_W - 24, 64, {fill = ui.c.bg2, radius = 10})
         local spot = select(2, fx.spotlight())
-        ui.textBox(spot and 'Alien ability' or (fx.frozen() and 'Time frozen') or 'Resolving...', SIDE_X + 12, py, SIDE_W - 24, 64, 'display', 17, fx.frozen() and ui.c.accent or ui.c.muted)
+        ui.textBox(spot and 'Alien ability' or (fx.frozen() and 'Time frozen') or 'Resolving...', SIDE_X + 12, py, SIDE_W - 24, 44, 'display', 17, fx.frozen() and ui.c.accent or ui.c.muted)
+        ui.textBox('Hold Space to fast-forward', SIDE_X + 12, py + 36, SIDE_W - 24, 24, 'body', 12, ui.c.dim)
     else
         if ui.button('End turn', SIDE_X + 12, py, SIDE_W - 24, 64, {size = 22, id = 'endturn', disabled = dimmed}) and not dimmed then endTurn() end
     end
