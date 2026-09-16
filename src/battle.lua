@@ -229,9 +229,7 @@ local function hit(i, j, amount, weapon, kind, opts)
         kill(i, j)
         return dmg
     end
-    -- reactions
-    if a.name == 'OldGranny' and i < B.ROWS and not s.grid[i + 1][j] then ability(a, i, j, 'lurches forward'); move(i, j, i + 1, j) end
-    if a.name == 'TheHevalGod' then ability(a, i, j, 'calls a Hevalten'); spawnInto(randomUnlocked(true), 3) end
+    a.hurt = true -- reactive abilities (Granny, Heval God) fire in the ability phase, not mid-turn
     return dmg
 end
 B.hit = hit
@@ -377,7 +375,10 @@ W.CelestialDisruption = {kind = 'lane', run = function(w, lane)
     local n = 0
     for i = B.ROWS, 1, -1 do
         local a = s.grid[i][lane]
-        if a and n < 4 and not a.hevalten and a.immune == 0 and not a.fly then a.health = 1; n = n + 1 end
+        if a and n < 4 and not a.hevalten and a.immune == 0 and not a.fly and a.health > 1 then
+            emit({type = 'hit', uid = a.uid, i = i, j = lane, amount = a.health - 1, killed = false})
+            a.health = 1; n = n + 1
+        end
     end
 end}
 -- common
@@ -427,8 +428,8 @@ W.ChainLightning = {kind = 'tile', shots = 1, run = function(w, row, lane)
     end
 end}
 W.TimeWarp = {kind = 'self', run = function(w) s.freeze = true end}
-W.Barricade = {kind = 'tile', shots = 1, run = function(w, row, lane)
-    if row >= 2 and not s.grid[row][lane] then s.walls[row][lane] = 3; emit({type = 'wall', i = row, j = lane, hp = 3}) end
+W.Barricade = {kind = 'tile', shots = 1, wall = true, run = function(w, row, lane)
+    s.walls[row][lane] = 3; emit({type = 'wall', i = row, j = lane, hp = 3})
 end}
 -- scarce
 W.Plague = {kind = 'lane', run = function(w, lane)
@@ -461,8 +462,13 @@ W.DoomsdayClock = {kind = 'tile', shots = 1, run = function(w, row, lane)
     if a then a.doom = 2; emit({type = 'status', uid = a.uid, i = row, j = lane, kind = 'doom'}) end
 end}
 W.MeteorStorm = {kind = 'field', run = function(w)
-    for _ = 1, 6 do
-        local i, j = math.random(B.ROWS), math.random(B.LANES)
+    -- meteors seek out aliens: each targets a different alien, spares crater empty tiles
+    local targets = {}
+    each(function(_, i, j) targets[#targets + 1] = {i, j} end)
+    for k = #targets, 2, -1 do local r = math.random(k); targets[k], targets[r] = targets[r], targets[k] end
+    for n = 1, 6 do
+        local i, j
+        if targets[n] then i, j = targets[n][1], targets[n][2] else i, j = math.random(B.ROWS), math.random(B.LANES) end
         emit({type = 'meteor', i = i, j = j})
         if s.grid[i][j] then hit(i, j, w.damage, w, 'tile') end
     end
@@ -543,6 +549,11 @@ function B.fire(n)
     local w = Weapons[slot.id]
     if not w or slot.used then return false end
     local rule = W[w.id]
+    if rule.wall then
+        local any = false
+        for j = 1, B.LANES do for i = 2, B.ROWS do if B.wallAllowed(i, j) then any = true end end end
+        if not any then return false end
+    end
     slot.used = true
     if rule.kind == 'lane' or rule.kind == 'tile' then
         s.aim = {kind = rule.kind, weapon = w, rule = rule, slot = n, remaining = rule.shots or 1, last = nil}
@@ -584,6 +595,7 @@ function B.aimTile(row, lane)
     end
     if not s.aim or s.aim.kind ~= 'tile' then return false end
     if s.aim.last and s.aim.last[1] == row and s.aim.last[2] == lane then return false end
+    if s.aim.rule.wall and not B.wallAllowed(row, lane) then return false end
     emit({type = 'weapon', id = s.aim.weapon.id, kind = 'tile', row = row, lane = lane})
     s.aim.rule.run(s.aim.weapon, row, lane)
     s.aim.last = {row, lane}
@@ -646,10 +658,7 @@ local function advance()
             local a = s.grid[i][j]
             if a and not a.hypno then
                 local blocked = a.stun > 0
-                if a.name == 'Giant' then
-                    a.giantWait = not a.giantWait
-                    if a.giantWait then blocked = true; emit({type = 'rest', uid = a.uid, i = i, j = j, text = 'catches its breath'}) end
-                end
+                if a.giantWait then blocked = true end
                 if a.fly then blocked = false end
                 if s.freeze then blocked = true end
                 local steps = (a.name == 'Swarmling') and 2 or 1
@@ -691,7 +700,12 @@ end
 
 local function supportAbilities()
     each(function(a, i, j)
-        if a.name == 'Shieldbearer' and i < B.ROWS and s.grid[i + 1][j] then
+        if a.name == 'OldGranny' and a.hurt and i < B.ROWS and not s.grid[i + 1][j] then ability(a, i, j, 'lurches forward'); move(i, j, i + 1, j)
+        elseif a.name == 'TheHevalGod' and a.hurt then ability(a, i, j, 'calls a Hevalten'); spawnInto(randomUnlocked(true), 3)
+        elseif a.name == 'Giant' then -- rests every other turn; decided here so the pause shows before anyone marches
+            a.giantWait = not a.giantWait
+            if a.giantWait then emit({type = 'rest', uid = a.uid, i = i, j = j, text = 'catches its breath'}) end
+        elseif a.name == 'Shieldbearer' and i < B.ROWS and s.grid[i + 1][j] then
             local t = s.grid[i + 1][j]
             ability(a, i, j, 'shields ' .. (Aliens[t.name].title))
             t.immune = math.max(t.immune, 2) -- ticks down once this turn, so it holds through the player's next turn
@@ -795,7 +809,6 @@ end
 function B.endTurn()
     if s.aim then B.cancelAim() end
     s.turn = s.turn + 1
-    each(function(a) a.marked = nil end)
     emit({type = 'phase', name = 'poison'})
     applyPoison()
     doomTicks()
@@ -811,6 +824,7 @@ function B.endTurn()
     morphs()
     flightToggles()
     hypnoTurn()
+    each(function(a) a.marked = nil; a.hurt = nil end)
     -- then everyone marches
     emit({type = 'phase', name = 'move', frozen = s.freeze})
     local lost = advance()

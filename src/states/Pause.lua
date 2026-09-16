@@ -20,11 +20,11 @@ function Pause:render()
     drawSettingsPanel(60, 256, 320)
 
     -- right: items
-    local px, py, pw, ph = 420, 120, 800, 470
+    local px, py, pw, ph = 420, 120, 800, 500
     ui.panel(px, py, pw, ph, {radius = 16})
     ui.text('Items', px + 30, py + 22, 300, 'left', 'display', 22)
     ui.text('One use each. Takes effect immediately.', px + 30, py + 52, 500, 'left', 'body', 14, ui.c.muted)
-    local cw, ch, gap = 176, 170, 14
+    local cw, ch, gap = 176, 186, 14
     for i, it in ipairs(ITEMS) do
         local col, row = (i - 1) % 4, math.floor((i - 1) / 4)
         local x, y = px + 30 + col * (cw + gap), py + 84 + row * (ch + gap)

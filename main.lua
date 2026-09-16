@@ -4,6 +4,7 @@ VIRTUAL_WIDTH, VIRTUAL_HEIGHT = 1280, 720
 push = require 'src/lib/push'
 Class = require 'src/lib/Class'
 ui = require 'src/ui'
+sfx = require 'src/sfx'
 icons = require 'src/icons'
 require 'src/StateMachine'
 require 'src/content'
@@ -37,6 +38,7 @@ function love.load(args)
     push:setupScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, {vsync = true, fullscreen = false, resizable = true})
 
     loadData()
+    sfx.init()
     weaponDictionary()
     alienDictionary()
     makeLevel(); applyNewSpawns()

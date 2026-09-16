@@ -29,8 +29,9 @@ function Home:render()
         icons.planet(cx, cy, r, p.hue, p.ringed, locked)
         if locked then icons.lock(cx, cy, 34, ui.c.muted) end
         ui.text(p.name, cx - 90, cy + 74, 180, 'center', 'display', 22, locked and ui.c.dim or ui.c.text)
-        local sub = locked and 'Locked' or (i < data.planet and 'Cleared' or ('Level ' .. math.min(30, data.level + 1) .. ' / 30'))
-        ui.text(sub, cx - 90, cy + 102, 180, 'center', 'body', 15, locked and ui.c.dim or (i < data.planet and ui.c.good or ui.c.accent))
+        local cleared = i < data.planet or (i == data.planet and data.level >= 30)
+        local sub = locked and 'Locked' or (cleared and 'Cleared' or ('Level ' .. (data.level + 1) .. ' / 30'))
+        ui.text(sub, cx - 90, cy + 102, 180, 'center', 'body', 15, locked and ui.c.dim or (cleared and ui.c.good or ui.c.accent))
         if not locked and ui.hit(cx - 80, cy - 90, 160, 220) then gStateMachine:change('planetMap', i) end
     end
 

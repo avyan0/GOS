@@ -25,7 +25,7 @@ function drawWeaponCard(w, x, y, cw, ch, selected, opts)
     if owned then
         ui.color(color, 0.12); ui.rrect('fill', x + 12, y + 12, cw - 24, ch * 0.5, 10)
         icons.weapon(w.shape, x + cw / 2, y + 12 + ch * 0.25, ch * 0.36, color)
-        ui.text(w.name, x + 6, y + ch * 0.5 + 16, cw - 12, 'center', 'display', ui.font('display', 14):getWidth(w.name) > cw - 12 and 11 or 14)
+        ui.text(w.name, x + 6, y + ch * 0.5 + 16, cw - 12, 'center', 'display', ui.fitSize('display', w.name, cw - 12, 14, 10))
         ui.pips(x + cw / 2 - 26, y + ch - 16, 5, data.upgrades[w.id] or 0, color, 6, 4)
         if opts.equipped then
             ui.color(color); love.graphics.circle('fill', x + cw - 14, y + 14, 6)
@@ -33,7 +33,7 @@ function drawWeaponCard(w, x, y, cw, ch, selected, opts)
     else
         ui.color(ui.c.bg2, 0.6); ui.rrect('fill', x + 12, y + 12, cw - 24, ch * 0.5, 10)
         icons.lock(x + cw / 2, y + 12 + ch * 0.25, 30, ui.c.dim)
-        ui.text(w.name, x + 6, y + ch * 0.5 + 16, cw - 12, 'center', 'display', ui.font('display', 14):getWidth(w.name) > cw - 12 and 11 or 14, ui.c.dim)
+        ui.text(w.name, x + 6, y + ch * 0.5 + 16, cw - 12, 'center', 'display', ui.fitSize('display', w.name, cw - 12, 14, 10), ui.c.dim)
     end
     return ui.hit(x, y, cw, ch)
 end
@@ -66,9 +66,23 @@ function drawWeaponDetail(w, px, py, pw, ph)
     ui.text(w.specialEffect, px + 30, py + 300, pw - 60, 'left', 'body', 16)
 
     local lvl = data.upgrades[w.id] or 0
-    local foot = owned and ('Upgrade level ' .. lvl .. '  |  +' .. (lvl * 10) .. '% damage') or 'Not yet unlocked - win it from a spin'
-    ui.text(foot, px + 30, py + ph - 60, pw - 60, 'left', 'body', 15, owned and color or ui.c.muted)
-    ui.pips(px + 30, py + ph - 34, 5, lvl, color, 10, 6)
+    local foot = owned and ('Level ' .. lvl .. ' / ' .. MAX_UPGRADE .. '  |  +' .. (lvl * 10) .. '% damage') or 'Not yet unlocked - win it from a spin'
+    ui.text(foot, px + 30, py + ph - 60, pw - 250, 'left', 'body', 15, owned and color or ui.c.muted)
+    ui.pips(px + 30, py + ph - 34, MAX_UPGRADE, lvl, color, 10, 6)
+    -- gems buy upgrades directly
+    if owned and lvl < MAX_UPGRADE then
+        local cost = upgradeCost(w)
+        local bx, bw = px + pw - 210, 180
+        if ui.button('Upgrade for ' .. cost, bx, py + ph - 66, bw, 42, {size = 15, outline = true, color = ui.c.accent, id = 'upg' .. w.id, disabled = data.gems < cost,
+            icon = function(x, y, sz) ui.color(ui.c.accent, data.gems < cost and 0.4 or 1); love.graphics.polygon('fill', x, y - sz * 0.45, x + sz * 0.4, y, x, y + sz * 0.45, x - sz * 0.4, y) end}) then
+            data.gems = data.gems - cost
+            data.upgrades[w.id] = lvl + 1
+            saveData()
+            ui.toast(w.name .. ' upgraded to level ' .. (lvl + 1), color)
+        end
+    elseif owned then
+        ui.text('MAX', px + pw - 90, py + ph - 56, 60, 'right', 'hud', 18, color)
+    end
 end
 
 function WeaponsScreen:render()

@@ -64,7 +64,11 @@ function wheel.apply(seg)
         local w = Weapons[seg.id]
         local color = ui.rarity[w.rarity]
         local sub
-        if data.weapons[seg.id] then
+        if data.weapons[seg.id] and (data.upgrades[seg.id] or 0) >= MAX_UPGRADE then
+            local n = ({common = 25, rare = 45, scarce = 100, god = 270})[w.rarity]
+            data.gold = data.gold + n
+            sub = 'Already at max level  -  ' .. n .. ' gold instead'
+        elseif data.weapons[seg.id] then
             data.upgrades[seg.id] = (data.upgrades[seg.id] or 0) + 1
             sub = 'Upgraded to level ' .. data.upgrades[seg.id]
         else
@@ -123,7 +127,10 @@ function Wheel:update(dt)
     local p = math.min(1, self.t / self.dur)
     local e = 1 - (1 - p) ^ 3
     self.angle = self.from + (self.to - self.from) * e
-    if p >= 1 then self.spinning = false; return true end
+    -- click as each segment edge passes the pointer
+    local seg = math.floor((( -math.pi / 2 - self.angle) % (math.pi * 2)) / (math.pi * 2) * 48)
+    if seg ~= self.lastSeg then self.lastSeg = seg; sfx.play('tick', {vol = 0.6, gap = 0.01}) end
+    if p >= 1 then self.spinning = false; sfx.play('chime'); return true end
     return false
 end
 

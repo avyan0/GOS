@@ -9,6 +9,14 @@ local function cellCenter(i, j) return fx.FIELD_X + (j - 0.5) * fx.LANE_W, fx.FI
 fx.cellCenter = cellCenter
 local function alienPos(i, j) local cx, cy = cellCenter(i, j); return cx - 56, cy - 2 end
 
+-- weapon icon shape -> firing effect style
+local STYLE = {well = 'pull', bounce = 'projectile', scan = 'rays', chain = 'target', clock = 'rings', barricade = 'lift', plague = 'wave', gear = 'rays', guillotine = 'projectile', nova = 'rays', hourglass = 'target', meteors = 'streaks',
+               rain = 'streaks', sun = 'rays', flux = 'rays', ring = 'rays', burst = 'rings', skull = 'lanefall', freeze = 'rings', eye = 'rays',
+               arrow = 'projectile', dagger = 'projectile', axe = 'projectile', hammer = 'projectile', ram = 'projectile',
+               bolt = 'lightning', jolt = 'lightning', orb = 'lightning',
+               laser = 'beam', beam = 'beam', blade = 'beam', block = 'lock', comet = 'impact', cannon = 'impact', star = 'cross',
+               restart = 'lift', crosshair = 'target', brain = 'wave', grenade = 'rows', wall = 'sweep', duel = 'lightning', boost = 'rays'}
+
 local function ease(t) t = math.max(0, math.min(1, t)); return 1 - (1 - t) ^ 3 end
 local function easeInOut(t) t = math.max(0, math.min(1, t)); return t < 0.5 and 4 * t * t * t or 1 - (-2 * t + 2) ^ 3 / 2 end
 
@@ -60,11 +68,11 @@ local function apply(ev, instant)
         v.x, v.y = alienPos(ev.i, ev.j)
         v.scale = instant and 1 or 0
         v.hp = ev.a.health
-        if not instant then burst(v.x, v.y, ui.c.accent, 8, 80, 0.4, 2) end
+        if not instant then burst(v.x, v.y, ui.c.accent, 8, 80, 0.4, 2); sfx.play('spawn', {vol = 0.6, gap = 0.1}) end
     elseif ev.type == 'move' and v then
         local tx, ty = alienPos(ev.to[1], ev.to[2])
         if instant then v.x, v.y = tx, ty
-        else v.move = {fx = v.x, fy = v.y, tx = tx, ty = ty, t = 0, dur = 0.35, arc = ev.arc} end
+        else v.move = {fx = v.x, fy = v.y, tx = tx, ty = ty, t = 0, dur = 0.35, arc = ev.arc}; sfx.play('step', {vol = 0.5, gap = 0.2}) end
     elseif ev.type == 'jump' and v then
         v.jumpNext = true
     elseif ev.type == 'hit' and v then
@@ -75,16 +83,18 @@ local function apply(ev, instant)
             popup(v.x + 60 + math.random(-10, 10), v.y - 14, '-' .. math.round(ev.amount), ev.poison and ui.c.good or ui.c.warn, ev.poison and 16 or 20)
             burst(v.x, v.y, ev.poison and ui.c.good or ui.c.warn, ev.poison and 4 or 7, 90, 0.35, 2)
             if not ev.poison then shake = math.max(shake, 3) end
+            sfx.play('hit', {vol = ev.poison and 0.35 or 0.8, pitch = 0.9 + math.random() * 0.25})
         end
     elseif ev.type == 'kill' and v then
         if instant then fx.vis[ev.uid] = nil
-        else v.dying = 0; burst(v.x, v.y, ui.c.danger, 16, 160, 0.6, 3); shake = math.max(shake, 4) end
+        else v.dying = 0; burst(v.x, v.y, ui.c.danger, 16, 160, 0.6, 3); shake = math.max(shake, 4); sfx.play('kill', {pitch = 0.9 + math.random() * 0.2}) end
     elseif ev.type == 'remove' and v and not v.dying then
         if instant then fx.vis[ev.uid] = nil else v.fading = 0 end
     elseif ev.type == 'status' and v and not instant then
         v.statusPulse = {kind = ev.kind, t = 0}
         local c = ({stun = ui.c.warn, poison = ui.c.good, hypno = ui.rarity.scarce, mark = ui.c.accent, plague = ui.rarity.scarce, shield = ui.c.gold, doom = ui.c.danger})[ev.kind] or ui.c.muted
         burst(v.x, v.y, c, 10, 70, 0.45, 2)
+        sfx.play('status', {vol = 0.6, pitch = ev.kind == 'doom' and 0.6 or 1})
     elseif ev.type == 'blocked' and v and not instant then
         popup(v.x + 60, v.y - 14, ev.text:upper(), ui.c.muted, 14)
         v.statusPulse = {kind = 'block', t = 0}
@@ -92,9 +102,9 @@ local function apply(ev, instant)
         local x1, y1 = cellCenter(ev.from[1], ev.from[2]); local x2, y2 = cellCenter(ev.to[1], ev.to[2])
         lines[#lines + 1] = {x1 = x1, y1 = y1, x2 = x2, y2 = y2, t = 0, color = ui.c.gold}
     elseif ev.type == 'wall' and not instant then
-        local cx, cy = cellCenter(ev.i, ev.j); burst(cx, cy + 20, ui.c.warn, 12, 60, 0.4, 3)
+        local cx, cy = cellCenter(ev.i, ev.j); burst(cx, cy + 20, ui.c.warn, 12, 60, 0.4, 3); sfx.play('wall')
     elseif ev.type == 'wallbreak' and not instant then
-        local cx, cy = cellCenter(ev.i, ev.j); burst(cx, cy + 20, ui.c.warn, 18, 140, 0.6, 3); shake = math.max(shake, 3)
+        local cx, cy = cellCenter(ev.i, ev.j); burst(cx, cy + 20, ui.c.warn, 18, 140, 0.6, 3); shake = math.max(shake, 3); sfx.play('crack')
     elseif ev.type == 'fight' and not instant then
         local va, vb = fx.vis[ev.a], fx.vis[ev.b]
         if va and vb then
@@ -102,7 +112,7 @@ local function apply(ev, instant)
             va.lunge = {tx = mx, ty = my, t = 0}; vb.lunge = {tx = mx, ty = my, t = 0}
             burst(mx, my, ui.c.white, 14, 160, 0.4, 3); burst(mx, my, ui.rarity.scarce, 10, 120, 0.5, 2)
             lines[#lines + 1] = {x1 = va.x, y1 = va.y, x2 = vb.x, y2 = vb.y, t = 0, color = ui.rarity.scarce}
-            shake = math.max(shake, 5)
+            shake = math.max(shake, 5); sfx.play('clash')
         end
     elseif ev.type == 'discover' and not instant then
         ui.toast('New alien discovered: ' .. (Aliens[ev.name] and Aliens[ev.name].title or ev.name), ui.c.accent)
@@ -111,14 +121,14 @@ local function apply(ev, instant)
         lines[#lines + 1] = {x1 = x1 - 56, y1 = y1, x2 = x2 - 56, y2 = y2, t = 0, color = ui.rarity.rare, jag = true}
     elseif ev.type == 'meteor' and not instant then
         local cx, cy = cellCenter(ev.i, ev.j)
-        burst(cx - 56, cy, ui.rarity.god, 16, 150, 0.5, 3); shake = math.max(shake, 5)
+        burst(cx - 56, cy, ui.rarity.god, 16, 150, 0.5, 3); shake = math.max(shake, 5); sfx.play('boom', {vol = 0.7, pitch = 0.9 + math.random() * 0.3, gap = 0.02})
         lines[#lines + 1] = {x1 = cx + 60, y1 = cy - 120, x2 = cx - 56, y2 = cy, t = 0, color = ui.rarity.god}
     elseif ev.type == 'explode' and not instant then
         local cx, cy = cellCenter(ev.i, ev.j)
-        burst(cx - 56, cy, ui.rarity.god, 20, 180, 0.5, 3); shake = math.max(shake, 4)
+        burst(cx - 56, cy, ui.rarity.god, 20, 180, 0.5, 3); shake = math.max(shake, 4); sfx.play('boom', {vol = 0.6, gap = 0.02})
     elseif ev.type == 'heal' and v and not instant then
         v.hpTarget = (v.hpTarget or v.hp) + ev.amount
-        popup(v.x + 60, v.y - 14, '+' .. math.round(ev.amount), ui.c.good, 16)
+        popup(v.x + 60, v.y - 14, '+' .. math.round(ev.amount), ui.c.good, 16); sfx.play('status', {vol = 0.4, pitch = 1.4})
         burst(v.x, v.y, ui.c.good, 6, 50, 0.4, 2)
     elseif ev.type == 'morphed' and v and not instant then
         burst(v.x, v.y, ui.rarity.scarce, 14, 100, 0.5, 2)
@@ -162,8 +172,19 @@ function fx.sync(events)
     for _, ev in ipairs(events) do apply(ev, true) end
 end
 
+local FIRE_SOUND = {lightning = 'zap', beam = 'beam', projectile = 'whoosh', lock = 'freeze', rings = 'freeze'}
+local function clipStarted(c)
+    if c.kind == 'weapon' then
+        local w = Weapons[c.ev.id]
+        sfx.play(FIRE_SOUND[STYLE[w.shape]] or 'boom', {vol = 0.8})
+    elseif c.kind == 'ability' then sfx.play('ability', {vol = 0.7})
+    elseif c.kind == 'move' and c.ev and c.ev.frozen then sfx.play('freeze')
+    elseif c.kind == 'item' then sfx.play(c.ev.key == 'teleporter' and 'freeze' or 'zap')
+    end
+end
+
 function fx.update(dt)
-    if not current and #clips > 0 then current = table.remove(clips, 1) end
+    if not current and #clips > 0 then current = table.remove(clips, 1); clipStarted(current) end
     if current then
         current.t = current.t + dt
         if not current.applied and current.t >= current.hitAt then
@@ -288,13 +309,6 @@ function fx.drawStatuses(v, t)
 end
 
 -- ---------------------------------------------------------------- weapon effects
-local STYLE = {well = 'pull', bounce = 'projectile', scan = 'rays', chain = 'target', clock = 'rings', barricade = 'lift', plague = 'wave', gear = 'rays', guillotine = 'projectile', nova = 'rays', hourglass = 'target', meteors = 'streaks',
-               rain = 'streaks', sun = 'rays', flux = 'rays', ring = 'rays', burst = 'rings', skull = 'lanefall', freeze = 'rings', eye = 'rays',
-               arrow = 'projectile', dagger = 'projectile', axe = 'projectile', hammer = 'projectile', ram = 'projectile',
-               bolt = 'lightning', jolt = 'lightning', orb = 'lightning',
-               laser = 'beam', beam = 'beam', blade = 'beam', block = 'lock', comet = 'impact', cannon = 'impact', star = 'cross',
-               restart = 'lift', crosshair = 'target', brain = 'wave', grenade = 'rows', wall = 'sweep', duel = 'lightning', boost = 'rays'}
-
 local function laneRect(lane) return fx.FIELD_X + (lane - 1) * fx.LANE_W, fx.FIELD_Y, fx.LANE_W, fx.ROW_H * B.ROWS end
 local lightningSeed = 0
 

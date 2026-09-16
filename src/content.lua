@@ -335,7 +335,7 @@ function weaponDictionary()
     add(makeWeapon('QuantumFlux', 'god', 'Quantum Flux', 'flux', 'Deals 3000 damage to every alien. Every alien it kills explodes for 1500 damage to its neighbours, which can chain.', {aoe = 'all', all = 3000, dmg = 3000}))
     add(makeWeapon('Supernova', 'god', 'Supernova', 'nova', 'Burns away 20% of the maximum health of every alien on the field.', {aoe = 'all', cd = 3}))
     add(makeWeapon('DoomsdayClock', 'god', 'Doomsday Clock', 'hourglass', 'Marks an alien for death. Two turns later it dies, no matter what protects it.', {aoe = 'tile', attacks = 1, cd = 3}))
-    add(makeWeapon('MeteorStorm', 'god', 'Meteor Storm', 'meteors', 'Six meteors strike random tiles for 6000 damage each.', {aoe = 'all', dmg = 6000, cd = 2}))
+    add(makeWeapon('MeteorStorm', 'god', 'Meteor Storm', 'meteors', 'Six meteors each hunt down a different alien for 6000 damage. Spare meteors crater empty ground.', {aoe = 'all', dmg = 6000, cd = 2}))
 
     -- upgrades are keyed by weapon id; migrate saves that used the old display names
     local OLD_NAMES = {AstroidRain = 'Astroid Rain', Hevalstruck = 'Hevalstruck', Respawn = 'Respawn', Offguard = 'Offguard', Protected = 'Protected'}
@@ -347,8 +347,13 @@ function weaponDictionary()
     end
 end
 
+MAX_UPGRADE = 5
 function upgradeMultiplier(weapon)
     return (data.upgrades[weapon.id] or 0) * 0.1 + 1
+end
+-- gems needed to raise a weapon one level (5, 10, 15 ...)
+function upgradeCost(weapon)
+    return ((data.upgrades[weapon.id] or 0) + 1) * 5
 end
 
 -- ========================= ALIENS =========================
@@ -385,7 +390,7 @@ function alienDictionary()
     add(makeAlien('SpaceFence',       2950,  false, 'Space Fence',    'Spawns with a one-turn shield that blocks all damage.',                            {shape = 'square',  eyes = 3, hue = 0.5}))
     add(makeAlien('Spaceship',        3000,  false, 'Spaceship',      'Takes flight every second turn. While flying it is immune to almost everything.', {shape = 'diamond', eyes = 1, hue = 0.58}))
     add(makeAlien('VRWorkout',        3500,  false, 'VR Workout',     'Very fit. No ability.',                                                            {shape = 'round',   eyes = 2, hue = 0.05}))
-    add(makeAlien('OldGranny',        3700,  false, 'Old Granny',     'Lurches one tile forward every time she takes damage.',                           {shape = 'round',   eyes = 2, hue = 0.9,  sat = 0.3}))
+    add(makeAlien('OldGranny',        3700,  false, 'Old Granny',     'If she was hurt this turn, lurches an extra tile forward before everyone moves.',                           {shape = 'round',   eyes = 2, hue = 0.9,  sat = 0.3}))
     add(makeAlien('Albot',            3000,  true,  'Albot',          'Hevalten. Spawns a random alien in its row every turn.',                          {shape = 'square',  eyes = 3, hue = 0.0}))
     add(makeAlien('Jumper',           4900,  false, 'Jumper',         'Leaps over any wall in its way.',                                                  {shape = 'tri',     eyes = 2, hue = 0.28}))
     add(makeAlien('Giant',            12700, false, 'Giant',          'Enormous, but only moves every other turn.',                                       {shape = 'hex',     eyes = 2, hue = 0.08, sat = 0.5}))
@@ -402,7 +407,7 @@ function alienDictionary()
     add(makeAlien('Protected',        26000, false, 'Bunker',         'All targeted damage against it is halved.',                                        {shape = 'square',  eyes = 2, hue = 0.1,  sat = 0.3}))
     add(makeAlien('Interdimentional', 34200, false, 'Interdimensional', 'Every one on the field reduces all damage by 7.5%.',                            {shape = 'diamond', eyes = 3, hue = 0.7}))
     add(makeAlien('Scarce',           40000, true,  'Scarcebane',     'Hevalten. Scarce weapons deal 20% less damage while it lives.',                   {shape = 'hex',     eyes = 1, hue = 0.8}))
-    add(makeAlien('TheHevalGod',      46700, true,  'Heval God',      'Hevalten. Every time it takes damage, a random Hevalten spawns in the first three rows.', {shape = 'hex', eyes = 3, hue = 0.0, aura = true, crown = true}))
+    add(makeAlien('TheHevalGod',      46700, true,  'Heval God',      'Hevalten. If it was hurt this turn, calls a random Hevalten into the first three rows.', {shape = 'hex', eyes = 3, hue = 0.0, aura = true, crown = true}))
     add(makeAlien('GodOfSpace',       50000, true,  'God of Space',   'Hevalten. Spawns three more aliens on arrival. Immune to knockback, poison and hypnosis.', {shape = 'round', eyes = 3, hue = 0.15, aura = true, crown = true}))
     -- newer arrivals
     add(makeAlien('Swarmling',        400,   false, 'Swarmling',      'Tiny and fast: moves two rows every turn.',                                        {shape = 'tri',     eyes = 1, hue = 0.45}))

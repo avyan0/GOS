@@ -10,6 +10,48 @@ local KEYS = {'A', 'S', 'D'}
 local ITEM_LABEL = {walls = 'Wall', zap = 'Zap', gold = 'Double Gold', electricity = 'Electricity', retreat = 'Retreat', bomb = 'Bomb', teleporter = 'Teleporter', protection = 'Protection'}
 local TARGET_LABEL = {field = 'Field', lane = 'Lane', tile = 'Tile', self = 'Buff'}
 
+-- what each status means, for the hover card
+local function statusRows(a)
+    local rows = {}
+    local function add(txt, c) rows[#rows + 1] = {txt, 'body', 13, c} end
+    if a.stun > 0 then add('Stunned - cannot move for ' .. a.stun .. ' more turn' .. (a.stun == 1 and '' or 's'), ui.c.warn) end
+    if a.poison > 0 then add('Poisoned - takes damage every turn', ui.c.good) end
+    if a.plague and a.plague > 0 then add('Plagued - poison that spreads to neighbours', ui.rarity.scarce) end
+    if a.hypno then add('Hypnotised - attacks the closest alien ahead of it', ui.rarity.scarce) end
+    if a.immune > 0 then add('Shielded - immune to damage and effects this turn', ui.c.gold) end
+    if a.marked then add('Scanned - takes 25% more damage this turn', ui.c.accent) end
+    if a.doom then add('Doomed - dies in ' .. a.doom .. ' turn' .. (a.doom == 1 and '' or 's'), ui.c.danger) end
+    if a.fly then add('Flying - only field-wide weapons can hit it', ui.c.muted) end
+    if a.giantWait then add('Resting - moves every other turn', ui.c.muted) end
+    return rows
+end
+
+local function alienTooltip(a, x, y)
+    local def = Aliens[a.name]
+    local rows = {
+        {def.title, 'display', 17},
+        {(a.hevalten and 'HEVALTEN   -   ' or '') .. math.max(0, math.round(a.health)) .. ' / ' .. a.maxHealth .. ' HP', 'hud', 12, a.hevalten and ui.c.danger or ui.c.muted, gap = 8},
+        {def.desc, 'body', 14},
+    }
+    local st = statusRows(a)
+    if #st > 0 then rows[#rows].gap = 10 end
+    for _, r in ipairs(st) do rows[#rows + 1] = r end
+    ui.tooltip(x, y, rows, {color = a.hevalten and ui.c.danger or ui.c.line, width = 280})
+end
+
+local function weaponTooltip(w, x, y)
+    local rule = B.WEAPON_RULES[w.id]
+    local color = ui.rarity[w.rarity]
+    local stats = ui.rarityName[w.rarity]:upper() .. '   -   ' .. (TARGET_LABEL[rule.kind] or rule.kind):upper()
+    if w.damage > 0 then stats = stats .. '   -   ' .. math.round(w.damage * upgradeMultiplier(w)) .. ' DMG' end
+    if w.cooldown > 0 then stats = stats .. '   -   ' .. w.cooldown .. ' TURN CD' end
+    ui.tooltip(x, y, {
+        {w.name, 'display', 17, color},
+        {stats, 'hud', 11, ui.c.muted, gap = 8},
+        {w.specialEffect, 'body', 14},
+    }, {color = color, width = 300})
+end
+
 local active = false      -- a battle is in progress (survives Pause round-trips)
 local pendingResult = nil -- result to apply once animations finish
 
@@ -50,6 +92,7 @@ function GameState:enter(item)
         fx.sync(B.drain())
     end
     if item then
+        if B.cancelAim() == 'wall' then refundItem('walls') end
         local r = B.useItem(item)
         if r == false then
             refundItem(item)
@@ -66,11 +109,12 @@ end
 local function fire(n)
     if fx.busy() then return end
     local r = B.fire(n)
-    if r == true then animate() end
+    if r == true then animate() elseif r then sfx.play('click') end
 end
 
 local function endTurn()
     if fx.busy() then return end
+    sfx.play('turn')
     local r = B.endTurn()
     animate(r)
 end
@@ -166,7 +210,7 @@ function GameState:render(dimmed)
                 ui.color(ui.c.bg, 0.5); for k = 0, 3 do love.graphics.rectangle('fill', x + 12 + k * 44, y + ROW_H - 12, 2, 4) end
                 if hp > 1 then ui.pips(x + LANE_W / 2 - 12, y + ROW_H - 26, 3, hp, wc, 5, 3) end
             end
-            if aiming and s.aim.kind == 'wall' then
+            if aiming and (s.aim.kind == 'wall' or (s.aim.rule and s.aim.rule.wall)) then
                 local ok = B.wallAllowed(i, j)
                 if hoverLane == j and hoverRow == i then
                     ui.color(ok and ui.c.good or ui.c.danger, 0.3); love.graphics.rectangle('fill', x, y, LANE_W, ROW_H, 4, 4)
@@ -184,7 +228,7 @@ function GameState:render(dimmed)
             ui.color(ui.c.accent, 0.9); love.graphics.setLineWidth(2); love.graphics.rectangle('line', FIELD_X + (j - 1) * LANE_W, FIELD_Y, LANE_W, ROW_H * 10, 6, 6)
         end
     end
-    if aiming and s.aim.kind == 'tile' and hoverLane and hoverRow then
+    if aiming and s.aim.kind == 'tile' and not s.aim.rule.wall and hoverLane and hoverRow then
         local x, y = FIELD_X + (hoverLane - 1) * LANE_W, FIELD_Y + (hoverRow - 1) * ROW_H
         ui.color(ui.c.accent, 0.25); love.graphics.rectangle('fill', x, y, LANE_W, ROW_H, 4, 4)
         ui.color(ui.c.accent); love.graphics.setLineWidth(2); love.graphics.rectangle('line', x, y, LANE_W, ROW_H, 4, 4)
@@ -238,6 +282,7 @@ function GameState:render(dimmed)
     end
 
     local busy = fx.busy()
+    local tipWeapon, tipY
     for n, slot in ipairs(s.slots) do
         local w = Weapons[slot.id]
         local y = 124 + (n - 1) * 118
@@ -245,12 +290,13 @@ function GameState:render(dimmed)
         local ready = w and not slot.used and not s.aim and not busy
         local isAiming = s.aim and s.aim.slot == n
         local hover = ui.hovered(SIDE_X + 12, y, SIDE_W - 24, 108)
+        if hover and w and not dimmed then tipWeapon, tipY = w, y end
         ui.panel(SIDE_X + 12, y, SIDE_W - 24, 108, {fill = (ready or isAiming) and ui.c.panel2 or ui.c.bg2, border = isAiming and ui.c.accent or ((hover and ready and not dimmed) and color or ui.c.line), radius = 10})
         if w then
             local rule = B.WEAPON_RULES[w.id]
             local lit = ready or isAiming
             icons.weapon(w.shape, SIDE_X + 40, y + 34, 38, lit and color or ui.c.dim)
-            local nameSize = ui.font('display', 15):getWidth(w.name) > SIDE_W - 90 and 12 or 15
+            local nameSize = ui.fitSize('display', w.name, SIDE_W - 90, 15, 11)
             ui.text(w.name, SIDE_X + 68, y + 14 + (15 - nameSize), SIDE_W - 90, 'left', 'display', nameSize, lit and ui.c.text or ui.c.dim)
             local dmg = w.damage > 0 and ('   -   ' .. math.round(w.damage * ((data.upgrades[w.id] or 0) * 0.1 + 1))) or ''
             ui.text((TARGET_LABEL[rule.kind] or rule.kind) .. dmg, SIDE_X + 68, y + 38, SIDE_W - 90, 'left', 'body', 13, ui.c.muted)
@@ -267,16 +313,16 @@ function GameState:render(dimmed)
 
     local py = 124 + 3 * 118 + 4
     if s.aim and not busy then
-        local isWall = s.aim.kind == 'wall'
+        local isWall = s.aim.kind == 'wall' or (s.aim.rule and s.aim.rule.wall)
         ui.panel(SIDE_X + 12, py, SIDE_W - 24, 64, {fill = isWall and ui.c.warn or ui.c.accent, border = false, radius = 10})
         local msg
-        if isWall then msg = 'Place the wall'
+        if isWall then msg = s.aim.kind == 'wall' and 'Place the wall' or 'Place the barricade'
         elseif s.aim.kind == 'lane' then msg = 'Click a lane'
         else
             local shots = s.aim.rule.shots or 1
             msg = 'Click a tile' .. (shots > 1 and ('  (' .. (shots - s.aim.remaining + 1) .. '/' .. shots .. ')') or '')
         end
-        ui.textBox(msg, SIDE_X + 12, py, SIDE_W - 24, 40, 'display', 17, ui.c.bg)
+        ui.textBox(msg, SIDE_X + 12, py, SIDE_W - 24, 40, 'display', ui.fitSize('display', msg, SIDE_W - 44, 17, 12), ui.c.bg)
         ui.textBox('Esc to cancel', SIDE_X + 12, py + 34, SIDE_W - 24, 24, 'body', 12, ui.c.bg)
     elseif busy then
         ui.panel(SIDE_X + 12, py, SIDE_W - 24, 64, {fill = ui.c.bg2, radius = 10})
@@ -286,4 +332,30 @@ function GameState:render(dimmed)
         if ui.button('End turn', SIDE_X + 12, py, SIDE_W - 24, 64, {size = 22, id = 'endturn', disabled = dimmed}) and not dimmed then endTurn() end
     end
     if not dimmed and ui.button('Pause', SIDE_X + 12, py + 74, SIDE_W - 24, 40, {outline = true, size = 16, id = 'pausebtn', color = ui.c.muted, disabled = busy}) then gStateMachine:change('pause') end
+
+    -- hover cards: weapon in the sidebar, alien or wall on the field
+    if dimmed then return end
+    if tipWeapon then
+        weaponTooltip(tipWeapon, SIDE_X - 312, tipY)
+    elseif hoverLane and hoverRow then
+        local best, bestD
+        for _, v in pairs(fx.vis) do
+            if not v.dying and not v.fading then
+                local ci, cj = math.floor((v.y + 2 - FIELD_Y) / ROW_H) + 1, math.floor((v.x + 56 - FIELD_X) / LANE_W) + 1
+                if ci == hoverRow and cj == hoverLane then
+                    local d = math.abs(v.x + 56 - ui.mouse.x) + math.abs(v.y - ui.mouse.y)
+                    if not bestD or d < bestD then best, bestD = v, d end
+                end
+            end
+        end
+        if best then
+            alienTooltip(best.a, ui.mouse.x + 18, ui.mouse.y + 18)
+        elseif s.walls[hoverRow][hoverLane] then
+            local hp = tonumber(s.walls[hoverRow][hoverLane]) or 1
+            ui.tooltip(ui.mouse.x + 18, ui.mouse.y + 18, {
+                {hp > 1 and 'Barricade' or 'Wall', 'display', 17, hp > 1 and ui.rarity.rare or ui.c.warn},
+                {'Stops aliens marching past. Breaks after ' .. hp .. ' more hit' .. (hp == 1 and '' or 's') .. '.', 'body', 14},
+            }, {color = hp > 1 and ui.rarity.rare or ui.c.warn})
+        end
+    end
 end

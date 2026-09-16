@@ -42,6 +42,12 @@ function ui.font(kind, size)
     return fontCache[key]
 end
 
+-- largest size (stepping down to min) at which str fits on one line of width w
+function ui.fitSize(kind, str, w, size, min)
+    while size > (min or 10) and ui.font(kind, size):getWidth(str) > w do size = size - 1 end
+    return size
+end
+
 function ui.color(c, a)
     love.graphics.setColor(c[1], c[2], c[3], (a or 1) * (c[4] or 1))
 end
@@ -190,7 +196,8 @@ function ui.button(label, x, y, w, h, opts)
     love.graphics.printf(label, tx, by + (h - f:getHeight()) / 2 + 1, tw, opts.align or 'center')
 
     if opts.disabled then return false end
-    return ui.hit(x, y, w, h)
+    if ui.hit(x, y, w, h) then sfx.play('click'); return true end
+    return false
 end
 
 -- small icon-only round button
@@ -202,7 +209,8 @@ function ui.iconButton(id, x, y, r, drawIcon, opts)
     ui.color(opts.border or ui.c.line, 0.6 + 0.4 * hoverT); love.graphics.circle('line', x, y, r + 2 * hoverT)
     ui.color(opts.iconColor or ui.c.text)
     drawIcon(x, y, r)
-    return ui.hit(x - r, y - r, r * 2, r * 2)
+    if ui.hit(x - r, y - r, r * 2, r * 2) then sfx.play('click'); return true end
+    return false
 end
 
 function ui.arrowLeft(x, y, r)
@@ -261,7 +269,7 @@ function ui.navbar(active)
             ui.color(ui.c.accent); love.graphics.rectangle('fill', x + w * 0.3, y, w * 0.4, 3)
         end
         ui.text(tab[2], x, y + 20, w, 'center', 'display', 22, isActive and ui.c.accent or mix(ui.c.muted, ui.c.text, hoverT))
-        if not isActive and ui.hit(x, y, w, h) then result = tab[1] end
+        if not isActive and ui.hit(x, y, w, h) then result = tab[1]; sfx.play('click') end
     end
     return result
 end
@@ -285,6 +293,33 @@ function ui.slider(id, x, y, w, value, min, max, color)
     ui.color(ui.c.text); love.graphics.circle('fill', kx, y + h / 2, dragging == id and 11 or 9)
     ui.color(color or ui.c.accent); love.graphics.circle('line', kx, y + h / 2, dragging == id and 11 or 9)
     return value
+end
+
+-- ---------------------------------------------------------------- tooltip
+-- Hover card anchored near (x, y), clamped to the screen. rows: list of {text, kind, size, color}.
+function ui.tooltip(x, y, rows, opts)
+    opts = opts or {}
+    local w = opts.width or 260
+    local pad = 14
+    local h = pad
+    local laid = {}
+    for _, r in ipairs(rows) do
+        local f = ui.font(r[2] or 'body', r[3] or 14)
+        local _, lines = f:getWrap(r[1], w - pad * 2)
+        laid[#laid + 1] = {r = r, f = f, h = #lines * f:getHeight() + (r.gap or 4)}
+        h = h + laid[#laid].h
+    end
+    h = h + pad - 4
+    x = math.max(8, math.min(VIRTUAL_WIDTH - w - 8, x))
+    y = math.max(8, math.min(VIRTUAL_HEIGHT - h - 8, y))
+    ui.panel(x, y, w, h, {fill = ui.c.bg2, border = opts.color or ui.c.line, radius = 10, alpha = 0.97})
+    local ty = y + pad
+    for _, l in ipairs(laid) do
+        love.graphics.setFont(l.f)
+        ui.color(l.r[4] or ui.c.text)
+        love.graphics.printf(l.r[1], x + pad, ty, w - pad * 2, 'left')
+        ty = ty + l.h
+    end
 end
 
 -- ---------------------------------------------------------------- background
@@ -333,6 +368,7 @@ end
 -- ---------------------------------------------------------------- toasts / popups
 local toasts = {}
 function ui.toast(msg, color)
+    sfx.play('notify')
     table.insert(toasts, {msg = msg, color = color or ui.c.accent, t = 2.4})
 end
 function ui.drawToasts()

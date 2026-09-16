@@ -43,7 +43,8 @@ function drawSlots(x, y, w, selectedSlot, t)
         if w_ then
             local color = ui.rarity[w_.rarity]
             icons.weapon(w_.shape, sx + 44, y + 58, 44, color)
-            ui.text(w_.name, sx + 78, y + 36, sw - 90, 'left', 'display', 18)
+            local size = ui.fitSize('display', w_.name, sw - 90, 18, 12)
+            ui.text(w_.name, sx + 78, y + 36 + (18 - size) / 2, sw - 90, 'left', 'display', size)
             ui.text(ui.rarityName[w_.rarity] .. '   -   Lv ' .. (data.upgrades[id] or 0), sx + 78, y + 62, sw - 90, 'left', 'body', 14, color)
         else
             local pulse = 0.5 + 0.5 * math.sin((t or 0) * 3)

@@ -19,8 +19,10 @@ function Result:enter(params)
     self.planet = tonumber(data.currentLevel:match('(%d+)')) or 1
     self.levelNum = tonumber(data.currentLevel:match('%-(%d+)')) or 1
     data.matchesPlayed = data.matchesPlayed + 1
-    self.newAlien, self.spin, self.advanced = nil, nil, false
+    self.newAlien, self.spin, self.advanced, self.newPlanet, self.complete = nil, nil, false, nil, false
     if self.won then self:applyWin() end
+    sfx.play(self.won and 'win' or 'lose')
+    data.goldBuff = 1 -- Double Gold only covers the level it was used in
     saveData()
 end
 
@@ -38,8 +40,8 @@ function Result:applyWin()
         local p, l = data.planet, data.level
         self.spin = SPIN_AT[p] and SPIN_AT[p][l]
         if data.level >= 30 then
-            data.level = 0
-            if data.planet < 6 then data.planet = data.planet + 1; self.newPlanet = PLANETS[data.planet] end
+            if data.planet < 6 then data.level = 0; data.planet = data.planet + 1; self.newPlanet = PLANETS[data.planet]
+            else self.complete = true end -- final world cleared: keep the 30/30 record
         end
     end
 end
@@ -63,6 +65,7 @@ function Result:render()
             ui.text(txt, px, y, pw, 'center', 'body', 18, c or ui.c.text); y = y + 34
         end
         if self.newPlanet then line('New world unlocked: ' .. self.newPlanet.name, ui.c.accent) end
+        if self.complete then line('Every world defended. You are a god of space.', ui.c.gold) end
         if self.spin then line('Bonus ' .. self.spin .. ' prize wheel earned!', ui.c.gold) end
         if not self.advanced then line('Replayed level  -  no progress change', ui.c.muted) end
     else
@@ -76,8 +79,9 @@ function Result:render()
         end
         by = by + 70
     end
-    if ui.button(self.won and 'Next level' or 'Try again', VIRTUAL_WIDTH / 2 - 310, by, 300, 50, {size = 20, id = 'again', outline = self.spin ~= nil}) then
-        if self.won and self.advanced and data.level > 0 then data.currentLevel = data.planet .. '-' .. (data.level + 1) end
+    local nextLabel = self.won and (self.complete and 'Play again' or 'Next level') or 'Try again'
+    if ui.button(nextLabel, VIRTUAL_WIDTH / 2 - 310, by, 300, 50, {size = 20, id = 'again', outline = self.spin ~= nil}) then
+        if self.won and self.advanced then data.currentLevel = data.planet .. '-' .. math.min(30, data.level + 1) end
         gStateMachine:change('loadout')
     end
     if ui.button('Home', VIRTUAL_WIDTH / 2 + 10, by, 300, 50, {size = 20, outline = true, id = 'home'}) then gStateMachine:change('home') end
