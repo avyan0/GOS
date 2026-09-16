@@ -107,3 +107,7 @@ function Loadout:render()
         gStateMachine:change('battle')
     end
 end
+
+function Loadout:keyPressed(k)
+    if k == 'escape' then gStateMachine:change('planetMap', tonumber(data.currentLevel:match('^(%d+)'))) end
+end

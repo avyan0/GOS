@@ -55,3 +55,9 @@ function HowToPlay:render()
         if ui.button('Next', 940, 620, 200, 48, {size = 18, id = 'next'}) then self.page = self.page + 1 end
     elseif ui.button('Done', 940, 620, 200, 48, {size = 18, id = 'done'}) then gStateMachine:change('home') end
 end
+
+function HowToPlay:keyPressed(k)
+    if k == 'escape' then gStateMachine:change('settings')
+    elseif k == 'right' and self.page < #PAGES then self.page = self.page + 1
+    elseif k == 'left' and self.page > 1 then self.page = self.page - 1 end
+end

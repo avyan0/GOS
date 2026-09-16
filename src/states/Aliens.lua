@@ -59,3 +59,5 @@ function AliensScreen:render()
     local nav = ui.navbar('aliens')
     if nav then gStateMachine:change(nav) end
 end
+
+function AliensScreen:keyPressed(k) if k == 'escape' then gStateMachine:change('home') end end

@@ -86,3 +86,10 @@ function Result:render()
     end
     if ui.button('Home', VIRTUAL_WIDTH / 2 + 10, by, 300, 50, {size = 20, outline = true, id = 'home'}) then gStateMachine:change('home') end
 end
+
+function Result:keyPressed(k)
+    if k == 'return' or k == 'space' then
+        if self.won and self.advanced then data.currentLevel = data.planet .. '-' .. math.min(30, data.level + 1) end
+        gStateMachine:change(self.spin and 'reward' or 'loadout', self.spin and {tier = self.spin} or nil)
+    elseif k == 'escape' then gStateMachine:change('home') end
+end

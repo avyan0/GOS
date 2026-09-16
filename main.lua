@@ -116,6 +116,8 @@ function love.keypressed(key)
     gStateMachine:keyPressed(key)
 end
 
+function love.textinput(t) gStateMachine:textInput(t) end
+
 function love.keyboard.wasPressed(key) return love.keyboard.keysPressed[key] == true end
 
 function love.quit() if not TESTING then saveData() end end

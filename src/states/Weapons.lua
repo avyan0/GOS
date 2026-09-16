@@ -66,15 +66,17 @@ function drawWeaponDetail(w, px, py, pw, ph)
     ui.text(w.specialEffect, px + 30, py + 300, pw - 60, 'left', 'body', 16)
 
     local lvl = data.upgrades[w.id] or 0
-    local foot = owned and ('Level ' .. lvl .. ' / ' .. MAX_UPGRADE .. '  |  +' .. (lvl * 10) .. '% damage') or 'Not yet unlocked - win it from a spin'
-    ui.text(foot, px + 30, py + ph - 60, pw - 250, 'left', 'body', 15, owned and color or ui.c.muted)
+    local foot = owned and ('Level ' .. lvl .. '/' .. MAX_UPGRADE .. '   +' .. (lvl * 10) .. '% dmg') or 'Not yet unlocked - win it from a spin'
+    ui.text(foot, px + 30, py + ph - 60, pw - 230, 'left', 'body', 14, owned and color or ui.c.muted)
     ui.pips(px + 30, py + ph - 34, MAX_UPGRADE, lvl, color, 10, 6)
     -- gems buy upgrades directly
     if owned and lvl < MAX_UPGRADE then
         local cost = upgradeCost(w)
-        local bx, bw = px + pw - 210, 180
-        if ui.button('Upgrade for ' .. cost, bx, py + ph - 66, bw, 42, {size = 15, outline = true, color = ui.c.accent, id = 'upg' .. w.id, disabled = data.gems < cost,
-            icon = function(x, y, sz) ui.color(ui.c.accent, data.gems < cost and 0.4 or 1); love.graphics.polygon('fill', x, y - sz * 0.45, x + sz * 0.4, y, x, y + sz * 0.45, x - sz * 0.4, y) end}) then
+        local bx, bw = px + pw - 190, 160
+        local can = data.gems >= cost
+        ui.color(ui.c.accent, can and 1 or 0.4); love.graphics.polygon('fill', bx + 8, py + ph - 76, bx + 14, py + ph - 70, bx + 8, py + ph - 64, bx + 2, py + ph - 70)
+        ui.text(cost .. ' gems', bx + 20, py + ph - 80, bw - 20, 'left', 'hud', 13, can and ui.c.accent or ui.c.dim)
+        if ui.button('Upgrade', bx, py + ph - 58, bw, 36, {size = 15, outline = true, color = ui.c.accent, id = 'upg' .. w.id, disabled = not can}) then
             data.gems = data.gems - cost
             data.upgrades[w.id] = lvl + 1
             saveData()
@@ -124,3 +126,5 @@ function WeaponsScreen:render()
     local nav = ui.navbar('weapons')
     if nav then gStateMachine:change(nav) end
 end
+
+function WeaponsScreen:keyPressed(k) if k == 'escape' then gStateMachine:change('home') end end

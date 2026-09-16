@@ -26,3 +26,5 @@ function Items:render()
     local nav = ui.navbar('items')
     if nav then gStateMachine:change(nav) end
 end
+
+function Items:keyPressed(k) if k == 'escape' then gStateMachine:change('home') end end

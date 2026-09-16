@@ -87,3 +87,5 @@ function PlanetMap:render()
         end
     end
 end
+
+function PlanetMap:keyPressed(k) if k == 'escape' then gStateMachine:change('home') end end

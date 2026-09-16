@@ -36,3 +36,5 @@ function Settings:render()
     if ui.button(love.window.getFullscreen() and 'Windowed' or 'Fullscreen', 770, 345, 210, 50, {outline = true, size = 20, id = 'fs'}) then toggleFullscreen() end
     if ui.button('Quit game', 1000, 345, 210, 50, {outline = true, color = ui.c.danger, size = 20}) then love.event.quit() end
 end
+
+function Settings:keyPressed(k) if k == 'escape' then saveData(); gStateMachine:change('home') end end

@@ -112,3 +112,8 @@ function Shop:render()
     local nav = ui.navbar('shop')
     if nav and not (self.wheel and self.wheel.spinning) then gStateMachine:change(nav) end
 end
+
+function Shop:keyPressed(k)
+    if k ~= 'escape' or (self.wheel and self.wheel.spinning) then return end
+    if self.tier then self.tier = nil; self.wheel = nil; self.result = nil else gStateMachine:change('home') end
+end

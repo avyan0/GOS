@@ -1,7 +1,7 @@
 StateMachine = Class{}
 
 local NOOP = function() end
-local EMPTY = {render = NOOP, update = NOOP, enter = NOOP, exit = NOOP, mousePressed = NOOP, keyPressed = NOOP}
+local EMPTY = {render = NOOP, update = NOOP, enter = NOOP, exit = NOOP, mousePressed = NOOP, keyPressed = NOOP, textInput = NOOP}
 
 function StateMachine:init(states)
     self.states = states or {}
@@ -37,3 +37,4 @@ end
 function StateMachine:render() self.current:render() end
 function StateMachine:mousePressed(x, y, b) self.current:mousePressed(x, y, b) end
 function StateMachine:keyPressed(k) self.current:keyPressed(k) end
+function StateMachine:textInput(t) self.current:textInput(t) end

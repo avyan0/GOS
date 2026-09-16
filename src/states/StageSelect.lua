@@ -45,3 +45,5 @@ function StageSelect:render()
         gStateMachine:change('battle')
     end
 end
+
+function StageSelect:keyPressed() end -- no leaving mid-battle

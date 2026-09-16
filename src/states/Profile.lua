@@ -5,15 +5,21 @@ local NAME_MAX = 12
 function Profile:init() self.t = 0; self.editing = false end
 function Profile:update(dt) self.t = self.t + dt end
 
+function Profile:stopEditing()
+    self.editing = false
+    if data.name:match('^%s*$') then data.name = 'Player' end
+    saveData()
+end
+
 function Profile:keyPressed(key)
-    if not self.editing then return end
-    if key == 'return' or key == 'escape' then self.editing = false; saveData()
-    elseif key == 'backspace' then data.name = data.name:sub(1, -2)
-    elseif #key == 1 and #data.name < NAME_MAX then
-        local ch = key
-        if love.keyboard.isDown('lshift', 'rshift') then ch = ch:upper() end
-        if ch:match('[%w]') then data.name = data.name .. ch end
-    elseif key == 'space' and #data.name < NAME_MAX then data.name = data.name .. ' ' end
+    if not self.editing then if key == 'escape' then gStateMachine:change('home') end return end
+    if key == 'return' or key == 'escape' then self:stopEditing()
+    elseif key == 'backspace' then data.name = data.name:sub(1, -2) end
+end
+
+-- real text input, so shift/caps/layout all behave
+function Profile:textInput(t)
+    if self.editing and #data.name < NAME_MAX and t:match('^[%w ]$') then data.name = data.name .. t end
 end
 
 function Profile:render()
@@ -30,8 +36,7 @@ function Profile:render()
     local shown = data.name .. ((self.editing and math.floor(self.t * 2) % 2 == 0) and '_' or '')
     ui.text(shown, px + 130, py + 62, 230, 'left', 'display', 28)
     if ui.button(self.editing and 'Done' or 'Rename', px + 30, py + 136, pw - 60, 42, {outline = true, size = 18}) then
-        self.editing = not self.editing
-        if not self.editing then saveData() end
+        if self.editing then self:stopEditing() else self.editing = true end
     end
 
     -- stats
