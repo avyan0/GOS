@@ -41,6 +41,12 @@ local function count()
 end
 B.count = count
 
+-- aliens still fighting against you (hypnotised ones are yours now)
+local function hostile()
+    local n = 0; each(function(a) if not a.hypno then n = n + 1 end end); return n
+end
+B.hostile = hostile
+
 local function freeCells(rowMax)
     local out = {}
     for i = 1, rowMax or B.ROWS do for j = 1, B.LANES do if not s.grid[i][j] then out[#out + 1] = {i, j} end end end
@@ -81,7 +87,7 @@ end
 -- ---------------------------------------------------------------- spawning / removal
 local function place(i, j, def, health)
     local a = {
-        uid = s.nextUid, name = def.name, hevalten = def.hevalten, health = health or def.health, maxHealth = def.health,
+        uid = s.nextUid, name = def.name, hevalten = def.hevalten, health = health or def.health, maxHealth = math.max(def.health, health or 0),
         stun = 0, poison = 0, hypno = false, immune = 0, fly = false, giantWait = false, morph = def.name == 'Morpher',
     }
     s.nextUid = s.nextUid + 1
@@ -110,7 +116,7 @@ local function kill(i, j)
     data.aliensKilled = data.aliensKilled + 1
     if a.name ~= 'Splitter' then s.lastKilled = Aliens[a.name] end
     if a.name == 'Splitter' then
-        local def = Aliensrand[math.max(1, (Aliens.Splitter.tier or 2) - 1)]
+        local def = Aliens.Swarmling -- two fast fragments, each with a quarter of the Splitter's health
         local spots = {}
         for _, c in ipairs({{i, j - 1}, {i, j + 1}, {i - 1, j}, {i + 1, j}}) do
             if c[1] >= 1 and c[1] <= B.ROWS and c[2] >= 1 and c[2] <= B.LANES and not s.grid[c[1]][c[2]] then spots[#spots + 1] = c end
@@ -118,7 +124,7 @@ local function kill(i, j)
         emit({type = 'ability', uid = a.uid, name = a.name, i = i, j = j, text = 'splits apart'})
         for n = 1, math.min(2, #spots) do
             local c = table.remove(spots, math.random(#spots))
-            B.spawn(c[1], c[2], def, def.health * 0.5)
+            B.spawn(c[1], c[2], def, a.maxHealth * 0.25)
         end
     end
 end
@@ -548,7 +554,7 @@ B.WAVE = {1, 2, 3}
 
 function B.spawnWave()
     for _ = 1, B.WAVE[s.stage] or 1 do
-        if s.kills + count() >= s.needed then break end -- enough on the field already
+        if s.kills + hostile() >= s.needed then break end -- enough on the field already
         local def = rollAlien()
         local lanes = {}
         for j = 1, B.LANES do
@@ -624,7 +630,7 @@ end
 
 local function albotSpawns()
     each(function(a, i, j)
-        if a.name == 'Albot' then
+        if a.name == 'Albot' and not a.hypno then
             local free = {}
             for c = 1, B.LANES do if not s.grid[i][c] then free[#free + 1] = c end end
             if #free > 0 then
@@ -718,6 +724,7 @@ end
 
 local function supportAbilities()
     each(function(a, i, j)
+        if a.hypno then return end -- fighting for you now; no tricks
         if a.name == 'OldGranny' and a.hurt and i < B.ROWS and not s.grid[i + 1][j] then ability(a, i, j, 'lurches forward'); move(i, j, i + 1, j)
         elseif a.name == 'TheHevalGod' and a.hurt then ability(a, i, j, 'calls a Hevalten'); spawnInto(randomUnlocked(true), 3)
         elseif a.name == 'Giant' then -- rests every other turn; decided here so the pause shows before anyone marches
@@ -857,7 +864,7 @@ function B.endTurn()
 end
 
 function B.checkStage()
-    if s.kills >= s.needed and count() == 0 then
+    if s.kills >= s.needed and hostile() == 0 then
         if s.stage >= 3 then s.result = 'win'; return 'win' end
         s.stage = s.stage + 1
         B.newStage()

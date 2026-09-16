@@ -232,6 +232,7 @@ test('Hypnotised aliens fight: both lose the other health, stronger survives and
     local s = setup({}); s.needed = 0
     local h = put(8, 1, 'Giant', 50000); h.hypno = true; h.health = 5000
     put(5, 1, 'King') -- hp.King, two rows up with a gap
+    put(1, 5, 'Joe').stun = 99 -- a hostile somewhere so the stage does not end
     B.endTurn()
     check(B.alienAt(5, 1) == nil, 'king died')
     check(s.kills == 1, 'counts as a kill')
@@ -248,6 +249,7 @@ test('Hypnotised aliens fight: both lose the other health, stronger survives and
     -- with nothing to fight it moves up and holds the top
     s = setup({}); s.needed = 0
     h = put(2, 3, 'Giant', 50000); h.hypno = true
+    put(1, 5, 'Joe').stun = 99
     B.endTurn(); check(B.alienAt(1, 3) and B.alienAt(1, 3).hypno, 'moved to the top')
     B.endTurn(); check(B.alienAt(1, 3) and B.alienAt(1, 3).hypno, 'stands guard at the top')
 end)
@@ -578,7 +580,7 @@ test('Supernova burns 20% max health, ignores buffs, respects the Void Titan cap
     local s = setup({w1 = 'Supernova'}); put(3, 1, 'Giant', 50000); put(3, 2, 'King'); put(3, 3, 'VoidTitan')
     s.buff = 0.5
     B.fire(1)
-    check(near(B.alienAt(3, 1).health, hp.Giant * 0.8 + 50000 - hp.Giant) and near(B.alienAt(3, 2).health, hp.King * 0.8), '20% of max each')
+    check(near(B.alienAt(3, 1).health, 50000 * 0.8) and near(B.alienAt(3, 2).health, hp.King * 0.8), '20% of max each')
     check(near(B.alienAt(3, 3).health, hp.VoidTitan - 5000), 'titan capped at 5000')
 end)
 
@@ -643,7 +645,7 @@ test('Splitter splits into two weaker aliens on death', function()
     B.fire(1); B.aimTile(5, 3); B.cancelAim()
     check(B.count() == 2, 'two children (' .. B.count() .. ')')
     local child; B.each(function(a) child = a end)
-    check(child and child.name ~= 'Splitter' and near(child.health, child.maxHealth * 0.5), 'children are weaker at half health')
+    check(child and child.name == 'Swarmling' and near(child.health, hp.Splitter * 0.25), 'swarmling children at a quarter health')
 end)
 
 test('Anchor stops knockback in its lane', function()
@@ -665,6 +667,17 @@ test('Void Titan caps every hit at 5000', function()
     setup({w1 = 'VoidBurst'}); put(5, 1, 'VoidTitan')
     B.fire(1); B.aimTile(5, 1); B.aimTile(1, 1); B.aimTile(2, 2)
     check(near(B.alienAt(5, 1).health, hp.VoidTitan - 5000), '11000 became 5000')
+end)
+
+test('Hypnotised survivors do not block the stage or spawns', function()
+    local s = setup({w1 = 'Hypnosis'}); s.needed = 1; s.kills = 1
+    put(1, 1, 'King'); B.fire(1)
+    check(B.alienAt(1, 1).hypno, 'hypnotised')
+    check(B.endTurn() == 'stage', 'stage cleared with only a hypnotised alien left')
+    s = setup({w1 = 'Hypnosis'}); s.needed = 3; s.kills = 0
+    put(5, 1, 'Thief'); B.fire(1); data.gold = 10
+    B.endTurn(); check(data.gold == 10, 'hypnotised thief steals nothing')
+    check(B.count() >= 2, 'waves keep coming despite the hypnotised alien (' .. B.count() .. ')')
 end)
 
 test('Discovery: aliens are marked seen when they first appear', function()
