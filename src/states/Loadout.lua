@@ -57,6 +57,41 @@ function drawSlots(x, y, w, selectedSlot, t)
     return clicked, clickedId
 end
 
+-- what this level spawns, as a row of icons with share %. Undiscovered aliens stay hidden.
+-- Returns a function that draws the hover card, to call after everything else.
+function drawIncoming(x, y)
+    local L = Levels[data.currentLevel]
+    if not L then return end
+    local list, prev = {}, 0
+    for _, name in ipairs(alienNames) do
+        local top = L[name] or 0
+        if top > prev then list[#list + 1] = {a = Aliens[name], share = top - prev}; prev = top end
+    end
+    table.sort(list, function(p, q) return p.share > q.share end)
+    ui.text('INCOMING', x, y, 200, 'left', 'hud', 12, ui.c.muted)
+    local hover
+    local shown = math.min(#list, 8)
+    if #list > shown then ui.text('+' .. (#list - shown) .. ' more', x + shown * 62, y + 38, 80, 'left', 'body', 13, ui.c.muted) end
+    for k = 1, shown do
+        local e = list[k]
+        local ix = x + (k - 1) * 62
+        local seen = data.seen[e.a.name]
+        ui.panel(ix, y + 18, 54, 54, {fill = ui.c.bg2, border = ui.c.line, radius = 10})
+        if seen then icons.alien(e.a.spec, ix + 27, y + 43, 30) else icons.lock(ix + 27, y + 45, 16, ui.c.dim) end
+        ui.text(e.share .. '%', ix, y + 74, 54, 'center', 'hud', 11, ui.c.muted)
+        if ui.hovered(ix, y + 18, 54, 54) then hover = {e = e, x = ix, y = y + 96} end
+    end
+    if not hover then return nil end
+    return function()
+        local a = hover.e.a
+        if data.seen[a.name] then
+            ui.tooltip(hover.x, hover.y, {{a.title, 'display', 15}, {(a.hevalten and 'HEVALTEN   -   ' or '') .. a.health .. ' HP', 'hud', 11, a.hevalten and ui.c.danger or ui.c.muted, gap = 6}, {a.desc, 'body', 13}}, {width = 260})
+        else
+            ui.tooltip(hover.x, hover.y, {{'Unknown alien', 'display', 15, ui.c.muted}, {'You have not met this one yet.', 'body', 13}}, {width = 220})
+        end
+    end
+end
+
 -- clicking a slot toggles it for replacement and previews what is in it
 function Loadout:slotClicked(clicked, id)
     self.slot = (self.slot == clicked) and nil or clicked
@@ -73,6 +108,7 @@ function Loadout:render()
     ui.background(self.t)
     local planet, lvl = data.currentLevel:match('(%d+)%-(%d+)')
     if ui.header('Loadout', PLANETS[tonumber(planet)].name .. '   -   Level ' .. lvl, true) then gStateMachine:change('planetMap', tonumber(planet)) end
+    local tip = drawIncoming(430, 14)
 
     local clicked, clickedId = drawSlots(40, 100, 760, self.slot, self.t)
     if clicked then self:slotClicked(clicked, clickedId) end
@@ -106,8 +142,10 @@ function Loadout:render()
         saveData()
         gStateMachine:change('battle')
     end
+    if tip then tip() end
 end
 
 function Loadout:keyPressed(k)
-    if k == 'escape' then gStateMachine:change('planetMap', tonumber(data.currentLevel:match('^(%d+)'))) end
+    if k == 'escape' then gStateMachine:change('planetMap', tonumber(data.currentLevel:match('^(%d+)')))
+    elseif (k == 'return' or k == 'kpenter') and self:ready() and self.t > 0.5 then saveData(); gStateMachine:change('battle') end
 end

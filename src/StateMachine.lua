@@ -26,6 +26,7 @@ function StateMachine:apply()
     self.currentName = p.name
     for k, v in pairs(EMPTY) do if not self.current[k] then self.current[k] = v end end
     if p.name ~= 'battle' then ui.fadeIn() end
+    love.keyboard.keysPressed = {} -- the key that triggered the change must not leak into the new state
     self.current:enter(p.params)
 end
 
