@@ -363,7 +363,7 @@ end
 function icons.alienArt(key, x, y, s, alpha)
     local img = image('assets/img/aliens/' .. key .. '.png')
     if not img then return false end
-    local sc = s * 1.15 / img:getHeight()
+    local sc = s * 1.3 / img:getHeight()
     g.setColor(1, 1, 1, alpha or 1)
     g.draw(img, x, y, 0, sc, sc, img:getWidth() / 2, img:getHeight() / 2)
     g.setColor(1, 1, 1, 1)

@@ -338,9 +338,9 @@ def tentacles(img, cx, cy, n, length, w, col, dark, rng, spread=1.0, base_w=None
 
 def arms(img, cx, cy, w, col, dark, up=False, width=18, claws=True):
     for s in (-1, 1):
-        ex = cx + s * w * 1.25
-        ey = cy - w * 0.45 if up else cy + w * 0.35
-        limb(img, [(cx + s * w * 0.6, cy), (cx + s * w * 1.05, cy + (0 if up else w * 0.25)), (ex, ey)],
+        ex = cx + s * w * 1.5
+        ey = cy - w * 0.55 if up else cy + w * 0.45
+        limb(img, [(cx + s * w * 0.6, cy), (cx + s * w * 1.2, cy + (0 if up else w * 0.3)), (ex, ey)],
              width, width * 0.7, col, dark)
         if claws:
             for k in range(3):
@@ -512,7 +512,8 @@ def horns(img, cx, cy, size, dark, col=(70, 20, 30, 255), tilt=0.0):
 
 
 def aura_ring(img, cx, cy, r, col, dark_col=(20, 2, 8, 255), width=14):
-    outer = ellipse_mask((cx - r, cy - r * 0.95, cx + r, cy + r * 0.95))
+    """Flat ominous halo on the ground behind the body."""
+    outer = ellipse_mask((cx - r, cy - r * 0.32, cx + r, cy + r * 0.32))
     inner = erode(outer, width)
     ring = ImageChops.subtract(outer, inner)
     fill(img, blur(dilate(ring, 12), 14), shade_col(col, 1.0, 140))
@@ -622,7 +623,7 @@ def build(al):
     sat = spec.get("sat", 0.8)
     hev = al["hevalten"]
     bulk = clamp((math.log(al["health"]) - math.log(400)) / (math.log(60000) - math.log(400)))
-    col = R.get("col") or hsv(hue, sat, 0.92 - 0.3 * bulk)
+    col = R.get("col") or hsv(hue, sat, 0.92 - 0.18 * bulk)
     dark = hsv(hue, min(1, sat + 0.1), 0.13)
     img = new()
     bw = 150 * R.get("bw", 1.0)
@@ -642,9 +643,9 @@ def build(al):
     if spec.get("aura"):
         energy_aura(img, bm, RED if hev else hsv(hue + 0.08, 0.9, 1.0))
     if hev and R.get("ring", True):
-        aura_ring(img, cx, cy + bh * 0.25, bw * 1.25, RED)
+        aura_ring(img, cx, cy + bh * 0.8, bw * 1.45, RED)
     if hev and R.get("horns", True):
-        horns(img, cx, cy - bh * 0.55, bw * 0.55, dark, col=RED_D if bulk > 0.5 else (60, 15, 25, 255))
+        horns(img, cx, cy - bh * 0.8, bw * 0.62, dark, col=RED_D if bulk > 0.5 else (60, 15, 25, 255))
     if hev and R.get("spikes", True):
         hev_spikes(img, cx, cy, bw * 0.95, bh * 0.95, rng, dark, n=R.get("nspikes", 9), length=bw * 0.22)
     if "back" in R:
@@ -671,7 +672,7 @@ def build(al):
         texture(img, bm, tex, col, dark, rng, k.box)
     if bulk > 0.55 and R.get("armor", True):
         # chest plate band for heavy aliens
-        pm = ImageChops.multiply(bm, rrect_mask((cx - bw, cy + bh * 0.15, cx + bw, cy + bh * 0.62), 30))
+        pm = ImageChops.multiply(bm, rrect_mask((cx - bw, cy + bh * 0.6, cx + bw, cy + bh * 1.05), 30))
         pm = erode(pm, 8)
         outline(img, pm, dark, 3)
         shaded(img, pm, shade_col(col, 0.75), amount=0.4, spec=0.3, rim=0.4)
@@ -681,7 +682,7 @@ def build(al):
     if R.get("eyes", True):
         n = int(spec["eyes"])
         ey = cy - bh * (0.15 if shape != "tri" else -0.05)
-        er = bw * (0.19 if n < 3 else 0.16) * R.get("eye_scale", 1.0)
+        er = bw * (0.19 if n < 3 else 0.17) * R.get("eye_scale", 1.0)
         spread = bw * (0.38 if shape != "tri" else 0.28)
         e = R.get("eye", {})
         eyes_row(img, n, cx + R.get("eye_dx", 0), ey + R.get("eye_dy", 0), spread, er,
@@ -690,7 +691,7 @@ def build(al):
                  slit=e.get("slit", hev), glow_col=e.get("glow"), sclera=e.get("sclera", (245, 240, 225, 255)))
     if R.get("mouth", True):
         mk = R.get("mouth_kind", "grin" if (hev or bulk > 0.4) else "small")
-        mouth(img, cx, cy + bh * 0.42 + R.get("mouth_dy", 0), bw * 0.42, bh * 0.14, mk, teeth=R.get("teeth", 6))
+        mouth(img, cx, cy + bh * 0.36 + R.get("mouth_dy", 0), bw * 0.42, bh * 0.14, mk, teeth=R.get("teeth", 6))
     if "front" in R:
         R["front"](k)
     if spec.get("crown"):
@@ -893,6 +894,7 @@ def jumper_back(k):
 def giant_front(k):
     cx, cy, bw, bh, img = k.cx, k.cy, k.bw, k.bh, k.img
     for s in (-1, 1):  # huge fists
+        limb(img, [(cx + s * bw * 0.6, cy + bh * 0.2), (cx + s * bw * 0.95, cy + bh * 0.3), (cx + s * bw * 1.05, cy + bh * 0.6)], 30, 30, k.col, k.dark)
         fm = ellipse_mask((cx + s * bw * 1.05 - 58, cy + bh * 0.3, cx + s * bw * 1.05 + 58, cy + bh * 0.9))
         _chunk(img, fm, k.col, k.dark, 6, amount=0.45)
         t = mask_new()
@@ -962,6 +964,7 @@ def fusion_front(k):
         _chunk(img, hm, c, k.dark, 6, amount=0.45, spec=0.35)
         eye(img, cx + s * bw * 0.45, cy - bh * 0.55, bw * 0.2, hsv(h + 0.5, 0.85, 0.9), look=(-0.2 * s, 0.1), lid="angry" if s > 0 else None, lid_col=k.dark)
         mouth(img, cx + s * bw * 0.45, cy - bh * 0.22, bw * 0.2, bh * 0.07, "grin" if s > 0 else "small", teeth=3)
+    fill(img, ImageChops.multiply(rrect_mask((cx, 0, S, S), 0), k.bm), hsv(k.hue + 0.12, 0.8, 0.9, 150))
     seam = rrect_mask((cx - 6, cy - bh * 0.55, cx + 6, cy + bh * 0.85), 5)
     glow(img, seam, hsv(0.13, 0.6, 1.0), 14, 1.3)
     fill(img, seam, hsv(0.13, 0.3, 1.0))
@@ -1037,6 +1040,8 @@ def guardian_front(k):
         for y in (cy + bh * 0.35, cy + bh * 1.05):
             _chunk(img, ellipse_mask((x - 10, y - 10, x + 10, y + 10)), RED, RED_D, 2, spec=0.5)
     fill(img, star_mask(cx, cy + bh * 0.7, bw * 0.3, 4, 0.4), RED)
+    for s in (-1, 1):
+        _chunk(img, ellipse_mask((cx + s * bw * 0.95 - 34, cy + bh * 0.0, cx + s * bw * 0.95 + 34, cy + bh * 0.4)), k.col, k.dark, 5, amount=0.45)
 
 
 def hood_back(k, col):
@@ -1102,31 +1107,32 @@ def bunker_front(k):
 
 def interdim_back(k):
     cx, cy, bw, bh, img = k.cx, k.cy, k.bw, k.bh, k.img
-    for i in range(3):
-        r = bw * (1.55 - 0.2 * i)
-        ring = ImageChops.subtract(ellipse_mask((cx - r, cy - r * 0.35, cx + r, cy + r * 0.35)),
-                                   ellipse_mask((cx - r + 10, cy - r * 0.35 + 10, cx + r - 10, cy + r * 0.35 - 10)))
-        ring = ImageChops.subtract(ring, rrect_mask((cx - r, cy - r, cx + r, cy + 6), 0))
-        c = hsv(k.hue + 0.05 * i, 0.7, 1.0)
-        glow(img, ring, c, 12)
-        fill(img, ring, c[:3] + (200,))
-    for dx, dy, a in ((-40, -18, 110), (40, 22, 110)):
-        m = soften(body_mask("diamond", cx + dx, cy + dy, bw, bh), 6)
-        fill(img, m, hsv(k.hue + 0.15, 0.8, 1.0, a))
-    for _ in range(12):
-        x, y = cx + k.rng.uniform(-bw * 1.5, bw * 1.5), cy + k.rng.uniform(-bh * 1.3, bh * 1.3)
-        fill(img, star_mask(x, y, k.rng.uniform(4, 9), 4, 0.35), (255, 255, 255, 220))
+    portal = ellipse_mask((cx - bw * 1.55, cy - bh * 1.45, cx + bw * 1.55, cy + bh * 1.45))
+    glow(img, portal, hsv(k.hue, 0.9, 1.0), 26, 1.2)
+    fill(img, portal, (12, 6, 30, 255))
+    for i in range(3):  # swirl arcs
+        a = mask_new()
+        r = bw * (1.45 - 0.3 * i)
+        ImageDraw.Draw(a).arc((cx - r, cy - r * 0.95, cx + r, cy + r * 0.95), 200 + i * 70, 20 + i * 70, fill=255, width=6)
+        c = hsv(k.hue + 0.06 * i, 0.7, 1.0)
+        glow(img, a, c, 10)
+        fill(img, a, c[:3] + (220,))
+    for _ in range(16):
+        x, y = cx + k.rng.uniform(-bw * 1.4, bw * 1.4), cy + k.rng.uniform(-bh * 1.3, bh * 1.3)
+        fill(img, ImageChops.multiply(star_mask(x, y, k.rng.uniform(4, 9), 4, 0.35), portal), (255, 255, 255, 220))
+    for dx, h in ((-40, 0.5), (40, 0.9)):  # chromatic ghost copies
+        m = soften(body_mask("diamond", cx + dx, cy, bw, bh), 6)
+        fill(img, m, hsv(h, 0.9, 1.0, 120))
 
 
 def scarce_front(k):
     cx, cy, bw, bh, img = k.cx, k.cy, k.bw, k.bh, k.img
     for s in (-1, 1):  # crystal shoulder spikes
         for j in range(3):
-            x, y = cx + s * bw * (0.55 + j * 0.25), cy - bh * (0.05 + j * 0.05)
-            m = poly_mask([(x - 14, y + 30), (x + 14, y + 30), (x + s * 8, y - 60 + j * 12)])
+            x, y = cx + s * bw * (0.85 + j * 0.22), cy - bh * (0.15 - j * 0.12)
+            m = poly_mask([(x - 16, y + 34), (x + 16, y + 34), (x + s * 10, y - 70 + j * 14)])
             glow(img, m, hsv(0.8, 0.9, 1.0), 10)
             _chunk(img, m, hsv(0.8, 0.5, 1.0), k.dark, 3, spec=0.6)
-    fill(img, text_mask("S", 60, cx, cy + bh * 0.45), hsv(0.8, 0.4, 1.0, 200))
 
 
 def hevalgod_back(k):
