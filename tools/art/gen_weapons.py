@@ -207,14 +207,40 @@ def rock(c, ctr, r, seed, col=None):
         px = ctr[0] + rng.uniform(-0.4, 0.4) * r; py = ctr[1] + rng.uniform(-0.4, 0.4) * r
         c.fill(m_ellipse((px, py), r * 0.16), c.p["metal_dark"])
 
-def flame(c, base, h, w, col_out=None, col_mid=None, col_in=None, wobble=0.0):
-    bx, by = base
-    def tongue(hh, ww, off):
-        return [(bx - ww, by), (bx - ww * 0.9, by - hh * 0.35 + off), (bx - ww * 0.3, by - hh * 0.75),
-                (bx + off * 0.5, by - hh), (bx + ww * 0.35, by - hh * 0.7), (bx + ww * 0.85, by - hh * 0.4), (bx + ww, by)]
-    c.poly(tongue(h, w, wobble), col=col_out or c.p["main"], contrast=0.5)
-    c.poly(tongue(h * 0.68, w * 0.62, -wobble * 0.5), col=col_mid or c.p["bright"], outline=0, bevel=0)
-    c.poly(tongue(h * 0.38, w * 0.32, wobble * 0.3), col=col_in or WHITE, outline=0, bevel=0)
+def smooth(pts, n=2):
+    """Chaikin corner cutting on a closed polygon."""
+    for _ in range(n):
+        out = []
+        for i in range(len(pts)):
+            a, b = pts[i], pts[(i + 1) % len(pts)]
+            out.append(lerp_pt(a, b, 0.25)); out.append(lerp_pt(a, b, 0.75))
+        pts = out
+    return pts
+
+def scale_pts(pts, sx, sy, c=(128, 128)): return [(c[0] + (x - c[0]) * sx, c[1] + (y - c[1]) * sy) for x, y in pts]
+
+def teardrop(ctr, w, h, tilt=0, n=48):
+    """Pointy-top teardrop; ctr is the centre, w/h half sizes; tilted about its base."""
+    pts = []
+    for i in range(n):
+        a = 2 * math.pi * i / n
+        pts.append((ctr[0] + w * math.sin(a) * math.sin(a / 2) ** 0.8, ctr[1] - h * math.cos(a) * 0.85 + h * 0.15))
+    return rot(pts, tilt, (ctr[0], ctr[1] + h))
+
+FLAME = smooth([(128, 238), (96, 232), (70, 206), (64, 170), (68, 140), (50, 116), (48, 86), (70, 104), (84, 90), (92, 58),
+                (104, 30), (112, 62), (122, 44), (134, 14), (146, 50), (154, 78), (170, 60), (192, 44), (186, 84), (194, 112),
+                (196, 150), (188, 192), (170, 224), (150, 236)], 1)
+FLAME_IN = smooth([(128, 238), (104, 230), (90, 206), (92, 176), (84, 150), (96, 160), (106, 132), (110, 104), (122, 130),
+                   (130, 96), (140, 128), (152, 112), (150, 150), (166, 170), (168, 200), (156, 226)], 1)
+
+def flame(c, base, scale=1.0, col_out=None, col_mid=None, col_in=None):
+    """Hand-drawn licking flame; base = bottom centre (x, y)."""
+    def at(pts, k, dy=0):
+        return m_poly([(base[0] + (x - 128) * k * scale, base[1] + (y - 238) * k * scale + dy) for x, y in pts])
+    c.glow(at(FLAME, 1.0), c.p["main"], 10, 0.6)
+    c.shape(at(FLAME, 1.0), col=col_out or c.p["main"], contrast=0.5)
+    c.fill(at(FLAME_IN, 1.0), col_mid or c.p["bright"])
+    c.fill(at(FLAME_IN, 0.5, -4), col_in or WHITE, 0.95)
 
 def sword(c, hilt, tip, blade_w, col=None, guard=18):
     """Straight blade from hilt point to tip, with crossguard + grip."""
@@ -235,10 +261,10 @@ def sword(c, hilt, tip, blade_w, col=None, guard=18):
 def skull(c, ctr, r, col=None):
     cx, cy = ctr; col = col or c.p["core"]
     c.circle((cx, cy - r * 0.15), r, col=col, contrast=0.5)
-    c.poly([(cx - r * 0.62, cy + r * 0.3), (cx + r * 0.62, cy + r * 0.3), (cx + r * 0.5, cy + r * 0.95),
-            (cx - r * 0.5, cy + r * 0.95)], col=col, contrast=0.5)
+    c.poly([(cx - r * 0.78, cy + r * 0.05), (cx + r * 0.78, cy + r * 0.05), (cx + r * 0.6, cy + r * 0.55), (cx + r * 0.46, cy + r * 0.95),
+            (cx - r * 0.46, cy + r * 0.95), (cx - r * 0.6, cy + r * 0.55)], col=col, contrast=0.5)
     for sx in (-1, 1):
-        c.fill(m_ellipse((cx + sx * r * 0.38, cy - r * 0.1), r * 0.27, r * 0.3), INK)
+        c.fill(m_ellipse((cx + sx * r * 0.36, cy - r * 0.08), r * 0.3, r * 0.32), INK)
         c.fill(m_ellipse((cx + sx * r * 0.34, cy - r * 0.16), r * 0.1, r * 0.1), c.p["main"])
     c.fill(m_poly([(cx, cy + r * 0.2), (cx - r * 0.13, cy + r * 0.45), (cx + r * 0.13, cy + r * 0.45)]), INK)
     for i in range(-2, 3):
@@ -270,30 +296,31 @@ def recipe(name):
 # ---- COMMON -------------------------------------------------------------
 @recipe("AstroidRain")
 def _(c):
-    rocks = [((150, 160), 34, 1), ((78, 92), 22, 2), ((190, 70), 17, 3), ((70, 190), 14, 4)]
+    rocks = [((152, 164), 40, 1), ((70, 92), 26, 2), ((196, 62), 20, 3), ((64, 200), 15, 4)]
     for ctr, r, sd in rocks:
-        tail = (ctr[0] - r * 2.6, ctr[1] - r * 2.6)
-        c.trail(ctr, tail, r * 1.5)
+        c.trail(ctr, (ctr[0] - r * 3.2, ctr[1] - r * 3.2), r * 1.9, strength=1.0, soft=3)
     for ctr, r, sd in rocks:
-        rock(c, ctr, r, sd)
-        c.glow_circle((ctr[0] + r * 0.5, ctr[1] + r * 0.5), r * 0.7, c.p["main"], 6, 0.6)
+        c.glow_circle(ctr, r * 1.1, c.p["main"], 8, 0.8)
+        rock(c, ctr, r, sd, col=mix(c.p["metal"], c.p["main"], 0.25))
+        c.fill(m_sub(m_ellipse(ctr, r * 0.98), m_ellipse((ctr[0] - r * 0.3, ctr[1] - r * 0.3), r * 1.05)), c.p["bright"], 0.75)
+    c.sparkle((30, 40), 9); c.sparkle((228, 150), 7)
 
 @recipe("PoisonArrow")
 def _(c):
-    a, b = (48, 48), (196, 196)  # shaft
-    tip = (214, 214)
-    c.bar([a, b], 10, col=c.p["gun"])
-    # fletching
-    for k in (0, 18):
-        f = [(a[0] + k, a[1] + k), (a[0] + k - 16, a[1] + k + 6), (a[0] + k + 2, a[1] + k + 22)]
-        c.poly(f, col=c.p["main"]); c.poly([(a[0] + k, a[1] + k), (a[0] + k + 6, a[1] + k - 16), (a[0] + k + 22, a[1] + k + 2)], col=c.p["main"])
-    head = [(b[0] - 40, b[1] - 8), tip, (b[0] - 8, b[1] - 40)]
+    a, b, tip = (44, 44), (186, 186), (222, 222)
+    c.bar([a, b], 14, col=c.p["gun"], contrast=0.6)
+    for k in (0, 22):
+        p = (a[0] + k, a[1] + k)
+        c.poly([p, (p[0] - 22, p[1] + 8), (p[0] + 4, p[1] + 30)], col=c.p["main"], contrast=0.5)
+        c.poly([p, (p[0] + 8, p[1] - 22), (p[0] + 30, p[1] + 4)], col=c.p["main"], contrast=0.5)
+    head = [(b[0] - 52, b[1] - 10), (b[0] - 14, b[1] - 14), (b[0] - 10, b[1] - 52), tip]
+    c.glow(m_poly(head), c.p["main"], 10, 0.9)
     c.poly(head, col=c.p["bright"], contrast=0.6)
-    c.glow(m_poly(head), c.p["main"], 8, 0.9)
-    # venom drips
-    for (x, y, r) in ((172, 214, 7), (214, 172, 6), (190, 236, 5)):
-        c.poly([(x, y - r * 2.2), (x + r, y), (x, y + r), (x - r, y)], col=c.p["main"], contrast=0.4)
-        c.fill(m_ellipse((x, y + r * 0.1), r * 0.9), c.p["main"]); c.fill(m_ellipse((x - r * 0.3, y - r * 0.2), r * 0.3), WHITE, 0.8)
+    c.fill(m_poly([(b[0] - 30, b[1] - 12), tip, (b[0] - 12, b[1] - 30)]), WHITE, 0.35)
+    for (x, y, r) in ((160, 216, 9), (216, 160, 8), (190, 240, 6)):
+        drop = m_union(m_poly([(x, y - r * 2.2), (x + r * 0.9, y), (x - r * 0.9, y)]), m_ellipse((x, y + r * 0.1), r))
+        c.glow(drop, c.p["main"], 4, 0.8); c.shape(drop, col=c.p["main"], contrast=0.45)
+        c.fill(m_ellipse((x - r * 0.3, y - r * 0.1), r * 0.3), WHITE, 0.85)
 
 @recipe("TripleThreat")
 def _(c):
@@ -304,17 +331,16 @@ def _(c):
 
 @recipe("CosmicFire")
 def _(c):
-    c.glow(m_ellipse((128, 150), 60, 80), c.p["main"], 14, 0.7)
-    flame(c, (128, 232), 190, 78, wobble=8)
+    flame(c, (128, 238), 1.0)
     for (x, y, r) in ((70, 80, 5), (190, 60, 6), (176, 110, 4)):
         c.fill(m_ellipse((x, y), r), c.p["bright"]); c.glow_circle((x, y), r, c.p["main"], 4, 0.9)
 
 @recipe("Astrobolt")
 def _(c):
-    pts = [(150, 20), (92, 122), (134, 122), (100, 236), (176, 108), (132, 108), (166, 20)]
+    pts = [(156, 16), (76, 126), (128, 126), (92, 240), (188, 104), (136, 104), (176, 16)]
     c.glow(m_poly(pts), c.p["main"], 14, 0.9)
     c.poly(pts, col=c.p["bright"], contrast=0.55)
-    c.fill(m_poly([(146, 34), (108, 112), (128, 112), (122, 130), (148, 100), (130, 100), (150, 34)]), WHITE, 0.6)
+    c.fill(m_poly([(150, 34), (100, 112), (128, 112), (116, 150), (160, 100), (140, 100), (160, 34)]), WHITE, 0.55)
     for ctr in ((52, 60), (204, 190)):
         c.sparkle(ctr, 14)
 
@@ -328,20 +354,24 @@ def _(c):
 
 @recipe("LaserKill")
 def _(c):
-    c.beam([(96, 96), (226, 226)], 12)
-    for k in (150, 190):
-        c.sparkle((k + 6, k - 4), 9, glow=False)
-    emitter(c, (70, 70), 45, 1.0)
+    c.beam([(104, 104), (226, 226)], 16, halo=2.8)
+    c.fill(m_line([(104, 104), (226, 226)], 4), WHITE)
+    c.sparkle((228, 228), 22, thin=0.16)
+    c.sparkle((166, 150), 9, glow=False)
+    emitter(c, (68, 68), 45, 1.35)
 
 @recipe("StellarBoost")
 def _(c):
-    for i, y in enumerate((196, 148, 100)):
-        pts = [(128, y - 60), (200, y + 6), (168, y + 6), (168, y + 22), (88, y + 22), (88, y + 6), (56, y + 6)]
-        pts = [(128, y - 60), (200, y + 8), (162, y + 8), (162, y + 28), (94, y + 28), (94, y + 8), (56, y + 8)]
-        c.glow(m_poly(pts), c.p["main"], 8, 0.5)
-        c.poly(pts, col=mix(c.p["main"], WHITE, 0.15 * i), contrast=0.5)
-    for ctr, s in (((40, 40), 12), ((216, 52), 10), ((196, 24), 7)):
-        c.sparkle(ctr, s)
+    c.trail((128, 120), (128, 250), 70, strength=0.9, soft=4)
+    c.glow(m_poly([(128, 24), (216, 110), (40, 110)]), c.p["main"], 14, 0.6)
+    arrow = [(128, 16), (222, 106), (170, 106), (170, 150), (86, 150), (86, 106), (34, 106)]
+    c.poly(arrow, col=c.p["main"], contrast=0.5)
+    c.fill(m_poly([(128, 38), (152, 62), (104, 62)]), WHITE, 0.45)
+    c.sparkle((128, 96), 18, glow=False)
+    for ctr, sz in (((128, 176), 16), ((100, 196), 11), ((156, 204), 12), ((124, 226), 8), ((146, 236), 5), ((92, 230), 5)):
+        c.sparkle(ctr, sz)
+    for ctr, sz in (((36, 44), 12), ((222, 40), 10), ((200, 20), 7), ((22, 88), 6)):
+        c.sparkle(ctr, sz)
 
 @recipe("GravityWell")
 def _(c):
@@ -353,9 +383,9 @@ def _(c):
             t = i / 59; a = math.radians(k * 120 + t * 420); r = 108 * (1 - t) ** 1.1 + 12
             pts.append((ctr[0] + r * math.cos(a), ctr[1] + r * math.sin(a)))
         c.poly(band(pts, 22, 4), col=mix(c.p["main"], WHITE, 0.1), contrast=0.5)
-    c.fill(m_ellipse(ctr, 26), INK)
-    c.ring(ctr, 22, 6, col=c.p["bright"], outline=0)
-    c.glow_circle(ctr, 20, c.p["bright"], 6, 0.9)
+    c.glow_circle(ctr, 30, c.p["bright"], 8, 0.9)
+    c.fill(m_ellipse(ctr, 28), INK)
+    c.fill(m_sub(m_ellipse(ctr, 28), m_ellipse(ctr, 23)), c.p["core"], 0.95)
 
 @recipe("Ricochet")
 def _(c):
@@ -381,8 +411,8 @@ def _(c):
     arr = np.array(wedge, np.float32)
     yy, xx = np.mgrid[0:N, 0:N].astype(np.float32)
     ang = (np.degrees(np.arctan2(yy - ctr[1] * S, xx - ctr[0] * S)) + 90) % 360
-    arr *= np.clip(ang / 70, 0, 1) ** 1.5 * 0.85
-    c.fill(Image.fromarray(arr.astype(np.uint8)), c.p["main"])
+    arr *= np.clip(ang / 70, 0, 1) ** 1.2
+    c.fill(Image.fromarray(arr.astype(np.uint8)), c.p["bright"])
     c.beam([ctr, arc_pts(ctr, 96, -20, -20, 1)[0]], 6)
     for p in ((88, 96), (166, 176), (72, 168)):
         c.glow_circle(p, 5, c.p["bright"], 5, 1.0); c.fill(m_ellipse(p, 5.5), c.p["core"])
@@ -391,55 +421,75 @@ def _(c):
 # ---- RARE ---------------------------------------------------------------
 @recipe("ThunderStrike")
 def _(c):
-    ctr = (128, 88)
-    for pts in ([(100, 130), (84, 172), (104, 168), (80, 226)], [(156, 130), (176, 176), (156, 172), (184, 226)],
-                [(128, 140), (118, 190), (138, 184), (124, 240)]):
-        c.bolt(pts, 12)
-    c.glow_circle(ctr, 62, c.p["main"], 16, 0.9)
-    c.circle(ctr, 60, col=c.p["main"], contrast=0.6)
-    c.fill(m_ellipse((ctr[0] - 18, ctr[1] - 20), 22, 14), WHITE, 0.35)
-    c.bolt([(140, 46), (112, 92), (136, 90), (114, 132)], 9, col=WHITE)
+    ctr = (128, 84)
+    for pts in ([(96, 128), (70, 176), (96, 170), (62, 234)], [(160, 128), (186, 178), (160, 172), (194, 234)],
+                [(128, 140), (114, 196), (140, 188), (120, 246)]):
+        c.bolt(pts, 16)
+    c.glow_circle(ctr, 64, c.p["main"], 16, 0.9)
+    c.circle(ctr, 62, col=c.p["main"], contrast=0.6)
+    c.fill(m_ellipse((ctr[0] - 18, ctr[1] - 22), 24, 14), WHITE, 0.3)
+    c.fill(m_ellipse(ctr, 40), mix(c.p["dark"], BLACK, 0.3), 0.7)
+    c.bolt([(146, 40), (110, 88), (138, 86), (108, 134)], 12, col=WHITE)
+    c.sparkle((44, 60), 10); c.sparkle((212, 50), 8)
 
 @recipe("BattleRam")
 def _(c):
-    c.speedlines([((18, 96), (60, 96)), ((18, 128), (72, 128)), ((18, 160), (60, 160))], 5)
-    c.bar([(52, 128), (150, 128)], 30, col=c.p["gun"], contrast=0.6)
-    for x in (80, 116): c.fill(m_line([(x, 113), (x, 143)], 4), c.p["metal_dark"])
-    head = [(140, 84), (196, 100), (232, 128), (196, 156), (140, 172)]
+    c.speedlines([((14, 100), (70, 100)), ((14, 128), (84, 128)), ((14, 156), (70, 156))], 6)
+    # impact burst behind the head
+    c.glow_circle((222, 128), 40, c.p["main"], 14, 0.8)
+    c.poly(star_pts((226, 128), 52, 20, 9, -90), col=c.p["bright"], contrast=0.4, outline=0.9)
+    # log with iron bands
+    c.bar([(52, 128), (150, 128)], 42, col=c.p["gun"], contrast=0.6)
+    for x in (78, 118): c.poly([(x - 7, 104), (x + 7, 104), (x + 7, 152), (x - 7, 152)], col=c.p["metal_dark"], contrast=0.6)
+    c.fill(m_line([(58, 114), (140, 114)], 4), WHITE, 0.2)
+    # heavy head
+    head = [(140, 78), (196, 78), (216, 98), (216, 158), (196, 178), (140, 178)]
     c.poly(head, col=c.p["metal"], contrast=0.7)
-    c.bar([(150, 100), (150, 156)], 8, col=c.p["main"])
-    c.fill(m_line([(196, 104), (222, 128), (196, 152)], 6), c.p["main"], 0.9)
-    c.glow(m_line([(196, 104), (222, 128), (196, 152)], 6), c.p["main"], 5, 0.8)
-    for p in ((232, 92), (244, 128), (232, 164)):
-        c.sparkle(p, 9, glow=False)
+    for y in (98, 128, 158): c.poly([(214, y - 10), (236, y), (214, y + 10)], col=c.p["bright"], contrast=0.5)
+    for (x, y) in ((156, 96), (196, 96), (156, 160), (196, 160)):
+        c.fill(m_ellipse((x, y), 5), c.p["metal_dark"]); c.fill(m_ellipse((x - 1.5, y - 1.5), 2), WHITE, 0.6)
+    c.fill(m_poly([(146, 116), (206, 116), (206, 140), (146, 140)]), c.p["main"], 0.9)
+    c.glow(m_poly([(146, 116), (206, 116), (206, 140), (146, 140)]), c.p["main"], 5, 0.8)
 
 @recipe("ElectroJolt")
 def _(c):
-    c.glow_circle((128, 120), 60, c.p["main"], 18, 0.6)
-    c.bar([(128, 236), (128, 150)], 26, col=c.p["gun"], contrast=0.6)
-    c.bar([(128, 236), (128, 200)], 30, col=c.p["metal_dark"])
-    for sx in (-1, 1):
-        c.bar([(128 + sx * 10, 150), (128 + sx * 44, 96), (128 + sx * 44, 56)], 14, col=c.p["metal"], contrast=0.65)
-        c.circle((128 + sx * 44, 52), 10, col=c.p["bright"])
-    c.bolt([(90, 56), (120, 76), (104, 96), (140, 88), (122, 116), (166, 56)], 8)
-    c.bolt([(84, 44), (60, 26)], 5); c.bolt([(172, 44), (198, 26)], 5); c.bolt([(84, 68), (52, 74)], 4); c.bolt([(172, 68), (204, 74)], 4)
+    # tesla coil: base, ribbed column, toroid, arcs
+    c.glow_circle((128, 70), 60, c.p["main"], 18, 0.7)
+    c.poly([(70, 236), (186, 236), (176, 210), (80, 210)], col=c.p["metal_dark"], contrast=0.6)
+    c.poly([(104, 210), (152, 210), (146, 96), (110, 96)], col=c.p["gun"], contrast=0.6)
+    for y in range(110, 206, 16):
+        c.fill(m_line([(106, y), (150, y)], 5), c.p["main"], 0.75)
+    c.ellipse((128, 82), 56, 22, col=c.p["metal"], contrast=0.7)
+    c.fill(m_ellipse((128, 78), 40, 10), mix(c.p["dark"], BLACK, 0.3), 0.8)
+    c.circle((128, 70), 14, col=c.p["bright"])
+    c.glow_circle((128, 70), 14, c.p["core"], 8, 1.0)
+    c.bolt([(128, 62), (104, 42), (116, 30), (84, 8)], 8)
+    c.bolt([(128, 62), (156, 44), (146, 30), (178, 10)], 8)
+    c.bolt([(84, 82), (58, 74), (52, 92), (18, 90)], 6)
+    c.bolt([(172, 82), (200, 76), (206, 94), (238, 92)], 6)
+    c.bolt([(128, 60), (132, 40), (124, 26), (130, 8)], 5)
+    for p in ((60, 130), (196, 130)): c.sparkle(p, 9)
 
 @recipe("DaggerThrow")
 def _(c):
     c.speedlines([((30, 200), (100, 130)), ((16, 170), (70, 116)), ((60, 236), (120, 176))], 5)
-    sword(c, (56, 200), (226, 30), 34, guard=20)
+    sword(c, (50, 206), (228, 28), 44, guard=22)
     c.sparkle((214, 44), 12)
 
 @recipe("Hevalstruck")
 def _(c):
-    c.bar([(60, 236), (160, 96)], 16, col=c.p["gun"], contrast=0.6)
-    for t in (0.15, 0.3, 0.45): c.fill(m_line([lerp_pt((60, 236), (160, 96), t)] * 2, 18), c.p["metal_dark"], 0.9)
-    head = rot([(118, 40), (206, 40), (214, 60), (214, 96), (206, 116), (118, 116), (110, 96), (110, 60)], -55, (160, 78))
+    hc = (156, 84)
+    c.bar([(44, 236), hc], 18, col=c.p["gun"], contrast=0.6)
+    for t in (0.12, 0.26, 0.4): c.fill(m_line([lerp_pt((44, 236), hc, t)] * 2, 20), c.p["metal_dark"], 0.9)
+    head = rot([(96, 40), (216, 40), (226, 58), (226, 110), (216, 128), (96, 128), (86, 110), (86, 58)], -54, hc)
+    c.glow(m_poly(head), c.p["main"], 10, 0.6)
     c.poly(head, col=c.p["metal"], contrast=0.7)
-    c.fill(m_poly(rot([(130, 66), (194, 66), (194, 90), (130, 90)], -55, (160, 78))), c.p["main"], 0.9)
-    c.glow(m_poly(rot([(130, 66), (194, 66), (194, 90), (130, 90)], -55, (160, 78))), c.p["main"], 6, 0.9)
-    c.poly(star_pts((208, 42), 34, 12, 8), col=c.p["core"], outline=0.8, bevel=0)
-    c.glow_circle((208, 42), 24, c.p["main"], 10, 0.9)
+    strip = rot([(110, 72), (202, 72), (202, 96), (110, 96)], -54, hc)
+    c.fill(m_poly(strip), c.p["main"], 0.95); c.glow(m_poly(strip), c.p["main"], 6, 0.9)
+    for t in (0.3, 0.7): c.fill(m_ellipse(lerp_pt(strip[0], strip[1], t), 4), WHITE, 0.6)
+    c.poly(star_pts((218, 30), 34, 12, 8), col=c.p["core"], outline=0.8, bevel=0)
+    c.glow_circle((218, 30), 24, c.p["main"], 10, 0.9)
+    c.sparkle((60, 120), 10, glow=False)
 
 @recipe("RecursiveExplosion")
 def _(c):
@@ -464,28 +514,30 @@ def _(c):
 @recipe("FreshStart")
 def _(c):
     ctr = (128, 128)
-    # 3x3 grid inside
     for i in range(3):
         for j in range(3):
             c.poly([(94 + i * 24, 94 + j * 24), (112 + i * 24, 94 + j * 24), (112 + i * 24, 112 + j * 24), (94 + i * 24, 112 + j * 24)],
                    col=c.p["metal_dark"] if (i + j) % 2 else c.p["main"], contrast=0.5)
-    c.glow(m_arc(ctr, 92, 200, 480, 22), c.p["main"], 10, 0.7)
-    c.arc(ctr, 92, 200, 480, 22, col=c.p["main"], contrast=0.55)
-    p = rot([(ctr[0] + 92, ctr[1])], 200, ctr)[0]
-    head = rot([(p[0] - 30, p[1] - 30), (p[0] + 30, p[1] - 30), (p[0], p[1] + 30)], 200 + 90 + 180, p)
+    a0, a1 = 200, 470
+    c.glow(m_arc(ctr, 92, a0, a1, 22), c.p["main"], 10, 0.7)
+    c.arc(ctr, 92, a0, a1, 22, col=c.p["main"], contrast=0.55)
+    p = (ctr[0] + 92 * math.cos(math.radians(a1)), ctr[1] + 92 * math.sin(math.radians(a1)))
+    head = rot([(p[0] + 36, p[1]), (p[0] - 12, p[1] - 32), (p[0] - 12, p[1] + 32)], a1 + 90, p)
     c.poly(head, col=c.p["bright"], contrast=0.5)
+    c.sparkle((196, 60), 10)
 
 @recipe("ChainLightning")
 def _(c):
-    nodes = [(128, 118), (36, 60), (220, 44), (52, 208), (206, 196)]
-    c.bolt([(128, 14), (112, 60), (140, 66), (128, 118)], 16)
-    c.bolt([(128, 118), (86, 96), (98, 80), (36, 60)], 10)
-    c.bolt([(128, 118), (170, 92), (164, 72), (220, 44)], 10)
-    c.bolt([(128, 118), (90, 150), (104, 170), (52, 208)], 9)
-    c.bolt([(128, 118), (162, 156), (150, 176), (206, 196)], 9)
+    nodes = [(128, 120), (36, 60), (220, 44), (52, 208), (206, 196)]
+    c.bolt([(128, 10), (108, 60), (144, 66), (128, 120)], 22)
+    c.bolt([(128, 120), (86, 96), (98, 78), (36, 60)], 14)
+    c.bolt([(128, 120), (170, 92), (164, 70), (220, 44)], 14)
+    c.bolt([(128, 120), (90, 152), (106, 172), (52, 208)], 13)
+    c.bolt([(128, 120), (164, 158), (150, 178), (206, 196)], 13)
     for i, n in enumerate(nodes):
-        r = 18 if i == 0 else 12
+        r = 22 if i == 0 else 16
         c.glow_circle(n, r, c.p["main"], 8, 0.9); c.circle(n, r, col=c.p["bright"] if i == 0 else c.p["main"])
+        c.fill(m_ellipse(n, r * 0.35), WHITE, 0.9)
 
 @recipe("TimeWarp")
 def _(c):
@@ -521,16 +573,21 @@ def _(c):
 # ---- SCARCE -------------------------------------------------------------
 @recipe("SantaAxe")
 def _(c):
-    c.bar([(128, 236), (128, 40)], 16, col=c.p["gun"], contrast=0.6)
-    for t in (0.55, 0.65, 0.75): c.fill(m_line([lerp_pt((128, 236), (128, 40), t)] * 2, 18), c.p["metal_dark"], 0.9)
+    c.bar([(128, 240), (128, 40)], 16, col=c.p["gun"], contrast=0.6)
+    for t in (0.55, 0.65, 0.75): c.fill(m_line([lerp_pt((128, 240), (128, 40), t)] * 2, 18), c.p["metal_dark"], 0.9)
     for sx in (-1, 1):
-        blade = m_sub(m_ellipse((128 + sx * 44, 96), 70, 76), m_ellipse((128 + sx * 96, 96), 70, 90))
-        blade = m_and(blade, m_poly([(128, 20), (128 + sx * 140, 20), (128 + sx * 140, 176), (128, 176)]))
-        c.shape(blade, col=c.p["metal"], contrast=0.7)
-        edge = m_and(blade, m_sub(new_mask().point(lambda v: 255), m_ellipse((128 + sx * 44, 96), 60, 66)))
-        c.fill(edge, c.p["bright"], 0.9); c.glow(edge, c.p["main"], 5, 0.9)
-    c.circle((128, 96), 16, col=c.p["main"])
-    c.sparkle((196, 28), 14); c.sparkle((56, 160), 10)
+        ctr = (128 + sx * 26, 92)
+        arc = arc_pts(ctr, 80, -62, 62, 20) if sx > 0 else arc_pts(ctr, 80, 118, 242, 20)
+        pts = [(128 + sx * 8, 46), (128 + sx * 30, 30)] + arc + [(128 + sx * 30, 154), (128 + sx * 8, 138)]
+        blade = m_poly(pts)
+        c.glow(blade, c.p["main"], 8, 0.5)
+        c.shape(blade, col=mix(c.p["metal"], WHITE, 0.2), contrast=0.7)
+        edge = m_and(blade, m_sub(m_ellipse(ctr, 80, 80), m_ellipse(ctr, 70, 70)))
+        c.fill(edge, c.p["bright"], 0.95); c.glow(edge, c.p["main"], 5, 0.9)
+    c.poly([(112, 24), (144, 24), (144, 160), (112, 160)], col=c.p["metal_dark"], contrast=0.6)
+    c.poly([(120, 6), (136, 6), (140, 26), (116, 26)], col=c.p["bright"])
+    c.circle((128, 92), 13, col=c.p["main"])
+    c.sparkle((214, 36), 14); c.sparkle((44, 152), 10)
 
 @recipe("Respawn")
 def _(c):
@@ -550,28 +607,29 @@ def _(c):
     ctr = (128, 128)
     c.glow_circle(ctr, 90, c.p["main"], 20, 0.6)
     for a in range(0, 360, 60):
-        arm = rot([(ctr[0], ctr[1]), (ctr[0], ctr[1] - 104)], a, ctr)
-        c.bar(arm, 12, col=c.p["main"], contrast=0.5)
-        for t in (0.5, 0.75):
-            p = lerp_pt(arm[0], arm[1], t)
-            for sgn in (-1, 1):
-                q = rot([(p[0], p[1] - 24 * (1.2 - t))], a + sgn * 50, p)[0]
-                c.bar([p, q], 8, col=c.p["main"], contrast=0.5)
-    c.poly(star_pts(ctr, 34, 14, 6), col=c.p["core"], bevel=0)
-    c.circle(ctr, 12, col=WHITE)
+        arm = rot([(ctr[0], ctr[1]), (ctr[0], ctr[1] - 108)], a, ctr)
+        c.bar(arm, 16, col=c.p["main"], contrast=0.5)
+        p = lerp_pt(arm[0], arm[1], 0.62)
+        for sgn in (-1, 1):
+            q = rot([(p[0], p[1] - 34)], a + sgn * 55, p)[0]
+            c.bar([p, q], 11, col=c.p["main"], contrast=0.5)
+        c.circle(arm[1], 9, col=c.p["bright"])
+    c.poly(star_pts(ctr, 40, 16, 6), col=c.p["core"], bevel=0)
+    c.circle(ctr, 14, col=WHITE)
 
 @recipe("LaserBeam")
 def _(c):
-    c.beam([(84, 128), (250, 128)], 26, halo=2.8)
-    c.fill(m_line([(84, 128), (250, 128)], 5), WHITE)
-    for (x, y) in ((150, 96), (200, 160), (228, 104)): c.sparkle((x, y), 8, glow=False)
+    c.beam([(96, 128), (252, 128)], 34, halo=2.6)
+    c.fill(m_line([(96, 128), (252, 128)], 8), WHITE)
+    c.sparkle((236, 128), 30, thin=0.14)
+    for (x, y) in ((150, 88), (196, 170)): c.sparkle((x, y), 8, glow=False)
     # heavy cannon emitter
-    c.poly([(8, 80), (68, 80), (96, 100), (96, 156), (68, 176), (8, 176)], col=c.p["gun"], contrast=0.6)
-    c.poly([(20, 60), (60, 60), (66, 80), (14, 80)], col=c.p["metal_dark"])
-    c.poly([(20, 196), (60, 196), (66, 176), (14, 176)], col=c.p["metal_dark"])
-    for x in (30, 50): c.fill(m_line([(x, 92), (x, 164)], 5), c.p["main"]); c.glow(m_line([(x, 92), (x, 164)], 5), c.p["main"], 3, 0.8)
-    c.ring((96, 128), 26, 12, col=c.p["metal"], contrast=0.7)
-    c.glow_circle((96, 128), 22, c.p["core"], 8, 1.0); c.fill(m_ellipse((96, 128), 18), c.p["core"])
+    c.poly([(6, 66), (70, 66), (104, 92), (104, 164), (70, 190), (6, 190)], col=c.p["gun"], contrast=0.6)
+    c.poly([(18, 42), (62, 42), (70, 66), (10, 66)], col=c.p["metal_dark"], contrast=0.6)
+    c.poly([(18, 214), (62, 214), (70, 190), (10, 190)], col=c.p["metal_dark"], contrast=0.6)
+    for x in (28, 52): c.fill(m_line([(x, 82), (x, 174)], 7), c.p["main"]); c.glow(m_line([(x, 82), (x, 174)], 7), c.p["main"], 3, 0.8)
+    c.ring((104, 128), 32, 14, col=c.p["metal"], contrast=0.7)
+    c.glow_circle((104, 128), 28, c.p["core"], 8, 1.0); c.fill(m_ellipse((104, 128), 24), c.p["core"])
 
 @recipe("MindBlast")
 def _(c):
@@ -583,10 +641,10 @@ def _(c):
                                                     ((110, 156), 30), ((146, 156), 30), ((128, 90), 34))])
     lobes = m_union(lobes, m_poly([(118, 166), (144, 166), (150, 200), (112, 200)]))
     c.shape(lobes, col=c.p["main"], contrast=0.55)
-    c.fill(m_line([(128, 60), (128, 176)], 5), c.p["deep"], 0.9)
+    c.fill(m_line([(128, 60), (128, 176)], 6), INK, 0.75)
     for pts in ([(74, 120), (96, 104), (106, 130), (118, 108)], [(182, 120), (160, 104), (150, 130), (138, 108)],
                 [(90, 150), (108, 138), (120, 160)], [(166, 150), (148, 138), (136, 160)], [(112, 78), (128, 96), (144, 78)]):
-        c.fill(m_line(pts, 5), c.p["deep"], 0.85)
+        c.fill(m_line(pts, 6), INK, 0.7)
     c.bolt([(128, 176), (120, 196), (136, 200), (128, 226)], 8)
     for p in ((44, 60), (212, 60), (36, 170), (222, 170)): c.sparkle(p, 10)
 
@@ -661,7 +719,7 @@ def _(c):
         for _ in range(4):
             px = ctr[0] + rng.uniform(-0.5, 0.5) * r; py = ctr[1] + rng.uniform(-0.5, 0.5) * r
             c.fill(m_ellipse((px, py), r * 0.16), c.p["dark"], 0.9)
-    virus((196, 66), 26, 8, 2); virus((62, 190), 22, 7, 3); virus((118, 120), 54, 12, 1)
+    virus((204, 54), 24, 8, 2); virus((50, 206), 20, 7, 3); virus((118, 124), 50, 12, 1)
 
 @recipe("Overclock")
 def _(c):
@@ -683,18 +741,22 @@ def _(c):
 
 @recipe("Executioner")
 def _(c):
-    for x in (44, 212): c.poly([(x - 12, 24), (x + 12, 24), (x + 12, 232), (x - 12, 232)], col=c.p["gun"], contrast=0.6)
-    c.poly([(28, 12), (228, 12), (228, 36), (28, 36)], col=c.p["metal_dark"], contrast=0.6)
-    c.poly([(20, 216), (236, 216), (236, 240), (20, 240)], col=c.p["metal_dark"], contrast=0.6)
-    c.fill(m_poly([(56, 36), (200, 36), (200, 216), (56, 216)]), mix(c.p["dark"], BLACK, 0.5), 0.7)
-    blade = [(58, 60), (198, 60), (198, 98), (58, 150)]
-    c.glow(m_poly(blade), c.p["main"], 10, 0.8)
-    c.poly(blade, col=c.p["metal"], contrast=0.7)
-    edge = m_sub(m_poly(blade), shift(m_poly(blade), 0, -6))
-    c.fill(edge, c.p["bright"]); c.glow(edge, c.p["main"], 4, 0.9)
-    c.poly([(58, 40), (198, 40), (198, 62), (58, 62)], col=c.p["main"], contrast=0.5)
-    c.bar([(128, 36), (128, 14)], 6, col=c.p["main"])
-    c.sparkle((72, 160), 9); c.sparkle((184, 116), 7)
+    for x in (36, 220): c.poly([(x - 10, 20), (x + 10, 20), (x + 10, 236), (x - 10, 236)], col=c.p["gun"], contrast=0.6)
+    c.poly([(20, 10), (236, 10), (236, 32), (20, 32)], col=c.p["metal_dark"], contrast=0.6)
+    c.poly([(14, 220), (242, 220), (242, 244), (14, 244)], col=c.p["metal_dark"], contrast=0.6)
+    c.fill(m_poly([(46, 32), (210, 32), (210, 220), (46, 220)]), INK, 0.75)
+    c.poly([(70, 232), (186, 232), (186, 206), (70, 206)], col=c.p["metal_dark"], contrast=0.6)
+    c.fill(m_ellipse((128, 206), 26, 20), INK)
+    c.fill(m_sub(m_ellipse((128, 206), 26, 20), m_ellipse((128, 204), 22, 16)), c.p["main"], 0.8)
+    blade = [(48, 62), (208, 62), (208, 118), (48, 196)]
+    c.glow(m_poly(blade), c.p["main"], 12, 0.9)
+    c.poly(blade, col=mix(c.p["metal"], WHITE, 0.3), contrast=0.7)
+    edge = m_sub(m_poly(blade), shift(m_poly(blade), 4, -8))
+    c.fill(edge, c.p["bright"]); c.glow(edge, c.p["main"], 5, 1.0)
+    c.poly([(48, 40), (208, 40), (208, 66), (48, 66)], col=c.p["main"], contrast=0.5)
+    for x in (70, 128, 186): c.fill(m_ellipse((x, 53), 4), c.p["deep"])
+    c.bar([(128, 34), (128, 12)], 7, col=c.p["main"])
+    c.sparkle((60, 208), 10); c.sparkle((196, 130), 8)
 
 # ---- GOD ----------------------------------------------------------------
 @recipe("GalacticBeam")
@@ -705,28 +767,30 @@ def _(c):
     tip = (238, 18)
     dx, dy = tip[0] - hilt[0], tip[1] - hilt[1]; L = math.hypot(dx, dy); ux, uy = dx / L, dy / L; nx, ny = -uy, ux
     g = (hilt[0] + ux * 30, hilt[1] + uy * 30)
-    blade = [(g[0] + nx * 22, g[1] + ny * 22), (tip[0] - ux * 36 + nx * 20, tip[1] - uy * 36 + ny * 20), tip,
-             (tip[0] - ux * 36 - nx * 20, tip[1] - uy * 36 - ny * 20), (g[0] - nx * 22, g[1] - ny * 22)]
+    blade = [(g[0] + nx * 30, g[1] + ny * 30), (tip[0] - ux * 44 + nx * 26, tip[1] - uy * 44 + ny * 26), tip,
+             (tip[0] - ux * 44 - nx * 26, tip[1] - uy * 44 - ny * 26), (g[0] - nx * 30, g[1] - ny * 30)]
     c.poly(blade, col=c.p["main"], contrast=0.45)
-    c.fill(m_poly(band([lerp_pt(g, tip, 0.05), lerp_pt(g, tip, 0.9)], 14, 4)), c.p["core"], 0.95)
-    c.fill(m_poly(band([lerp_pt(g, tip, 0.05), lerp_pt(g, tip, 0.85)], 5, 1)), WHITE)
+    c.fill(m_poly(band([lerp_pt(g, tip, 0.05), lerp_pt(g, tip, 0.9)], 20, 5)), c.p["core"], 0.95)
+    c.fill(m_poly(band([lerp_pt(g, tip, 0.05), lerp_pt(g, tip, 0.85)], 8, 1)), WHITE)
     c.bar([(g[0] + nx * 30, g[1] + ny * 30), (g[0] - nx * 30, g[1] - ny * 30)], 12, col=c.p["gun"], contrast=0.6)
     c.bar([hilt, (g[0] - ux * 4, g[1] - uy * 4)], 13, col=c.p["gun"], contrast=0.6)
     c.circle((hilt[0] - ux * 3, hilt[1] - uy * 3), 9, col=c.p["main"])
-    c.sparkle((tip[0] - 4, tip[1] + 4), 20, thin=0.16)
+    c.sparkle((tip[0] - 6, tip[1] + 6), 28, thin=0.14)
     c.sparkle((150, 60), 9, glow=False)
 
 @recipe("SolarFlare")
 def _(c):
     ctr = (128, 128)
     c.embers(8, (10, 10, 246, 246))
-    c.glow_circle(ctr, 90, c.p["main"], 26, 0.9)
+    c.glow_circle(ctr, 70, c.p["main"], 30, 0.7)
     for i in range(12):
-        a = i * 30 + 15; l = 118 if i % 2 == 0 else 96
-        pts = rot([(ctr[0], ctr[1] - l), (ctr[0] - 12, ctr[1] - 60), (ctr[0] + 12, ctr[1] - 60)], a, ctr)
-        c.poly(pts, col=c.p["main"], contrast=0.45)
+        a = i * 30 + 15; l = 122 if i % 2 == 0 else 98
+        pts = rot([(ctr[0], ctr[1] - l), (ctr[0] - 14, ctr[1] - 56), (ctr[0] + 14, ctr[1] - 56)], a, ctr)
+        c.glow(m_poly(pts), c.p["main"], 5, 0.7)
+        c.poly(pts, col=c.p["bright"] if i % 2 == 0 else c.p["main"], contrast=0.45)
     # prominence loop
-    c.arc((182, 76), 42, 120, 330, 12, col=c.p["bright"], contrast=0.4)
+    c.arc((186, 70), 46, 110, 340, 14, col=c.p["core"], contrast=0.3)
+    c.glow(m_arc((186, 70), 46, 110, 340, 14), c.p["bright"], 6, 0.9)
     c.circle(ctr, 66, col=c.p["bright"], contrast=0.55)
     c.fill(m_ellipse(ctr, 50), mix(c.p["core"], WHITE, 0.3), 0.9)
     c.fill(m_ellipse((108, 108), 22, 16), WHITE, 0.7)
@@ -736,15 +800,15 @@ def _(c):
 def _(c):
     head = (74, 182)
     c.embers(8, (100, 20, 240, 150))
-    c.trail(head, (250, 6), 64, strength=1.0, soft=3)
-    c.trail((head[0] - 6, head[1] + 4), (236, 24), 30, col=c.p["core"], strength=0.9, soft=2)
+    c.trail(head, (252, 4), 80, strength=1.0, soft=3)
+    c.trail((head[0] - 6, head[1] + 4), (236, 24), 38, col=c.p["core"], strength=0.9, soft=2)
     for a in (110, 140, 200, 240):
         p = rot([(head[0] + 60, head[1]), (head[0] + 84, head[1])], a, head)
         c.fill(m_line(p, 5), c.p["bright"], 0.8)
     c.glow_circle(head, 52, c.p["main"], 14, 1.0)
-    rock(c, head, 44, 7, col=c.p["deep"])
+    rock(c, head, 50, 7, col=c.p["deep"])
     c.fill(m_ellipse((head[0] - 14, head[1] - 14), 12), c.p["bright"], 0.6)
-    c.fill(m_sub(m_ellipse(head, 46), m_ellipse((head[0] - 10, head[1] - 10), 46)), c.p["core"], 0.9)
+    c.fill(m_sub(m_ellipse(head, 52), m_ellipse((head[0] - 12, head[1] - 12), 52)), c.p["core"], 0.9)
     c.sparkle((174, 92), 12); c.sparkle((214, 44), 9)
 
 @recipe("DeathVirus")
@@ -761,9 +825,9 @@ def _(c):
     c.embers(6, (100, 10, 250, 120))
     ctr = (96, 160)
     # muzzle blast
-    mz = (204, 52)
+    mz = (196, 60)
     c.glow_circle(mz, 44, c.p["main"], 16, 1.0)
-    c.poly(star_pts(mz, 52, 22, 10), col=c.p["bright"], contrast=0.4, outline=0.9)
+    c.poly(star_pts(mz, 50, 22, 10), col=c.p["bright"], contrast=0.4, outline=0.9)
     c.fill(m_ellipse(mz, 16), WHITE)
     barrel = rot([(ctr[0] - 10, ctr[1] - 26), (ctr[0] + 110, ctr[1] - 26), (ctr[0] + 110, ctr[1] + 26), (ctr[0] - 10, ctr[1] + 26)], -45, ctr)
     c.poly(barrel, col=c.p["gun"], contrast=0.65)
@@ -817,9 +881,10 @@ def _(c):
 def _(c):
     ctr = (128, 128)
     c.embers(12, (6, 6, 250, 250))
-    c.glow_circle(ctr, 100, c.p["main"], 26, 0.9)
-    c.fill(m_sub(m_ellipse(ctr, 118), m_ellipse(ctr, 106)), c.p["bright"], 0.7)
-    c.glow(m_sub(m_ellipse(ctr, 118), m_ellipse(ctr, 108)), c.p["main"], 6, 0.9)
+    c.glow_circle(ctr, 80, c.p["main"], 30, 0.7)
+    for a0 in (10, 100, 190, 280):
+        seg = m_arc(ctr, 116, a0, a0 + 70, 9)
+        c.glow(seg, c.p["main"], 6, 0.9); c.fill(seg, c.p["bright"], 0.9)
     c.poly(star_pts(ctr, 112, 40, 8, -90), col=c.p["main"], contrast=0.5)
     c.poly(star_pts(ctr, 80, 30, 8, -67.5), col=c.p["bright"], contrast=0.4, outline=0.8)
     c.poly(star_pts(ctr, 46, 22, 8, -90), col=c.p["core"], contrast=0.3, outline=0.6)
@@ -844,7 +909,7 @@ def _(c):
 @recipe("MeteorStorm")
 def _(c):
     c.embers(8, (60, 10, 250, 200))
-    mets = [((82, 190), 30, 11), ((166, 148), 24, 12), ((124, 92), 17, 13), ((200, 60), 13, 14), ((50, 110), 12, 15)]
+    mets = [((78, 186), 36, 11), ((176, 150), 28, 12), ((120, 84), 22, 13), ((208, 52), 15, 14)]
     for ctr, r, sd in mets:
         c.trail(ctr, (ctr[0] + r * 3.6, ctr[1] - r * 3.6), r * 1.8, strength=1.0)
     for ctr, r, sd in mets:

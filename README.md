@@ -22,8 +22,22 @@ or drag the folder onto `love.exe`. Saves live in `%APPDATA%\LOVE\GodsOfSpace\`.
 powershell -ExecutionPolicy Bypass -File build.ps1
 ```
 
-Produces `dist/GodsOfSpace.love` (cross-platform, needs LÖVE installed) and `dist/GodsOfSpace-win64/`
-(self-contained Windows folder - zip it and ship it).
+Produces `dist/GodsOfSpace.love` (cross-platform, needs LÖVE installed), `dist/GodsOfSpace-win64/` +
+`.zip` (self-contained Windows build) and, when Node is installed, an experimental browser build in
+`dist/web/`.
+
+## Publish to itch.io
+
+1. Create the project page on itch.io (kind: downloadable, add an HTML5 upload later if the web build
+   works for you). Install [butler](https://itch.io/docs/butler/) and run `butler login` once.
+2. Push every channel in one go:
+
+```bash
+powershell -ExecutionPolicy Bypass -File publish.ps1 -Project yourname/gods-of-space -Version 1.0.0
+```
+
+That uploads the Windows folder (`:windows`), the `.love` (`:love`) and, if present, the web build
+(`:html5`). Players on macOS/Linux run the `.love` with [LÖVE 11.5](https://love2d.org).
 
 ## Develop
 
