@@ -341,7 +341,7 @@ W.BattleRam = {kind = 'lane', run = function(w, lane)
     if a then hit(i, lane, w.damage, w, 'first') end
     knockback(lane)
 end}
-W.ElectroJolt = {kind = 'lane', run = function(w, lane) stunLane(lane, 99, 1) end}
+W.ElectroJolt = {kind = 'lane', run = function(w, lane) stunLane(lane, 99, w.stunDuration) end}
 W.DaggerThrow = {kind = 'lane', run = function(w, lane) hitLane(lane, w.damageLane, w) end}
 W.Hevalstruck = {kind = 'lane', run = function(w, lane)
     local a, i = firstInLane(lane)
@@ -363,8 +363,8 @@ W.FreshStart = {kind = 'tile', shots = 1, run = function(w, row, lane)
 end}
 
 W.SantaAxe = {kind = 'lane', run = function(w, lane) hitLane(lane, w.damageLane, w) end}
-W.Respawn = {kind = 'lane', run = function(w, lane) s.lockedLane = lane end}
-W.Offguard = {kind = 'field', run = function(w) each(function(a, i, j) if a.immune == 0 and canStun(a) then a.stun = math.max(a.stun, 1); emit({type = 'status', uid = a.uid, i = i, j = j, kind = 'stun'}) end end) end}
+W.Respawn = {kind = 'lane', run = function(w, lane) s.lockedLane = lane; s.lockedTurns = 2 end}
+W.Offguard = {kind = 'field', run = function(w) each(function(a, i, j) if a.immune == 0 and canStun(a) then a.stun = math.max(a.stun, w.stunDuration); emit({type = 'status', uid = a.uid, i = i, j = j, kind = 'stun'}) end end) end}
 W.LaserBeam = {kind = 'lane', run = function(w, lane)
     local cap = w.damage * upgrade(w)
     for i = B.ROWS, 1, -1 do local a = s.grid[i][lane]; if a and a.health <= cap and a.immune == 0 and not a.fly then kill(i, lane) end end
@@ -391,7 +391,9 @@ W.GalacticBeam = {kind = 'lane', run = function(w, lane) hitLane(lane, w.damageL
 W.SolarFlare = {kind = 'field', run = function(w) hitField(w.damage, w) end}
 W.CometStrike = {kind = 'tile', shots = 1, run = function(w, row, lane) hitBox(row, lane, w.damage, w) end}
 W.DeathVirus = {kind = 'field', run = function(w)
-    local lane = math.random(B.LANES)
+    local occupied = {}
+    for j = 1, B.LANES do if firstInLane(j) then occupied[#occupied + 1] = j end end
+    local lane = #occupied > 0 and occupied[math.random(#occupied)] or math.random(B.LANES)
     for i = B.ROWS, 1, -1 do local a = s.grid[i][lane]; if a and a.immune == 0 and not a.fly then kill(i, lane) end end
 end}
 W.VoidBurst = {kind = 'tile', shots = 3, run = function(w, row, lane) hit(row, lane, w.damageTile, w, 'tile') end}
@@ -573,7 +575,7 @@ function B.spawnWave()
         if #lanes == 0 then break end
         B.spawn(1, lanes[math.random(#lanes)], def)
     end
-    s.lockedLane = nil
+    if s.lockedTurns then s.lockedTurns = s.lockedTurns - 1; if s.lockedTurns <= 0 then s.lockedLane, s.lockedTurns = nil, nil end else s.lockedLane = nil end
 end
 
 -- fire a slot. Returns 'lane' / 'tile' when aiming is required, true when fired, false when unavailable.

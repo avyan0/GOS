@@ -171,7 +171,7 @@ end)
 test('Electro Jolt stuns the entire lane', function()
     setup({w1 = 'ElectroJolt'}); put(1, 4, 'King'); put(5, 4, 'King'); put(9, 4, 'King'); put(5, 5, 'King')
     B.fire(1); B.aimLane(4)
-    check(B.alienAt(1, 4).stun == 1 and B.alienAt(5, 4).stun == 1 and B.alienAt(9, 4).stun == 1, 'whole lane stunned')
+    check(B.alienAt(1, 4).stun == 2 and B.alienAt(5, 4).stun == 2 and B.alienAt(9, 4).stun == 2, 'whole lane stunned for two turns')
     check(B.alienAt(5, 5).stun == 0, 'other lane fine')
 end)
 
@@ -204,7 +204,7 @@ test('Fresh Start sends a 3x3 block back to the top rows', function()
     check(B.alienAt(9, 5) ~= nil, 'outside block stayed')
 end)
 
-test('Lockdown blocks spawning in a lane for one turn (Hevalten ignore)', function()
+test('Lockdown blocks spawning in a lane for two turns (Hevalten ignore)', function()
     local s = setup({w1 = 'Respawn', level = '1-1'})
     for _ = 1, 20 do
         s = setup({w1 = 'Respawn'})
@@ -213,13 +213,16 @@ test('Lockdown blocks spawning in a lane for one turn (Hevalten ignore)', functi
         B.fire(1); B.aimLane(3)
         B.endTurn()
         check(B.alienAt(1, 3) == nil, 'nothing spawned in locked lane')
+        for j = 1, B.LANES do if j ~= 3 then s.grid[1][j] = nil; put(1, j, 'Joe') end end
+        B.endTurn()
+        check(B.alienAt(1, 3) == nil, 'still locked on the second turn')
     end
 end)
 
-test('Off Guard stuns everything for one turn', function()
+test('Off Guard stuns everything for two turns', function()
     setup({w1 = 'Offguard'}); put(1, 1, 'King'); put(5, 3, 'Giant', 50000); put(9, 5, 'DJ')
     B.fire(1)
-    check(B.alienAt(1, 1).stun == 1 and B.alienAt(5, 3).stun == 1 and B.alienAt(9, 5).stun == 1, 'all stunned')
+    check(B.alienAt(1, 1).stun == 2 and B.alienAt(5, 3).stun == 2 and B.alienAt(9, 5).stun == 2, 'all stunned for two turns')
 end)
 
 test('Mind Blast deals 7001 and hypnotises the survivor', function()
