@@ -14,8 +14,9 @@ local PAGES = {
     {title = 'The alien turn', lines = {
         'Aliens with abilities act first, one at a time under a spotlight, so you can see what each one does.',
         'Reactive aliens like Old Granny and the Heval God respond at the end of any turn you hurt them in.',
-        'Then everyone marches one row and a new alien spawns at the top.',
-        'Walls stop an alien for a turn before breaking; a Barricade takes three hits. Jumpers leap straight over.'}},
+        'Then everyone marches one row and a new alien spawns at the top. You are never told how many are left - hold the line until the stage clears.',
+        'Random events can strike at the start of an alien turn: meteor showers, gravity surges, reinforcements, supply drops... read the banner and adapt.',
+        'Walls stop an alien for a turn before breaking; a Barricade takes three hits.'}},
     {title = 'Status effects', lines = {
         'Stunned aliens cannot move. Poison ticks every turn; Plague is poison that spreads to neighbours.',
         'Hypnotised aliens turn around and attack the closest alien ahead of them - both lose health equal to the other.',
@@ -40,7 +41,7 @@ function HowToPlay:render()
     ui.panel(px, py, pw, ph, {radius = 18})
     ui.text(p.title, px + 50, py + 40, pw - 100, 'left', 'display', 34, ui.c.accent)
     for i, line in ipairs(p.lines) do
-        local y = py + 100 + (i - 1) * 74
+        local y = py + 92 + (i - 1) * 64
         ui.color(ui.c.accent); love.graphics.circle('fill', px + 62, y + 12, 5)
         ui.text(line, px + 86, y, pw - 140, 'left', 'body', 19)
     end
