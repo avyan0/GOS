@@ -240,7 +240,7 @@ def eye(img, cx, cy, r, iris, look=(0.15, 0.1), lid=None, lid_col=None, slit=Fal
 def eyes_row(img, n, cx, cy, spread, r, iris, **kw):
     """n eyes in a row centred on cx; 3 -> middle one bigger; 4 -> two rows."""
     if n == 1:
-        eye(img, cx, cy, r * 1.35, iris, **kw)
+        eye(img, cx, cy, r * 1.6, iris, **kw)
     elif n == 2:
         eye(img, cx - spread, cy, r, iris, **kw)
         eye(img, cx + spread, cy, r, iris, **kw)
@@ -895,12 +895,12 @@ def giant_front(k):
     cx, cy, bw, bh, img = k.cx, k.cy, k.bw, k.bh, k.img
     for s in (-1, 1):  # huge fists
         limb(img, [(cx + s * bw * 0.6, cy + bh * 0.2), (cx + s * bw * 0.95, cy + bh * 0.3), (cx + s * bw * 1.05, cy + bh * 0.6)], 30, 30, k.col, k.dark)
-        fm = ellipse_mask((cx + s * bw * 1.05 - 58, cy + bh * 0.3, cx + s * bw * 1.05 + 58, cy + bh * 0.9))
+        fm = ellipse_mask((cx + s * bw * 1.1 - 68, cy + bh * 0.35, cx + s * bw * 1.1 + 68, cy + bh * 1.05))
         _chunk(img, fm, k.col, k.dark, 6, amount=0.45)
         t = mask_new()
         d = ImageDraw.Draw(t)
         for i in range(3):
-            d.line([(cx + s * bw * 1.05 - 30 + i * 30, cy + bh * 0.42), (cx + s * bw * 1.05 - 30 + i * 30, cy + bh * 0.62)], fill=255, width=5)
+            d.line([(cx + s * bw * 1.1 - 34 + i * 34, cy + bh * 0.48), (cx + s * bw * 1.1 - 34 + i * 34, cy + bh * 0.72)], fill=255, width=6)
         fill(img, ImageChops.multiply(t, fm), shade_col(k.dark, 1.0, 180))
     # brow ridge
     _chunk(img, ImageChops.multiply(rrect_mask((cx - bw * 0.8, cy - bh * 0.6, cx + bw * 0.8, cy - bh * 0.38), 10), k.bm), shade_col(k.col, 0.65), k.dark, 4)
@@ -1078,8 +1078,8 @@ def rare_front(k):
     fill(img, ImageChops.multiply(poly_mask([(cx - bw, cy - bh), (cx + bw * 0.2, cy - bh), (cx - bw, cy + bh * 0.3)]), erode(k.bm, 4)), (255, 255, 255, 70))
     for s in (-1, 1):  # gem shards orbiting
         for j in range(2):
-            gx, gy = cx + s * bw * (1.15 + 0.15 * j), cy - bh * (0.5 - 0.7 * j)
-            g = poly_mask([(gx, gy - 24), (gx + 14, gy - 6), (gx + 8, gy + 20), (gx - 8, gy + 20), (gx - 14, gy - 6)])
+            gx, gy = cx + s * bw * (1.2 + 0.12 * j), cy - bh * (0.55 - 0.8 * j)
+            g = poly_mask([(gx, gy - 36), (gx + 20, gy - 8), (gx + 12, gy + 30), (gx - 12, gy + 30), (gx - 20, gy - 8)])
             glow(img, g, hsv(0.6, 0.8, 1.0), 10)
             _chunk(img, g, hsv(0.6, 0.5, 1.0), k.dark, 3, spec=0.6)
 
@@ -1214,8 +1214,9 @@ def phaser_back(k):
     cx, cy, bw, bh, img = k.cx, k.cy, k.bw, k.bh, k.img
     for dx, h in ((-34, 0.92), (34, 0.5)):
         m = soften(body_mask("diamond", cx + dx, cy, bw, bh), 7)
-        fill(img, dilate(m, 4), hsv(h, 0.9, 1.0, 90))
-        fill(img, ImageChops.subtract(dilate(m, 4), m), hsv(h, 0.9, 1.0, 230))
+        fill(img, dilate(m, 4), hsv(h, 0.9, 1.0, 130))
+        fill(img, ImageChops.subtract(dilate(m, 4), m), hsv(h, 0.9, 1.0, 240))
+    energy_aura(img, k.bm, hsv(0.5, 0.8, 1.0), 30)
 
 
 def phaser_front(k):
@@ -1226,6 +1227,9 @@ def phaser_front(k):
         y = cy - bh + i * bh * 0.3
         d.line([(cx - bw, y), (cx + bw, y)], fill=255, width=3)
     fill(img, ImageChops.multiply(t, k.bm), (255, 255, 255, 70))
+    core = soften(body_mask("diamond", cx, cy + bh * 0.3, bw * 0.22, bh * 0.22), 3)
+    glow(img, core, hsv(0.5, 0.7, 1.0), 16, 1.4)
+    fill(img, core, (240, 255, 255, 255))
 
 
 def medic_front(k):
@@ -1274,16 +1278,16 @@ def splitter_front(k):
         y += 26
         i += 1
     seam = mask_new()
-    ImageDraw.Draw(seam).line(pts, fill=255, width=9)
+    ImageDraw.Draw(seam).line(pts, fill=255, width=14)
     seam = ImageChops.multiply(seam, k.bm)
     glow(img, seam, hsv(0.13, 0.8, 1.0), 10)
     fill(img, seam, k.dark)
-    fill(img, erode(seam, 2), hsv(0.13, 0.5, 1.0))
+    fill(img, erode(seam, 4), hsv(0.13, 0.5, 1.0))
 
 
 def anchor_front(k):
     cx, cy, bw, bh, img = k.cx, k.cy, k.bw, k.bh, k.img
-    ax, ay = cx, cy + bh * 0.5
+    ax, ay = cx, cy + bh * 0.62
     m = mask_new()
     d = ImageDraw.Draw(m)
     d.rectangle((ax - 7, ay - 60, ax + 7, ay + 40), fill=255)
@@ -1297,7 +1301,7 @@ def anchor_front(k):
     # chains dangling off the sides
     for s in (-1, 1):
         for j in range(5):
-            x, y = cx + s * bw * 1.08 + s * j * 6, cy + bh * 0.1 + j * 28
+            x, y = cx + s * bw * 1.08 + s * j * 5, cy + bh * 0.35 + j * 28
             ring = ImageChops.subtract(ellipse_mask((x - 12, y - 16, x + 12, y + 16)), ellipse_mask((x - 5, y - 9, x + 5, y + 9)))
             _chunk(img, ring, (150, 155, 170, 255), INK, 3, spec=0.4)
 
@@ -1348,7 +1352,7 @@ RECIPES = {
     "Albot": dict(limbs=[("arms",), ("legs", 2)], texture="metal", front=albot_front, mouth_kind="zigzag", teeth=5,
                   col=(150, 150, 165, 255), eye=dict(glow=RED, iris=(90, 0, 10, 255), lid=None), horns=False, spikes=False),
     "Jumper": dict(back=jumper_back, limbs=[("arms", True)], texture="spots", mouth_kind="grin", teeth=4, eye=dict(lid=None), dy=-40),
-    "Giant": dict(limbs=[("legs", 2)], texture="cracks", front=giant_front, mouth_kind="zigzag", teeth=7, bw=1.15, bh=1.1, eye_scale=0.75, eye=dict(lid="angry")),
+    "Giant": dict(limbs=[("legs", 2)], texture="cracks", col=hsv(0.08, 0.55, 0.72), front=giant_front, mouth_kind="zigzag", teeth=7, bw=1.15, bh=1.1, eye_scale=0.75, eye=dict(lid="angry")),
     "Gardener": dict(back=gardener_back, limbs=[("tentacles", 4)], texture="veins", mouth_kind="small", eye=dict(lid=None, iris=hsv(0.95, 0.7, 0.9))),
     "Army": dict(limbs=[("legs", 2), ("arms",)], texture="plates", front=army_front, mouth_kind="frown", eye=dict(lid="angry"), horns=False, bw=1.05),
     "Morpher": dict(back=morpher_back, front=morpher_front, limbs=[("tentacles", 3)], mouth_kind="small", eye=dict(lid=None), alpha=235),
@@ -1360,7 +1364,7 @@ RECIPES = {
                      eye=dict(glow=hsv(0.55, 0.7, 1.0), iris=hsv(0.6, 0.9, 0.4), lid="angry")),
     "DarkArts": dict(back=lambda k: hood_back(k, hsv(0.78, 0.7, 0.28)), front=dark_arts_front, mouth=False, horns=False, spikes=False, ring=True,
                      eye=dict(glow=hsv(0.78, 0.8, 1.0), iris=hsv(0.8, 0.9, 0.3), lid=None), armor=False),
-    "Rare": dict(front=rare_front, texture=None, mouth=False, limbs=[("legs", 2)], eye=dict(iris=hsv(0.13, 0.9, 0.9), lid="angry"), spec=0.6, bw=0.95),
+    "Rare": dict(front=rare_front, texture=None, mouth_kind="zigzag", teeth=7, body=lambda cx, cy, bw, bh: soften(poly_mask([(cx - bw * 0.55, cy - bh), (cx + bw * 0.55, cy - bh), (cx + bw, cy - bh * 0.45), (cx + bw, cy + bh * 0.45), (cx + bw * 0.55, cy + bh), (cx - bw * 0.55, cy + bh), (cx - bw, cy + bh * 0.45), (cx - bw, cy - bh * 0.45)]), 4), limbs=[("legs", 2)], eye=dict(iris=hsv(0.13, 0.9, 0.9), lid="angry"), spec=0.6, bw=0.95),
     "Protected": dict(front=bunker_front, texture="plates", eyes=False, mouth=False, bw=1.1, bh=0.95, armor=False),
     "Interdimentional": dict(back=interdim_back, texture=None, mouth_kind="small", alpha=210, eye=dict(glow=hsv(0.7, 0.6, 1.0), iris=hsv(0.75, 0.9, 0.4), lid=None), armor=False),
     "Scarce": dict(front=scarce_front, limbs=[("arms",), ("legs", 2)], texture="plates", mouth_kind="zigzag", teeth=7, eye=dict(iris=hsv(0.13, 0.9, 0.9)), bw=1.1, bh=1.05),
@@ -1374,7 +1378,7 @@ RECIPES = {
     "Medic": dict(front=medic_front, limbs=[("legs", 2), ("arms",)], mouth_kind="small", eye=dict(lid=None, iris=hsv(0.6, 0.7, 0.8)), col=hsv(0.0, 0.18, 0.95), armor=False),
     "Thief": dict(front=thief_front, limbs=[("legs", 2), ("arms",)], eyes=False, mouth_kind="grin", teeth=4, texture="cloth"),
     "Splitter": dict(front=splitter_front, limbs=[("legs", 2), ("arms",)], texture="scales", mouth_kind="zigzag", teeth=6, eye=dict(lid=None), mouth_dy=30),
-    "Anchor": dict(front=anchor_front, texture="metal", mouth_kind="frown", eye=dict(lid="angry", iris=hsv(0.13, 0.8, 0.9)), bw=1.05, bh=1.05, eye_dy=-25),
+    "Anchor": dict(front=anchor_front, texture="metal", mouth_kind="frown", eye=dict(lid="angry", iris=hsv(0.13, 0.8, 0.9)), bw=1.05, bh=1.05, eye_dy=-30, mouth_dy=-25),
     "Necromancer": dict(back=lambda k: hood_back(k, hsv(0.82, 0.6, 0.25)), front=necro_front, mouth_kind="zigzag", teeth=5, horns=False, spikes=False,
                         eye=dict(glow=hsv(0.35, 0.9, 1.0), iris=hsv(0.35, 0.9, 0.3), lid=None), armor=False),
     "VoidTitan": dict(front=titan_front, limbs=[("legs", 2), ("arms",)], texture="plates", mouth_kind="zigzag", teeth=9, bw=1.2, bh=1.15,
