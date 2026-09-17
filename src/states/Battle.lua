@@ -168,7 +168,7 @@ local function drawAlien(v, t, spotUid)
     love.graphics.scale(v.scale, v.scale)
     love.graphics.translate(-x, -(y + bob))
     fx.drawStatuses({a = a, x = x, y = y + bob, statusPulse = v.statusPulse}, t)
-    icons.alien(def.spec, x, y + bob, 40, alpha * (a.fly and 0.7 or 1))
+    if not icons.alienArt(a.name, x, y + bob, 40, alpha * (a.fly and 0.7 or 1)) then icons.alien(def.spec, x, y + bob, 40, alpha * (a.fly and 0.7 or 1)) end
     if v.flash > 0 then ui.color(ui.c.white, v.flash * 0.8); love.graphics.circle('fill', x, y + bob, 20) end
     love.graphics.pop()
     -- name + hp
@@ -304,7 +304,7 @@ function GameState:render(dimmed)
         if w then
             local rule = B.WEAPON_RULES[w.id]
             local lit = ready or isAiming
-            icons.weapon(w.shape, SIDE_X + 40, y + 34, 38, lit and color or ui.c.dim)
+            if not icons.weaponArt(w.id, SIDE_X + 40, y + 34, 38, lit and 1 or 0.35) then icons.weapon(w.shape, SIDE_X + 40, y + 34, 38, lit and color or ui.c.dim) end
             local nameSize = ui.fitSize('display', w.name, SIDE_W - 90, 15, 11)
             ui.text(w.name, SIDE_X + 68, y + 14 + (15 - nameSize), SIDE_W - 90, 'left', 'display', nameSize, lit and ui.c.text or ui.c.dim)
             local dmg = w.damage > 0 and ('   -   ' .. math.round(w.damage * ((data.upgrades[w.id] or 0) * 0.1 + 1))) or ''

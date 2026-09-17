@@ -24,7 +24,7 @@ function drawWeaponCard(w, x, y, cw, ch, selected, opts)
     ui.panel(x, y, cw, ch, {fill = selected and ui.c.panel2 or ui.c.panel, border = selected and color or (hover and ui.c.muted or ui.c.line), radius = 14})
     if owned then
         ui.color(color, 0.12); ui.rrect('fill', x + 12, y + 12, cw - 24, ch * 0.5, 10)
-        icons.weapon(w.shape, x + cw / 2, y + 12 + ch * 0.25, ch * 0.36, color)
+        if not icons.weaponArt(w.id, x + cw / 2, y + 12 + ch * 0.25, ch * 0.36) then icons.weapon(w.shape, x + cw / 2, y + 12 + ch * 0.25, ch * 0.36, color) end
         ui.text(w.name, x + 6, y + ch * 0.5 + 16, cw - 12, 'center', 'display', ui.fitSize('display', w.name, cw - 12, 14, 10))
         ui.pips(x + cw / 2 - 26, y + ch - 16, 5, data.upgrades[w.id] or 0, color, 6, 4)
         if opts.equipped then
@@ -48,7 +48,7 @@ function drawWeaponDetail(w, px, py, pw, ph)
     local color = ui.rarity[w.rarity]
     local owned = data.weapons[w.id]
     ui.glow(px + pw / 2, py + 90, 50, color, owned and 0.08 or 0.02)
-    if owned then icons.weapon(w.shape, px + pw / 2, py + 90, 110, color) else icons.lock(px + pw / 2, py + 90, 60, ui.c.dim) end
+    if owned then if not icons.weaponArt(w.id, px + pw / 2, py + 90, 110) then icons.weapon(w.shape, px + pw / 2, py + 90, 110, color) end else icons.lock(px + pw / 2, py + 90, 60, ui.c.dim) end
     ui.text(w.name, px, py + 165, pw, 'center', 'display', 28)
     ui.text(ui.rarityName[w.rarity]:upper(), px, py + 202, pw, 'center', 'hud', 16, color)
 

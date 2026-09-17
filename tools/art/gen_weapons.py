@@ -945,6 +945,8 @@ def sheet(icons):
     im.save(os.path.join(OUT, "sheet.png"))
 
 def main(only=None):
+    missing = [w["id"] for w in DATA["weapons"] if w["id"] not in R]
+    assert not missing, f"no recipe for {missing}"
     os.makedirs(OUT, exist_ok=True)
     icons = {}
     for w in DATA["weapons"]:

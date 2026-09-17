@@ -23,7 +23,7 @@ function AliensScreen:render()
         local sel = self.selected == k
         ui.panel(x, y, size, size, {fill = sel and ui.c.panel2 or ui.c.panel, border = sel and ui.c.accent or ((ui.hovered(x, y, size, size) and unlocked) and ui.c.muted or ui.c.line), radius = 12})
         if unlocked then
-            icons.alien(a.spec, x + size / 2, y + size / 2 - 7, 48)
+            if not icons.alienArt(a.name, x + size / 2, y + size / 2 - 7, 48) then icons.alien(a.spec, x + size / 2, y + size / 2 - 7, 48) end
             ui.text(a.title, x - 4, y + size - 18, size + 8, 'center', 'body', ui.fitSize('body', a.title, size + 6, 10, 7), ui.c.muted)
         else
             icons.lock(x + size / 2, y + size / 2, 24, ui.c.dim)
@@ -37,7 +37,7 @@ function AliensScreen:render()
     ui.panel(px, py, pw, ph, {radius = 16})
     local hcol = {icons.hsl(a.spec.hue, a.spec.sat or 0.7, 0.55)}
     ui.glow(px + pw / 2, py + 110, 60, hcol, 0.06)
-    icons.alien(a.spec, px + pw / 2, py + 110, 150)
+    if not icons.alienArt(a.name, px + pw / 2, py + 110, 150) then icons.alien(a.spec, px + pw / 2, py + 110, 150) end
     ui.text(a.title, px, py + 205, pw, 'center', 'display', 30)
     local tag = a.hevalten and 'HEVALTEN' or 'STANDARD'
     ui.text(tag, px, py + 245, pw, 'center', 'hud', 16, a.hevalten and ui.c.danger or ui.c.muted)

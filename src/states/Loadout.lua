@@ -42,7 +42,7 @@ function drawSlots(x, y, w, selectedSlot, t)
         ui.text('SLOT ' .. i, sx + 16, y + 10, 100, 'left', 'hud', 13, ui.c.muted)
         if w_ then
             local color = ui.rarity[w_.rarity]
-            icons.weapon(w_.shape, sx + 44, y + 58, 44, color)
+            if not icons.weaponArt(id, sx + 44, y + 58, 44) then icons.weapon(w_.shape, sx + 44, y + 58, 44, color) end
             local size = ui.fitSize('display', w_.name, sw - 90, 18, 12)
             ui.text(w_.name, sx + 78, y + 36 + (18 - size) / 2, sw - 90, 'left', 'display', size)
             ui.text(ui.rarityName[w_.rarity] .. '   -   Lv ' .. (data.upgrades[id] or 0), sx + 78, y + 62, sw - 90, 'left', 'body', 14, color)

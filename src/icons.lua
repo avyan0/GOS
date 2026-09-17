@@ -348,6 +348,28 @@ function icons.planetArt(index, x, y, r, locked)
     return true
 end
 
+-- weapon icon `id` centred at x,y; s matches the size the code-drawn icons use
+function icons.weaponArt(id, x, y, s, alpha)
+    local img = image('assets/img/weapons/' .. id .. '.png')
+    if not img then return false end
+    local sc = s * 1.45 / img:getHeight()
+    g.setColor(1, 1, 1, alpha or 1)
+    g.draw(img, x, y, 0, sc, sc, img:getWidth() / 2, img:getHeight() / 2)
+    g.setColor(1, 1, 1, 1)
+    return true
+end
+
+-- alien portrait `key` centred at x,y
+function icons.alienArt(key, x, y, s, alpha)
+    local img = image('assets/img/aliens/' .. key .. '.png')
+    if not img then return false end
+    local sc = s * 1.15 / img:getHeight()
+    g.setColor(1, 1, 1, alpha or 1)
+    g.draw(img, x, y, 0, sc, sc, img:getWidth() / 2, img:getHeight() / 2)
+    g.setColor(1, 1, 1, 1)
+    return true
+end
+
 function icons.lock(x, y, s, color)
     if color then g.setColor(color) end
     g.setLineWidth(s * 0.12)

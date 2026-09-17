@@ -75,7 +75,7 @@ function wheel.apply(seg)
             data.weapons[seg.id] = true
             sub = 'New weapon unlocked'
         end
-        return {title = w.name, subtitle = sub, color = color, icon = function(x, y, s) icons.weapon(w.shape, x, y, s, color) end}
+        return {title = w.name, subtitle = sub, color = color, icon = function(x, y, s) if not icons.weaponArt(w.id, x, y, s) then icons.weapon(w.shape, x, y, s, color) end end}
     end
 end
 
