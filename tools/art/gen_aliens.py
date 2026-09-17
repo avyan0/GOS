@@ -733,6 +733,13 @@ def president_front(k):
     _chunk(img, hm, (150, 140, 130, 255), INK, 3, amount=0.3)
 
 
+def king_back(k):
+    cx, cy, bw, bh, img = k.cx, k.cy, k.bw, k.bh, k.img
+    cape = soften(poly_mask([(cx - bw * 0.8, cy - bh * 0.6), (cx + bw * 0.8, cy - bh * 0.6), (cx + bw * 1.45, cy + bh * 1.2), (cx - bw * 1.45, cy + bh * 1.2)]), 8)
+    _chunk(img, cape, hsv(0.98, 0.85, 0.7), RED_D, 5, amount=0.4, spec=0.1)
+    texture(img, cape, "cloth", hsv(0.98, 0.85, 0.7), RED_D, k.rng, (cx - bw * 1.5, cy - bh * 0.6, cx + bw * 1.5, cy + bh * 1.2))
+
+
 def king_front(k):
     cx, cy, bw, bh, img = k.cx, k.cy, k.bw, k.bh, k.img
     # ermine collar with black spots
@@ -1314,10 +1321,11 @@ def necro_front(k):
     skull(img, sx, cy - bh * 1.18, 34)
     for s in (-1, 1):
         fill(img, ellipse_mask((sx + s * 15 - 8, cy - bh * 1.28, sx + s * 15 + 8, cy - bh * 1.1)), hsv(0.35, 0.8, 1.0))
-    for i in range(5):  # bone spikes on shoulders
-        x = cx - bw * 0.9 + i * bw * 0.22 - bw * 0.35
-        m = poly_mask([(x - 10, cy - bh * 0.35), (x + 10, cy - bh * 0.35), (x - 6, cy - bh * 0.9 + i * 6)])
-        _chunk(img, m, (225, 220, 205, 255), INK, 3)
+    for s in (-1, 1):  # bone spikes on both shoulders
+        for i in range(3):
+            x = cx + s * bw * (0.7 + i * 0.22)
+            m = poly_mask([(x - 10, cy - bh * 0.25), (x + 10, cy - bh * 0.25), (x + s * 6, cy - bh * (0.85 - i * 0.12))])
+            _chunk(img, m, (225, 220, 205, 255), INK, 3)
 
 
 def titan_front(k):
@@ -1341,7 +1349,7 @@ RECIPES = {
     "Gen57": dict(limbs=[("legs", 2), ("arms",), ("antennae", 1)], texture="plates", front=gen57_front, mouth_kind="small",
                   eye=dict(glow=hsv(0.55, 0.8, 1.0), iris=hsv(0.55, 0.9, 0.5))),
     "President": dict(limbs=[("arms",)], front=president_front, mouth_kind="small", eye=dict(lid="sleepy"), bh=1.05),
-    "King": dict(limbs=[("arms",)], texture="cloth", front=king_front, mouth_kind="frown", eye=dict(lid="sleepy"), bw=1.05),
+    "King": dict(limbs=[("arms",)], texture="cloth", back=king_back, front=king_front, mouth_kind="frown", eye=dict(lid="sleepy"), bw=1.05),
     "DJ": dict(limbs=[("arms", True)], front=dj_front, mouth_kind="grin", teeth=5, eye=dict(iris=hsv(0.5, 0.9, 0.9)), bw=0.95),
     "SpaceFence": dict(back=fence_back, front=fence_front, limbs=[("legs", 2)], texture="plates", mouth=False,
                        eye=dict(glow=hsv(0.5, 0.7, 1.0), iris=hsv(0.55, 0.9, 0.4))),
@@ -1382,7 +1390,7 @@ RECIPES = {
     "Necromancer": dict(back=lambda k: hood_back(k, hsv(0.82, 0.6, 0.25)), front=necro_front, mouth_kind="zigzag", teeth=5, horns=False, spikes=False,
                         eye=dict(glow=hsv(0.35, 0.9, 1.0), iris=hsv(0.35, 0.9, 0.3), lid=None), armor=False),
     "VoidTitan": dict(front=titan_front, limbs=[("legs", 2), ("arms",)], texture="plates", mouth_kind="zigzag", teeth=9, bw=1.2, bh=1.15,
-                      eye=dict(glow=hsv(0.72, 0.7, 1.0), iris=hsv(0.72, 0.9, 0.3)), eye_scale=0.85),
+                      eye=dict(glow=hsv(0.72, 0.7, 1.0), iris=hsv(0.72, 0.9, 0.3)), eye_dy=-30, mouth_dy=-50),
 }
 
 # ----------------------------------------------------------------- main ---
@@ -1415,7 +1423,9 @@ def main(only=None):
     for al in aliens:
         if only and al["key"] not in only:
             continue
-        build(al).save(os.path.join(OUT, al["key"] + ".png"))
+        im = build(al)
+        assert im.size == (256, 256) and im.mode == "RGBA" and im.getpixel((0, 0))[3] == 0 and im.getbbox(), al["key"]
+        im.save(os.path.join(OUT, al["key"] + ".png"))
         print("wrote", al["key"])
     contact_sheet(aliens).save(os.path.join(OUT, "sheet.png"))
     print("wrote sheet.png")
