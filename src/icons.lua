@@ -323,6 +323,31 @@ function icons.planet(x, y, r, hue, ringed, locked)
     end
 end
 
+-- ---------------------------------------------------------------- rendered art (assets/img), with code-drawn fallbacks
+local imgCache = {}
+local function image(path)
+    if imgCache[path] == nil then
+        local ok, img = pcall(g.newImage, path)
+        imgCache[path] = ok and img or false
+    end
+    return imgCache[path] or nil
+end
+icons.image = image
+
+-- planet `index` drawn so its sphere has radius r (the PNG sphere spans `sphere` of the image width)
+local PLANET_SPHERE = {0.745, 0.495, 0.745, 0.745, 0.487, 0.73}
+function icons.planetArt(index, x, y, r, locked)
+    local img = image('assets/img/planets/' .. index .. '.png')
+    if not img then return false end
+    local w = img:getWidth()
+    local scale = (r * 2) / (w * (PLANET_SPHERE[index] or 0.745))
+    local a = locked and 0.3 or 1
+    g.setColor(a, a, a, 1)
+    g.draw(img, x, y, 0, scale, scale, w / 2, img:getHeight() / 2)
+    g.setColor(1, 1, 1, 1)
+    return true
+end
+
 function icons.lock(x, y, s, color)
     if color then g.setColor(color) end
     g.setLineWidth(s * 0.12)

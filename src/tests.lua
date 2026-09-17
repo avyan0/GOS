@@ -15,6 +15,7 @@ local hp = setmetatable({}, {__index = function(_, name) return Aliens[name].hea
 -- fresh world for each test
 local function setup(opts)
     opts = opts or {}
+    B.EVENT_CHANCE = 0
     data = defaultSave()
     for _, id in ipairs(WEAPON_ORDER) do data.weapons[id] = true end
     data.aliensUnlocked = opts.unlocked or 27
@@ -60,7 +61,7 @@ test('Asteroid Rain hits every alien for 175', function()
     local s = setup({w1 = 'AstroidRain'})
     put(3, 1, 'Joe'); put(7, 4, 'King'); put(1, 5, 'DJ')
     check(B.fire(1) == true, 'field weapon fires without aiming')
-    check(near(B.alienAt(3, 1).health, 500 - 175), 'joe damaged')
+    check(near(B.alienAt(3, 1).health, hp.Joe - 175), 'joe damaged')
     check(near(B.alienAt(7, 4).health, hp.King - 175), 'king damaged')
     check(near(B.alienAt(1, 5).health, hp.DJ - 175), 'dj damaged')
     check(B.state().slots[1].used, 'slot marked used')
@@ -71,12 +72,12 @@ test('Poison Arrow damages a lane and poisons it', function()
     put(2, 3, 'King'); put(6, 3, 'King'); put(6, 4, 'King')
     check(B.fire(1) == 'lane', 'asks for a lane')
     B.aimLane(3)
-    check(near(B.alienAt(2, 3).health, 1400) and near(B.alienAt(6, 3).health, 1400), 'both in lane took 150')
+    check(near(B.alienAt(2, 3).health, hp.King - 150) and near(B.alienAt(6, 3).health, hp.King - 150), 'both in lane took 150')
     check(near(B.alienAt(6, 4).health, hp.King), 'other lane untouched')
     check(B.alienAt(2, 3).poison == 55, 'poisoned for 55')
     B.endTurn()
     -- both moved down one row and ticked poison
-    check(near(B.alienAt(3, 3).health, 1345), 'poison ticked on end turn')
+    check(near(B.alienAt(3, 3).health, hp.King - 150 - 55), 'poison ticked on end turn')
 end)
 
 test('Triple Threat hits three chosen tiles, not the same tile twice', function()
@@ -85,7 +86,7 @@ test('Triple Threat hits three chosen tiles, not the same tile twice', function(
     check(B.fire(1) == 'tile', 'asks for tiles')
     B.aimTile(4, 1); check(B.aimTile(4, 1) == false, 'same tile rejected'); B.aimTile(5, 2); B.aimTile(6, 3)
     check(B.state().aim == nil, 'aiming done after 3')
-    check(near(B.alienAt(4, 1).health, 1350) and near(B.alienAt(5, 2).health, 1350) and near(B.alienAt(6, 3).health, 1350), 'each tile took 200')
+    check(near(B.alienAt(4, 1).health, hp.King - 200) and near(B.alienAt(5, 2).health, hp.King - 200) and near(B.alienAt(6, 3).health, hp.King - 200), 'each tile took 200')
 end)
 
 test('Cosmic Fire / Dagger Throw / Santa Axe / Galactic Beam hit whole lane', function()
@@ -114,15 +115,15 @@ test('Star Blast hits a cross around the tile', function()
     setup({w1 = 'StarBlast'})
     put(5, 3, 'King'); put(5, 2, 'King'); put(5, 4, 'King'); put(3, 3, 'King'); put(7, 3, 'King'); put(5, 1, 'King'); put(8, 3, 'King')
     B.fire(1); B.aimTile(5, 3)
-    check(near(B.alienAt(5, 3).health, 1390), 'center hit')
-    check(near(B.alienAt(5, 2).health, 1390) and near(B.alienAt(5, 4).health, 1390), 'sides hit')
-    check(near(B.alienAt(3, 3).health, 1390) and near(B.alienAt(7, 3).health, 1390), 'two up / two down hit')
+    check(near(B.alienAt(5, 3).health, hp.King - 160), 'center hit')
+    check(near(B.alienAt(5, 2).health, hp.King - 160) and near(B.alienAt(5, 4).health, hp.King - 160), 'sides hit')
+    check(near(B.alienAt(3, 3).health, hp.King - 160) and near(B.alienAt(7, 3).health, hp.King - 160), 'two up / two down hit')
     check(near(B.alienAt(5, 1).health, hp.King) and near(B.alienAt(8, 3).health, hp.King), 'outside cross untouched')
 end)
 
 test('Laser Kill kills aliens at or under 600, Laser Beam under 6000, both ignore buffs', function()
     local s = setup({w1 = 'LaserKill', w2 = 'LaserBeam'})
-    put(2, 1, 'Joe'); put(4, 1, 'Gen57', 600); put(6, 1, 'King'); put(8, 1, 'Giant', 6000); put(9, 1, 'Giant', 6001)
+    put(2, 1, 'Joe', 500); put(4, 1, 'Gen57', 600); put(6, 1, 'King'); put(8, 1, 'Giant', 6000); put(9, 1, 'Giant', 6001)
     s.buff = 0.1
     B.fire(1); B.aimLane(1)
     check(B.alienAt(2, 1) == nil and B.alienAt(4, 1) == nil, 'weak aliens killed')
@@ -245,7 +246,7 @@ test('Hypnotised aliens fight: both lose the other health, stronger survives and
     B.endTurn()
     local k = B.alienAt(8, 2) or B.alienAt(7, 2)
     check(B.count() == 1 and k and not k.hypno, 'joe died')
-    check(k and near(k.health, hp.King - 500), 'king weakened but alive')
+    check(k and near(k.health, hp.King - hp.Joe), 'king weakened but alive')
     -- with nothing to fight it moves up and holds the top
     s = setup({}); s.needed = 0
     h = put(2, 3, 'Giant', 50000); h.hypno = true
@@ -486,7 +487,8 @@ test('Items: zap, electricity, teleporter, protection, gold, walls', function()
     B.useItem('protection'); check(near(s.buff, 1.5), 'protection +50%')
     B.useItem('gold'); check(data.goldBuff == 2, 'double gold flag')
     check(B.useItem('walls') == 'aim', 'wall asks for a tile')
-    check(B.aimTile(4, 1) == false, 'cannot place on an alien'); check(B.aimTile(1, 2) == false, 'cannot place on row 1')
+    local occ; for j = 1, 5 do if B.alienAt(4, j) then occ = j end end
+    check(B.aimTile(4, occ) == false, 'cannot place on an alien'); check(B.aimTile(1, 2) == false, 'cannot place on row 1')
     check(B.aimTile(6, 2) == true and s.walls[6][2] == 1 and s.aim == nil, 'wall placed where chosen')
     s = setup({}); s.needed = 0; put(3, 1, 'King'); s.walls[4][1] = true
     B.drain(); B.endTurn()
@@ -678,6 +680,51 @@ test('Hypnotised survivors do not block the stage or spawns', function()
     put(5, 1, 'Thief'); B.fire(1); data.gold = 10
     B.endTurn(); check(data.gold == 10, 'hypnotised thief steals nothing')
     check(B.count() >= 2, 'waves keep coming despite the hypnotised alien (' .. B.count() .. ')')
+end)
+
+test('Every random event runs on a busy field without errors', function()
+    for _, e in ipairs(B.EVENTS) do
+        local s = setup({w1 = 'CosmicFire', w2 = 'AstroidRain', w3 = 'Barricade', level = '6-25'}); s.needed = 100
+        put(2, 1, 'Joe'); put(5, 2, 'King'); put(8, 3, 'Guardian'); put(9, 4, 'Giant'); put(3, 5, 'Albot'); put(6, 1, 'Spaceship')
+        s.walls[7][2] = 1
+        B.fire(1); B.aimLane(1)
+        local ok, err = pcall(B.forceEvent, e.key)
+        check(ok, e.key .. ' ran (' .. tostring(err) .. ')')
+        check(s.evt and s.evt.key == e.key, e.key .. ' recorded as the active event')
+        local evs = B.drain()
+        local seen = false
+        for _, ev in ipairs(evs) do if ev.type == 'event' and ev.key == e.key then seen = true end end
+        check(seen, e.key .. ' emitted an event banner')
+        ok, err = pcall(B.endTurn)
+        check(ok, e.key .. ' turn completed (' .. tostring(err) .. ')')
+        check(s.evt == nil, e.key .. ' modifiers expired at the next end turn')
+    end
+end)
+
+test('Event modifiers: overcharge, fog, resonance and bounty', function()
+    local s = setup({w1 = 'CosmicFire', w2 = 'AstroidRain'}); s.needed = 100
+    put(5, 1, 'Giant', 50000)
+    B.forceEvent('overcharge'); B.fire(1); B.aimLane(1)
+    check(near(B.alienAt(5, 1).health, 50000 - 375), 'overcharge x1.5')
+    s = setup({w1 = 'CosmicFire', w2 = 'AstroidRain'}); s.needed = 100; put(5, 1, 'Giant', 50000)
+    B.forceEvent('fog'); B.fire(1); B.aimLane(1); B.fire(2)
+    check(near(B.alienAt(5, 1).health, 50000 - 125 - 175), 'fog halves lane damage but not field')
+    s = setup({w1 = 'CosmicFire'}); s.needed = 100; put(5, 1, 'Giant', 50000)
+    B.forceEvent('raritysurge'); B.fire(1); B.aimLane(1)
+    check(near(B.alienAt(5, 1).health, 50000 - 500), 'the only rarity resonates: x2')
+    s = setup({w1 = 'LaserKill'}); s.needed = 100; data.gold = 0; put(5, 1, 'Joe', 500)
+    B.forceEvent('bounty'); B.fire(1); B.aimLane(1)
+    check(data.gold == 5, 'bounty paid on kill')
+end)
+
+test('Events never fire before turn 3 and respect the gap', function()
+    local s = setup({}); s.needed = 100
+    B.EVENT_CHANCE = 1
+    B.endTurn(); check(s.evt == nil, 'no event on turn 2')
+    B.endTurn(); check(s.evt ~= nil, 'event on turn 3')
+    B.endTurn(); check(s.evt == nil, 'gap turn 4'); B.endTurn(); check(s.evt == nil, 'gap turn 5')
+    B.endTurn(); check(s.evt ~= nil, 'event again on turn 6')
+    B.EVENT_CHANCE = 0.14
 end)
 
 test('Discovery: aliens are marked seen when they first appear', function()

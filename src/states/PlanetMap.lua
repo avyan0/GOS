@@ -33,7 +33,7 @@ function PlanetMap:render()
     ui.wallet()
 
     -- planet in the corner
-    icons.planet(VIRTUAL_WIDTH - 90, 130, 36, self.info.hue, self.info.ringed)
+    if not icons.planetArt(self.planet, VIRTUAL_WIDTH - 90, 130, 44) then icons.planet(VIRTUAL_WIDTH - 90, 130, 36, self.info.hue, self.info.ringed) end
 
     -- path
     love.graphics.setLineWidth(6)

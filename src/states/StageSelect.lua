@@ -11,7 +11,6 @@ end
 function StageSelect:render()
     ui.background(self.t)
     ui.header('Stage ' .. (self.stageNum - 1) .. ' cleared', 'Adjust your loadout before stage ' .. self.stageNum .. ' of 3')
-    local tip = drawIncoming(560, 14)
 
     local clicked, clickedId = drawSlots(40, 100, 760, self.slot, self.t)
     if clicked then self:slotClicked(clicked, clickedId) end
@@ -45,7 +44,6 @@ function StageSelect:render()
         saveData()
         gStateMachine:change('battle')
     end
-    if tip then tip() end
 end
 
 function StageSelect:keyPressed(k) -- no leaving mid-battle; Enter starts the stage

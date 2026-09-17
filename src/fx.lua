@@ -133,6 +133,10 @@ local function apply(ev, instant)
     elseif ev.type == 'morphed' and v and not instant then
         burst(v.x, v.y, ui.rarity.scarce, 14, 100, 0.5, 2)
         v.scale = 0.2
+    elseif ev.type == 'bounty' and v and not instant then
+        popup(v.x + 60, v.y - 34, '+' .. ev.gold .. ' GOLD', ui.c.gold, 16); sfx.play('coin', {vol = 0.7})
+    elseif ev.type == 'eventdetail' and not instant then
+        popup(fx.FIELD_X + fx.LANE_W * 2.5, fx.FIELD_Y + 120, ev.text, ev.good and ui.c.good or ui.c.danger, 26)
     end
 end
 
@@ -152,6 +156,7 @@ function fx.play(events, cb)
         elseif ev.type == 'ability' or ev.type == 'rest' then newClip('ability', ev, ABILITY_DUR, ABILITY_HIT_AT)
         elseif ev.type == 'phase' then local p = PHASE[ev.name]; newClip(ev.name, ev, p[1], p[2])
         elseif ev.type == 'item' then newClip('item', ev, 0.8, 0.35)
+        elseif ev.type == 'event' then newClip('event', ev, 2.8, 1.0)
         elseif ev.type == 'lose' then newClip('lose', ev, 0.8, 0)
         else
             if not cur then newClip('misc', nil, 0.4, 0) end
@@ -185,6 +190,7 @@ local function clipStarted(c)
         local w = Weapons[c.ev.id]
         sfx.play(FIRE_SOUND[STYLE[w.shape]] or 'boom', {vol = 0.8})
     elseif c.kind == 'ability' then sfx.play('ability', {vol = 0.7})
+    elseif c.kind == 'event' then sfx.play(c.ev.good and 'chime' or 'boom', {vol = 0.9})
     elseif c.kind == 'move' and c.ev and c.ev.frozen then sfx.play('freeze')
     elseif c.kind == 'item' then sfx.play(c.ev.key == 'teleporter' and 'freeze' or 'zap')
     end
@@ -243,6 +249,7 @@ function fx.spotlight() -- uid of the alien currently performing an ability, plu
 end
 
 function fx.frozen() return current and current.kind == 'move' and current.ev and current.ev.frozen end
+function fx.eventPlaying() return current and current.kind == 'event' end
 
 -- ---------------------------------------------------------------- status visuals
 local S = {}
@@ -472,6 +479,22 @@ function fx.drawOverlay()
     for _, p in ipairs(popups) do
         local a = math.min(1, (1.2 - p.t) * 2.5)
         ui.text(p.text, p.x - 60, p.y - ease(p.t) * 34, 120, 'center', 'hud', p.size, p.color, a)
+    end
+    -- random event banner: slides in across the top of the field, holds, fades
+    if current and current.kind == 'event' then
+        local ev = current.ev
+        local p = current.t / current.dur
+        local a = math.min(1, p * 6, (1 - p) * 4)
+        local slide = (1 - ease(math.min(1, p * 4))) * -40
+        local c = ev.good and ui.c.good or ui.c.danger
+        local fw = fx.LANE_W * B.LANES
+        local bx, by, bw, bh = fx.FIELD_X + 60, fx.FIELD_Y + 150 + slide, fw - 120, 96
+        ui.color(ui.c.bg, 0.85 * a); g.rectangle('fill', fx.FIELD_X, fx.FIELD_Y, fw, fx.ROW_H * B.ROWS, 8, 8)
+        ui.panel(bx, by, bw, bh, {fill = ui.c.panel, border = c, radius = 14, alpha = a, lineWidth = 2.5})
+        ui.color(c, 0.9 * a); g.rectangle('fill', bx, by, 8, bh, 14, 14)
+        ui.text((ev.good and 'LUCKY BREAK' or 'BAD OMEN'), bx + 24, by + 10, bw - 48, 'left', 'hud', 12, c, a)
+        ui.text(ev.name, bx + 24, by + 26, bw - 48, 'left', 'display', 26, ui.c.text, a)
+        ui.text(ev.desc, bx + 24, by + 62, bw - 48, 'left', 'body', 15, ui.c.muted, a)
     end
 end
 

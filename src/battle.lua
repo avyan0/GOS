@@ -18,6 +18,7 @@ local function newState()
         aim = nil, lockedLane = nil, result = nil,
         events = {}, nextUid = 1,
         freeze = false, lastKilled = nil,
+        evt = nil, lastEvent = -10, -- random event active this turn, and the turn the last one fired
     }
 end
 
@@ -81,7 +82,12 @@ local BUFF = {
 }
 
 function B.damageMultiplier(weapon)
-    return upgrade(weapon) * s.buff * (s.stellar and s.stellar.mult or 1) * s.rarityBuff[weapon.rarity]
+    local m = upgrade(weapon) * s.buff * (s.stellar and s.stellar.mult or 1) * s.rarityBuff[weapon.rarity]
+    if s.evt then
+        if s.evt.mult then m = m * s.evt.mult end
+        if s.evt.rarity == weapon.rarity then m = m * 2 end
+    end
+    return m
 end
 
 -- ---------------------------------------------------------------- spawning / removal
@@ -114,6 +120,7 @@ local function kill(i, j)
     if not a then return end
     s.kills = s.kills + 1
     data.aliensKilled = data.aliensKilled + 1
+    if s.evt and s.evt.bounty and s.evt.bounty > 0 then s.evt.bounty = s.evt.bounty - 1; data.gold = data.gold + 5; emit({type = 'bounty', uid = a.uid, i = i, j = j, gold = 5}) end
     if a.name ~= 'Splitter' then s.lastKilled = Aliens[a.name] end
     if a.name == 'Splitter' then
         local def = Aliens.Swarmling -- two fast fragments, each with a quarter of the Splitter's health
@@ -236,6 +243,7 @@ local function hit(i, j, amount, weapon, kind, opts)
         if (kind == 'tile' or kind == 'splash' or kind == 'first') and a.name == 'Protected' then dmg = dmg * 0.5 end
     end
     if a.marked then dmg = dmg * 1.25 end
+    if s.evt and s.evt.fog and kind ~= 'field' and not opts.ignoreBuffs then dmg = dmg * 0.5 end
     if a.name == 'Phaser' then dmg = dmg * ((kind == 'lane') and 0.5 or (kind ~= 'field') and 2 or 1) end
     if a.name == 'VoidTitan' and dmg > 5000 then dmg = 5000; emit({type = 'blocked', uid = a.uid, i = i, j = j, text = 'capped'}) end
     if dmg <= 0 then return 0 end
@@ -521,10 +529,12 @@ end
 
 -- kills required this stage. The level tables were written for one spawn per
 -- turn; waves are bigger now so quotas are scaled to keep levels ~15-25 turns.
-B.QUOTA_SCALE = 0.25
+B.QUOTA_SCALE = nil -- override for the balance probe; otherwise 0.25 on planet 1 rising to 0.30 on planet 6
 function B.needed()
     local L = assert(Levels[data.currentLevel], 'no level ' .. tostring(data.currentLevel))
-    return math.ceil(({L.first, L.second, L.third})[s.stage] * B.QUOTA_SCALE)
+    local p = tonumber(data.currentLevel:match('^(%d+)')) or 1
+    local scale = B.QUOTA_SCALE or (0.24 + 0.012 * p)
+    return math.ceil(({L.first, L.second, L.third})[s.stage] * scale)
 end
 
 function B.start()
@@ -550,7 +560,7 @@ local function rollAlien()
 end
 
 -- aliens arriving per turn, by stage; later stages come in waves
-B.WAVE = {1, 2, 3}
+B.WAVE = {1, 1, 1}
 
 function B.spawnWave()
     for _ = 1, B.WAVE[s.stage] or 1 do
@@ -835,6 +845,8 @@ end
 function B.endTurn()
     if s.aim then B.cancelAim() end
     s.turn = s.turn + 1
+    s.evt = nil -- last turn's event modifiers expire
+    B.rollEvent()
     emit({type = 'phase', name = 'poison'})
     applyPoison()
     doomTicks()
@@ -853,7 +865,8 @@ function B.endTurn()
     each(function(a) a.marked = nil; a.hurt = nil end)
     -- then everyone marches
     emit({type = 'phase', name = 'move', frozen = s.freeze})
-    local lost = advance()
+    local lost = advance() or s.pendingLoss
+    s.pendingLoss = nil
     s.freeze = false
     tickStatuses()
     if lost then emit({type = 'lose'}); s.result = 'lose'; return 'lose' end
@@ -879,6 +892,178 @@ function B.newStage()
     loadSlots()
     s.needed = B.needed()
     B.spawnWave()
+end
+
+-- ---------------------------------------------------------------- random events
+-- Something unexpected happens at the start of some alien turns. Each event:
+-- key, name, desc, good (for the player), weight, planet (first planet it can
+-- appear on) and run(). Damage numbers scale with the level's biggest alien.
+local function levelScale()
+    local L = Levels[data.currentLevel]
+    local top = 500
+    for _, name in ipairs(alienNames) do if L and (L[name] or 0) > 0 then top = math.max(top, Aliens[name].health) end end
+    return top
+end
+
+local function randomAliens(n)
+    local list = {}
+    each(function(a, i, j) list[#list + 1] = {a, i, j} end)
+    for k = #list, 2, -1 do local r = math.random(k); list[k], list[r] = list[r], list[k] end
+    local out = {}
+    for k = 1, math.min(n, #list) do out[k] = list[k] end
+    return out
+end
+
+local function closestToBase(n)
+    local list = {}
+    for i = B.ROWS, 1, -1 do for j = 1, B.LANES do
+        local a = s.grid[i][j]
+        if a and not a.hypno then list[#list + 1] = {a, i, j}; if #list >= n then return list end end
+    end end
+    return list
+end
+
+local function planet() return tonumber(data.currentLevel:match('^(%d+)')) or 1 end
+
+B.EVENTS = {
+    -- bad news
+    {key = 'reinforce', name = 'Reinforcements', desc = 'Two extra aliens drop in at the top of the field.', good = false, weight = 10, planet = 1,
+        run = function() for _ = 1, 2 do spawnInto(rollAlien(), 1) end end},
+    {key = 'surge', name = 'Gravity Surge', desc = 'A gravity wave drags every alien one extra row toward your base.', good = false, weight = 8, planet = 1,
+        run = function() if advance() then s.pendingLoss = true end end},
+    {key = 'incursion', name = 'Hevalten Incursion', desc = 'An elite Hevalten warps in above the battlefield.', good = false, weight = 6, planet = 3,
+        run = function() spawnInto(randomUnlocked(true), 2) end},
+    {key = 'jam', name = 'Weapon Jam', desc = 'One of your weapons seizes up and needs a turn to reset.', good = false, weight = 8, planet = 1,
+        run = function()
+            local ready = {}
+            for _, slot in ipairs(s.slots) do if Weapons[slot.id] and not slot.used then ready[#ready + 1] = slot end end
+            if #ready > 0 then local slot = ready[math.random(#ready)]; slot.used = true; slot.cd = 0 end
+        end},
+    {key = 'regen', name = 'Regeneration Wave', desc = 'Every alien recovers 15% of its health.', good = false, weight = 7, planet = 2,
+        run = function()
+            each(function(a, i, j)
+                local amt = math.min(a.maxHealth * 0.15, a.maxHealth - a.health)
+                if amt > 0 then a.health = a.health + amt; emit({type = 'heal', uid = a.uid, i = i, j = j, amount = amt}) end
+            end)
+        end},
+    {key = 'mutate', name = 'Mutation', desc = 'The alien closest to your base mutates into a stronger form.', good = false, weight = 6, planet = 2,
+        run = function()
+            local t = closestToBase(1)[1]
+            if not t then return end
+            local a, i, j = t[1], t[2], t[3]
+            local k = Aliens[a.name].tier
+            if k and k < maxTier() then
+                local pct = a.health / a.maxHealth
+                remove(i, j); place(i, j, Aliensrand[k + 1], Aliensrand[k + 1].health * pct)
+            end
+        end},
+    {key = 'fog', name = 'Nebula Fog', desc = 'Lane and tile weapons deal half damage this turn. Field weapons cut through.', good = false, weight = 8, planet = 2,
+        run = function() s.evt.fog = true end},
+    {key = 'ritual', name = 'Dark Ritual', desc = 'Three aliens raise shields for a turn.', good = false, weight = 6, planet = 3,
+        run = function() for _, t in ipairs(randomAliens(3)) do t[1].immune = math.max(t[1].immune, 2); emit({type = 'status', uid = t[1].uid, i = t[2], j = t[3], kind = 'shield'}) end end},
+    {key = 'shuffle', name = 'Warp Shift', desc = 'Space folds: every alien lands in a different lane.', good = false, weight = 6, planet = 2,
+        run = function()
+            local perm = {1, 2, 3, 4, 5}
+            for k = 5, 2, -1 do local r = math.random(k); perm[k], perm[r] = perm[r], perm[k] end
+            for i = 1, B.ROWS do
+                local row = {}
+                for j = 1, B.LANES do row[j] = s.grid[i][j]; s.grid[i][j] = nil end
+                for j = 1, B.LANES do if row[j] then s.grid[i][perm[j]] = row[j]; emit({type = 'move', uid = row[j].uid, from = {i, j}, to = {i, perm[j]}}) end end
+            end
+        end},
+    {key = 'charge', name = 'Frenzy', desc = 'The front alien in every lane charges one extra row.', good = false, weight = 6, planet = 3,
+        run = function()
+            for j = 1, B.LANES do
+                local a, i = firstInLane(j)
+                if a and not a.hypno and a.stun == 0 and i < B.ROWS and not s.grid[i + 1][j] and not s.walls[i + 1][j] then move(i, j, i + 1, j) end
+            end
+        end},
+    {key = 'drain', name = 'Power Drain', desc = 'All of your damage is reduced by 30% this turn.', good = false, weight = 6, planet = 2,
+        run = function() s.evt.mult = 0.7 end},
+    {key = 'wallrot', name = 'Corrosion', desc = 'Every wall on the field crumbles.', good = false, weight = 4, planet = 2,
+        run = function() for i = 1, B.ROWS do for j = 1, B.LANES do if s.walls[i][j] then s.walls[i][j] = false; emit({type = 'wallbreak', i = i, j = j, left = 0}) end end end end},
+    -- good news
+    {key = 'meteors', name = 'Meteor Shower', desc = 'Stray meteors pound three aliens.', good = true, weight = 10, planet = 1,
+        run = function() local dmg = levelScale() * 0.4; for _, t in ipairs(randomAliens(3)) do emit({type = 'meteor', i = t[2], j = t[3]}); hit(t[2], t[3], dmg, nil, 'field', {ignoreBuffs = true}) end end},
+    {key = 'wind', name = 'Solar Wind', desc = 'A blast of solar wind pushes every lane back a row.', good = true, weight = 8, planet = 1,
+        run = function() for j = 1, B.LANES do W.GravityWell.run(nil, j) end end},
+    {key = 'supply', name = 'Supply Drop', desc = 'A supply pod lands: you gain a battle item.', good = true, weight = 7, planet = 1,
+        run = function() local it = ITEMS[math.random(#ITEMS)]; data[it.stat] = (data[it.stat] or 0) + 1; s.evt.detail = '+1 ' .. it.name end},
+    {key = 'gold', name = 'Gold Vein', desc = 'Prospectors strike gold in the debris.', good = true, weight = 8, planet = 1,
+        run = function() local g = 8 * planet() + math.random(0, 6); data.gold = data.gold + g; s.evt.detail = '+' .. g .. ' gold' end},
+    {key = 'overcharge', name = 'Overcharge', desc = 'Your reactor spikes: all damage +50% this turn.', good = true, weight = 8, planet = 1,
+        run = function() s.evt.mult = 1.5 end},
+    {key = 'ionstorm', name = 'Ion Storm', desc = 'Every alien is stunned for a turn.', good = true, weight = 6, planet = 2,
+        run = function() each(function(a, i, j) if canStun(a) and a.immune == 0 then a.stun = math.max(a.stun, 1); emit({type = 'status', uid = a.uid, i = i, j = j, kind = 'stun'}) end end) end},
+    {key = 'dilation', name = 'Time Dilation', desc = 'Time slows to a crawl: nobody marches this turn.', good = true, weight = 6, planet = 1,
+        run = function() s.freeze = true end},
+    {key = 'recal', name = 'Recalibration', desc = 'Every weapon is ready to fire again.', good = true, weight = 6, planet = 2,
+        run = function() for _, slot in ipairs(s.slots) do slot.used = false; slot.cd = 0 end end},
+    {key = 'blackhole', name = 'Black Hole', desc = 'A black hole swallows the alien closest to your base.', good = true, weight = 5, planet = 2,
+        run = function() local t = closestToBase(1)[1]; if t and t[1].name ~= 'GodOfSpace' then emit({type = 'item', key = 'teleporter', i = t[2], j = t[3]}); kill(t[2], t[3]) end end},
+    {key = 'wormhole', name = 'Wormhole', desc = 'The two aliens nearest your base are flung back to the top.', good = true, weight = 6, planet = 2,
+        run = function()
+            for _, t in ipairs(closestToBase(2)) do
+                local a, i, j = t[1], t[2], t[3]
+                if a.name ~= 'GodOfSpace' and not anchored(j) then
+                    for r = 1, 3 do if not s.grid[r][j] then move(i, j, r, j); break end end
+                end
+            end
+        end},
+    {key = 'signal', name = 'Psychic Echo', desc = 'The front alien of a random lane turns against its own side.', good = true, weight = 5, planet = 3,
+        run = function()
+            local lanes = {}
+            for j = 1, B.LANES do local a = firstInLane(j); if a and canHypno(a) and a.immune == 0 and not a.hypno then lanes[#lanes + 1] = j end end
+            if #lanes > 0 then local j = lanes[math.random(#lanes)]; local a, i = firstInLane(j); a.hypno = true; emit({type = 'status', uid = a.uid, i = i, j = j, kind = 'hypno'}) end
+        end},
+    {key = 'barrier', name = 'Debris Field', desc = 'Wreckage settles into walls across the field.', good = true, weight = 6, planet = 1,
+        run = function()
+            local n = 0
+            for j = 1, B.LANES do
+                local i = 7 + (j % 2)
+                if B.wallAllowed(i, j) and n < 3 and math.random(2) == 1 then s.walls[i][j] = 1; emit({type = 'wall', i = i, j = j, hp = 1}); n = n + 1 end
+            end
+        end},
+    {key = 'scan', name = 'Deep Scan', desc = 'Every alien is scanned: +25% damage against them this turn.', good = true, weight = 6, planet = 1,
+        run = function() W.Scanner.run(nil) end},
+    {key = 'gems', name = 'Gem Cache', desc = 'A shattered hull spills gems.', good = true, weight = 4, planet = 3,
+        run = function() local g = math.random(2, 5); data.gems = data.gems + g; s.evt.detail = '+' .. g .. ' gems' end},
+    {key = 'bounty', name = 'Bounty', desc = 'Your next three kills each pay 5 gold.', good = true, weight = 6, planet = 1,
+        run = function() s.evt.bounty = 3 end},
+    {key = 'raritysurge', name = 'Resonance', desc = 'One of your weapon rarities resonates: it deals double damage this turn.', good = true, weight = 6, planet = 1,
+        run = function()
+            local rs = {}
+            for _, slot in ipairs(s.slots) do local w = Weapons[slot.id]; if w then rs[#rs + 1] = w.rarity end end
+            s.evt.rarity = rs[math.random(#rs)] or 'common'
+            s.evt.detail = s.evt.rarity:sub(1, 1):upper() .. s.evt.rarity:sub(2) .. ' x2'
+        end},
+    {key = 'purge', name = 'Cleansing Pulse', desc = 'A pulse strips every shield and burns every alien for 10% of its health.', good = true, weight = 5, planet = 3,
+        run = function() each(function(a, i, j) a.immune = 0; hit(i, j, a.maxHealth * 0.1, nil, 'field', {ignoreBuffs = true}) end) end},
+}
+
+B.EVENT_CHANCE = 0.14
+local function fireEvent(e)
+    s.lastEvent = s.turn
+    s.evt = {key = e.key, name = e.name, desc = e.desc, good = e.good}
+    emit({type = 'event', key = e.key, name = e.name, desc = e.desc, good = e.good})
+    e.run()
+    if s.evt.detail then emit({type = 'eventdetail', text = s.evt.detail, good = e.good}) end
+end
+
+function B.rollEvent()
+    if s.turn < 3 or s.turn - s.lastEvent < 3 or math.random() >= B.EVENT_CHANCE then return end
+    local here = planet()
+    local pool, total = {}, 0
+    for _, e in ipairs(B.EVENTS) do if e.planet <= here then pool[#pool + 1] = e; total = total + e.weight end end
+    local r = math.random() * total
+    local pick
+    for _, e in ipairs(pool) do r = r - e.weight; if r <= 0 then pick = e; break end end
+    fireEvent(pick or pool[#pool])
+end
+
+-- force a specific event (tests, debugging)
+function B.forceEvent(key)
+    for _, e in ipairs(B.EVENTS) do if e.key == key then fireEvent(e); return true end end
 end
 
 -- ---------------------------------------------------------------- items

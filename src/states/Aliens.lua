@@ -16,7 +16,6 @@ function AliensScreen:render()
     -- grid: 7 columns x 4 rows
     local cols, size, gap = 9, 78, 8
     local gx, gy = 40, 118
-    local hint
     for k, a in ipairs(Aliensrand) do
         local col, row = (k - 1) % cols, math.floor((k - 1) / cols)
         local x, y = gx + col * (size + gap), gy + row * (size + gap)
@@ -28,7 +27,6 @@ function AliensScreen:render()
             ui.text(a.title, x - 4, y + size - 18, size + 8, 'center', 'body', ui.fitSize('body', a.title, size + 6, 10, 7), ui.c.muted)
         else
             icons.lock(x + size / 2, y + size / 2, 24, ui.c.dim)
-            if ui.hovered(x, y, size, size) and a.intro and a.intro < 9999 then hint = {a = a, x = x, y = y + size + 6} end
         end
         if unlocked and ui.hit(x, y, size, size) then self.selected = k end
     end
@@ -47,14 +45,6 @@ function AliensScreen:render()
     ui.text(tostring(a.health), px + 30, py + 303, 200, 'left', 'hud', 28)
     ui.text('Ability', px + 30, py + 345, 200, 'left', 'body', 15, ui.c.muted)
     ui.text(a.desc, px + 30, py + 365, pw - 60, 'left', 'body', 16)
-
-    if hint then
-        local p, l = math.floor(hint.a.intro / 100), hint.a.intro % 100
-        ui.tooltip(hint.x, hint.y, {
-            {'Undiscovered', 'display', 15, ui.c.muted},
-            {'First appears on ' .. PLANETS[p].name .. ' level ' .. l .. '. Meet it in battle to add it here.', 'body', 13},
-        }, {width = 240})
-    end
 
     local nav = ui.navbar('aliens')
     if nav then gStateMachine:change(nav) end

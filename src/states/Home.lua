@@ -25,8 +25,8 @@ function Home:render()
         local cx, cy = gap * (i - 0.5), 300
         local locked = data.planet < i
         local hover = not locked and ui.hovered(cx - 80, cy - 90, 160, 200)
-        local r = 46 + (hover and 5 or 0) + math.sin(self.t * 1.3 + i) * 1.5
-        icons.planet(cx, cy, r, p.hue, p.ringed, locked)
+        local r = 56 + (hover and 5 or 0) + math.sin(self.t * 1.3 + i) * 1.5
+        if not icons.planetArt(i, cx, cy, r, locked) then icons.planet(cx, cy, r, p.hue, p.ringed, locked) end
         if locked then icons.lock(cx, cy, 34, ui.c.muted) end
         ui.text(p.name, cx - 90, cy + 74, 180, 'center', 'display', 22, locked and ui.c.dim or ui.c.text)
         local cleared = i < data.planet or (i == data.planet and data.level >= 30)

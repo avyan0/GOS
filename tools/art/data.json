@@ -1,0 +1,810 @@
+{
+ "aliens": [
+  {
+   "key": "Joe",
+   "health": 500,
+   "hevalten": false,
+   "title": "Joe",
+   "desc": "Just a guy. No ability.",
+   "spec": {
+    "shape": "round",
+    "eyes": 2.0,
+    "hue": 0.33
+   }
+  },
+  {
+   "key": "Gen57",
+   "health": 700,
+   "hevalten": false,
+   "title": "Gen-57",
+   "desc": "Mass-produced clone. No ability.",
+   "spec": {
+    "shape": "square",
+    "eyes": 2.0,
+    "hue": 0.55
+   }
+  },
+  {
+   "key": "President",
+   "health": 1100,
+   "hevalten": false,
+   "title": "President",
+   "desc": "Elected, somehow. No ability.",
+   "spec": {
+    "shape": "round",
+    "eyes": 2.0,
+    "hue": 0.62
+   }
+  },
+  {
+   "key": "King",
+   "health": 1550,
+   "hevalten": false,
+   "title": "King",
+   "desc": "Rules by birthright. No ability.",
+   "spec": {
+    "shape": "hex",
+    "eyes": 2.0,
+    "hue": 0.12,
+    "crown": true
+   }
+  },
+  {
+   "key": "DJ",
+   "health": 1600,
+   "hevalten": false,
+   "title": "DJ",
+   "desc": "Loud. No ability.",
+   "spec": {
+    "shape": "round",
+    "eyes": 1.0,
+    "hue": 0.85
+   }
+  },
+  {
+   "key": "SpaceFence",
+   "health": 1700,
+   "hevalten": false,
+   "title": "Space Fence",
+   "desc": "Spawns with a one-turn shield that blocks all damage.",
+   "spec": {
+    "shape": "square",
+    "eyes": 3.0,
+    "hue": 0.5
+   }
+  },
+  {
+   "key": "Spaceship",
+   "health": 1800,
+   "hevalten": false,
+   "title": "Spaceship",
+   "desc": "Takes flight every second turn. While flying it is immune to almost everything.",
+   "spec": {
+    "shape": "diamond",
+    "eyes": 1.0,
+    "hue": 0.58
+   }
+  },
+  {
+   "key": "VRWorkout",
+   "health": 2000,
+   "hevalten": false,
+   "title": "VR Workout",
+   "desc": "Very fit. No ability.",
+   "spec": {
+    "shape": "round",
+    "eyes": 2.0,
+    "hue": 0.05
+   }
+  },
+  {
+   "key": "OldGranny",
+   "health": 2100,
+   "hevalten": false,
+   "title": "Old Granny",
+   "desc": "If she was hurt this turn, lurches an extra tile forward before everyone moves.",
+   "spec": {
+    "shape": "round",
+    "eyes": 2.0,
+    "hue": 0.9,
+    "sat": 0.3
+   }
+  },
+  {
+   "key": "Albot",
+   "health": 1650,
+   "hevalten": true,
+   "title": "Albot",
+   "desc": "Hevalten. Spawns a random alien in its row every turn.",
+   "spec": {
+    "shape": "square",
+    "eyes": 3.0,
+    "hue": 0.0
+   }
+  },
+  {
+   "key": "Jumper",
+   "health": 3400,
+   "hevalten": false,
+   "title": "Jumper",
+   "desc": "Leaps over any wall in its way.",
+   "spec": {
+    "shape": "tri",
+    "eyes": 2.0,
+    "hue": 0.28
+   }
+  },
+  {
+   "key": "Giant",
+   "health": 5500,
+   "hevalten": false,
+   "title": "Giant",
+   "desc": "Enormous, but only moves every other turn.",
+   "spec": {
+    "shape": "hex",
+    "eyes": 2.0,
+    "hue": 0.08,
+    "sat": 0.5
+   }
+  },
+  {
+   "key": "Gardener",
+   "health": 5000,
+   "hevalten": false,
+   "title": "Gardener",
+   "desc": "Walls cannot be placed in any lane the Gardener occupies.",
+   "spec": {
+    "shape": "round",
+    "eyes": 2.0,
+    "hue": 0.25
+   }
+  },
+  {
+   "key": "Army",
+   "health": 5500,
+   "hevalten": true,
+   "title": "Army",
+   "desc": "Hevalten. Every Army on the field lowers all of your damage by 2%.",
+   "spec": {
+    "shape": "square",
+    "eyes": 2.0,
+    "hue": 0.2,
+    "sat": 0.4
+   }
+  },
+  {
+   "key": "Morpher",
+   "health": 3800,
+   "hevalten": false,
+   "title": "Morpher",
+   "desc": "Turns into a different alien every turn, keeping its health percentage.",
+   "spec": {
+    "shape": "diamond",
+    "eyes": 3.0,
+    "hue": 0.75
+   }
+  },
+  {
+   "key": "Fusion",
+   "health": 4500,
+   "hevalten": false,
+   "title": "Fusion",
+   "desc": "On spawn, fuses two aliens into one with 1.5x their combined health.",
+   "spec": {
+    "shape": "hex",
+    "eyes": 1.0,
+    "hue": 0.95
+   }
+  },
+  {
+   "key": "CommonCrippler",
+   "health": 6000,
+   "hevalten": false,
+   "title": "Crippler",
+   "desc": "Common weapons deal 25% less damage while it lives.",
+   "spec": {
+    "shape": "tri",
+    "eyes": 2.0,
+    "hue": 0.4
+   }
+  },
+  {
+   "key": "Splashfest",
+   "health": 6500,
+   "hevalten": false,
+   "title": "Splashfest",
+   "desc": "Immune to all splash damage.",
+   "spec": {
+    "shape": "round",
+    "eyes": 3.0,
+    "hue": 0.52
+   }
+  },
+  {
+   "key": "Virus",
+   "health": 8500,
+   "hevalten": false,
+   "title": "Virus",
+   "desc": "Every weapon that has a cooldown takes one turn longer to recharge.",
+   "spec": {
+    "shape": "diamond",
+    "eyes": 1.0,
+    "hue": 0.3
+   }
+  },
+  {
+   "key": "Guardian",
+   "health": 13000,
+   "hevalten": true,
+   "title": "Guardian",
+   "desc": "Hevalten. Absorbs all damage aimed at its lane. Immune to poison, knockback and hypnosis.",
+   "spec": {
+    "shape": "hex",
+    "eyes": 2.0,
+    "hue": 0.6,
+    "aura": true
+   }
+  },
+  {
+   "key": "DarkArts",
+   "health": 9000,
+   "hevalten": true,
+   "title": "Dark Arts",
+   "desc": "Hevalten. On spawn, upgrades the three aliens closest to your base into stronger ones.",
+   "spec": {
+    "shape": "diamond",
+    "eyes": 2.0,
+    "hue": 0.78,
+    "sat": 0.9
+   }
+  },
+  {
+   "key": "Rare",
+   "health": 10500,
+   "hevalten": false,
+   "title": "Rarebane",
+   "desc": "Rare weapons deal 20% less damage while it lives.",
+   "spec": {
+    "shape": "square",
+    "eyes": 1.0,
+    "hue": 0.6
+   }
+  },
+  {
+   "key": "Protected",
+   "health": 11500,
+   "hevalten": false,
+   "title": "Bunker",
+   "desc": "All targeted damage against it is halved.",
+   "spec": {
+    "shape": "square",
+    "eyes": 2.0,
+    "hue": 0.1,
+    "sat": 0.3
+   }
+  },
+  {
+   "key": "Interdimentional",
+   "health": 14500,
+   "hevalten": false,
+   "title": "Interdimensional",
+   "desc": "Every one on the field reduces all damage by 7.5%.",
+   "spec": {
+    "shape": "diamond",
+    "eyes": 3.0,
+    "hue": 0.7
+   }
+  },
+  {
+   "key": "Scarce",
+   "health": 33000,
+   "hevalten": true,
+   "title": "Scarcebane",
+   "desc": "Hevalten. Scarce weapons deal 20% less damage while it lives.",
+   "spec": {
+    "shape": "hex",
+    "eyes": 1.0,
+    "hue": 0.8
+   }
+  },
+  {
+   "key": "TheHevalGod",
+   "health": 42000,
+   "hevalten": true,
+   "title": "Heval God",
+   "desc": "Hevalten. If it was hurt this turn, calls a random Hevalten into the first three rows.",
+   "spec": {
+    "shape": "hex",
+    "eyes": 3.0,
+    "hue": 0.0,
+    "aura": true,
+    "crown": true
+   }
+  },
+  {
+   "key": "GodOfSpace",
+   "health": 46000,
+   "hevalten": true,
+   "title": "God of Space",
+   "desc": "Hevalten. Spawns three more aliens on arrival. Immune to knockback, poison and hypnosis.",
+   "spec": {
+    "shape": "round",
+    "eyes": 3.0,
+    "hue": 0.15,
+    "aura": true,
+    "crown": true
+   }
+  },
+  {
+   "key": "Swarmling",
+   "health": 400,
+   "hevalten": false,
+   "title": "Swarmling",
+   "desc": "Tiny and fast: moves two rows every turn.",
+   "spec": {
+    "shape": "tri",
+    "eyes": 1.0,
+    "hue": 0.45
+   }
+  },
+  {
+   "key": "Shieldbearer",
+   "health": 1900,
+   "hevalten": false,
+   "title": "Shieldbearer",
+   "desc": "Each turn, shields the alien directly ahead of it for one turn.",
+   "spec": {
+    "shape": "square",
+    "eyes": 2.0,
+    "hue": 0.13
+   }
+  },
+  {
+   "key": "Phaser",
+   "health": 2300,
+   "hevalten": false,
+   "title": "Phaser",
+   "desc": "Half damage from lane attacks. Double damage from tile and single-target attacks.",
+   "spec": {
+    "shape": "diamond",
+    "eyes": 2.0,
+    "hue": 0.5,
+    "sat": 0.9
+   }
+  },
+  {
+   "key": "Medic",
+   "health": 4000,
+   "hevalten": false,
+   "title": "Medic",
+   "desc": "Each turn, heals every other alien for 10% of its maximum health.",
+   "spec": {
+    "shape": "round",
+    "eyes": 2.0,
+    "hue": 0.0,
+    "sat": 0.2
+   }
+  },
+  {
+   "key": "Thief",
+   "health": 4500,
+   "hevalten": false,
+   "title": "Thief",
+   "desc": "Steals 5 gold from you every turn it is alive.",
+   "spec": {
+    "shape": "diamond",
+    "eyes": 2.0,
+    "hue": 0.16,
+    "sat": 0.9
+   }
+  },
+  {
+   "key": "Splitter",
+   "health": 5000,
+   "hevalten": false,
+   "title": "Splitter",
+   "desc": "When it dies, breaks into two Swarmlings that each carry a quarter of its health.",
+   "spec": {
+    "shape": "hex",
+    "eyes": 4.0,
+    "hue": 0.35
+   }
+  },
+  {
+   "key": "Anchor",
+   "health": 8000,
+   "hevalten": false,
+   "title": "Anchor",
+   "desc": "Nothing in its lane can be knocked back, pulled or moved by your weapons.",
+   "spec": {
+    "shape": "square",
+    "eyes": 1.0,
+    "hue": 0.6,
+    "sat": 0.3
+   }
+  },
+  {
+   "key": "Necromancer",
+   "health": 9500,
+   "hevalten": true,
+   "title": "Necromancer",
+   "desc": "Hevalten. Every third turn, raises the last alien you killed at half health in its row.",
+   "spec": {
+    "shape": "diamond",
+    "eyes": 3.0,
+    "hue": 0.82,
+    "aura": true
+   }
+  },
+  {
+   "key": "VoidTitan",
+   "health": 60000,
+   "hevalten": true,
+   "title": "Void Titan",
+   "desc": "Hevalten. No single hit can deal more than 5000 damage to it.",
+   "spec": {
+    "shape": "hex",
+    "eyes": 3.0,
+    "hue": 0.68,
+    "aura": true,
+    "crown": true
+   }
+  }
+ ],
+ "weapons": [
+  {
+   "id": "AstroidRain",
+   "rarity": "common",
+   "name": "Asteroid Rain",
+   "shape": "rain",
+   "desc": "Deals 175 damage to every alien on the field."
+  },
+  {
+   "id": "PoisonArrow",
+   "rarity": "common",
+   "name": "Poison Arrow",
+   "shape": "arrow",
+   "desc": "Deals 150 damage to a lane and poisons every alien in it for 55 damage per turn."
+  },
+  {
+   "id": "TripleThreat",
+   "rarity": "common",
+   "name": "Triple Threat",
+   "shape": "crosshair",
+   "desc": "Deals 200 damage to three tiles of your choice."
+  },
+  {
+   "id": "CosmicFire",
+   "rarity": "common",
+   "name": "Cosmic Fire",
+   "shape": "flame",
+   "desc": "Deals 250 damage to every alien in a lane."
+  },
+  {
+   "id": "Astrobolt",
+   "rarity": "common",
+   "name": "Astrobolt",
+   "shape": "bolt",
+   "desc": "Deals 150 damage to a lane and stuns the two closest aliens for one turn."
+  },
+  {
+   "id": "StarBlast",
+   "rarity": "common",
+   "name": "Star Blast",
+   "shape": "star",
+   "desc": "Deals 160 damage in a cross around a tile of your choice."
+  },
+  {
+   "id": "LaserKill",
+   "rarity": "common",
+   "name": "Laser Kill",
+   "shape": "laser",
+   "desc": "Instantly kills every alien in a lane with 600 health or less. Ignores buffs."
+  },
+  {
+   "id": "StellarBoost",
+   "rarity": "common",
+   "name": "Stellar Boost",
+   "shape": "boost",
+   "desc": "All weapons deal +20% damage this turn and +10% for the next two."
+  },
+  {
+   "id": "GravityWell",
+   "rarity": "common",
+   "name": "Gravity Well",
+   "shape": "well",
+   "desc": "Drags every alien in a lane one row back toward the top of the field."
+  },
+  {
+   "id": "Ricochet",
+   "rarity": "common",
+   "name": "Ricochet",
+   "shape": "bounce",
+   "desc": "Deals 300 damage to the closest alien in a lane, then bounces into a neighbouring lane for 200 more."
+  },
+  {
+   "id": "Scanner",
+   "rarity": "common",
+   "name": "Scanner",
+   "shape": "scan",
+   "desc": "Marks every alien on the field. Marked aliens take 25% more damage until the end of the turn."
+  },
+  {
+   "id": "ThunderStrike",
+   "rarity": "rare",
+   "name": "Thunder Strike",
+   "shape": "orb",
+   "desc": "Deals 700 damage to a lane. 33% chance to stun the closest alien, and to keep chaining down the lane."
+  },
+  {
+   "id": "BattleRam",
+   "rarity": "rare",
+   "name": "Battle Ram",
+   "shape": "ram",
+   "desc": "Deals 1050 damage to the closest alien in a lane and knocks it back one tile."
+  },
+  {
+   "id": "ElectroJolt",
+   "rarity": "rare",
+   "name": "Electro Jolt",
+   "shape": "jolt",
+   "desc": "Stuns every alien in a lane for one turn."
+  },
+  {
+   "id": "DaggerThrow",
+   "rarity": "rare",
+   "name": "Dagger Throw",
+   "shape": "dagger",
+   "desc": "Deals 900 damage to every alien in a lane."
+  },
+  {
+   "id": "Hevalstruck",
+   "rarity": "rare",
+   "name": "Hevalbane",
+   "shape": "hammer",
+   "desc": "Deals 1200 damage to the closest alien in a lane. Double damage against Hevalten."
+  },
+  {
+   "id": "RecursiveExplosion",
+   "rarity": "rare",
+   "name": "Recursive Explosion",
+   "shape": "burst",
+   "desc": "Deals 500 damage to every alien on the field."
+  },
+  {
+   "id": "Dueltroid",
+   "rarity": "rare",
+   "name": "Dueltroid",
+   "shape": "duel",
+   "desc": "Randomly stuns either the closest alien in a lane for 4 turns, or the two closest for 2 turns."
+  },
+  {
+   "id": "FreshStart",
+   "rarity": "rare",
+   "name": "Fresh Start",
+   "shape": "restart",
+   "desc": "Sends a 3x3 block of aliens back to the start of the field."
+  },
+  {
+   "id": "ChainLightning",
+   "rarity": "rare",
+   "name": "Chain Lightning",
+   "shape": "chain",
+   "desc": "Deals 800 damage to a tile, then arcs to the four nearest aliens anywhere on the field, losing 20% per jump."
+  },
+  {
+   "id": "TimeWarp",
+   "rarity": "rare",
+   "name": "Time Warp",
+   "shape": "clock",
+   "desc": "Freezes time: no alien moves at the end of this turn. Works on everything, even shielded aliens."
+  },
+  {
+   "id": "Barricade",
+   "rarity": "rare",
+   "name": "Barricade",
+   "shape": "barricade",
+   "desc": "Builds a reinforced wall on a tile of your choice. It takes three hits before it breaks."
+  },
+  {
+   "id": "SantaAxe",
+   "rarity": "scarce",
+   "name": "Santa Axe",
+   "shape": "axe",
+   "desc": "Deals 2200 damage to every alien in a lane."
+  },
+  {
+   "id": "Respawn",
+   "rarity": "scarce",
+   "name": "Lockdown",
+   "shape": "block",
+   "desc": "Nothing can spawn in the lane you choose next turn. Hevalten ignore it."
+  },
+  {
+   "id": "Offguard",
+   "rarity": "scarce",
+   "name": "Off Guard",
+   "shape": "freeze",
+   "desc": "Stuns every alien on the field for one turn."
+  },
+  {
+   "id": "LaserBeam",
+   "rarity": "scarce",
+   "name": "Laser Beam",
+   "shape": "beam",
+   "desc": "Instantly kills every alien in a lane with 6000 health or less. Ignores buffs."
+  },
+  {
+   "id": "MindBlast",
+   "rarity": "scarce",
+   "name": "Mind Blast",
+   "shape": "brain",
+   "desc": "Deals 7001 damage to the closest alien in a lane. If it survives, it is hypnotised and fights for you."
+  },
+  {
+   "id": "GrenadeLauncher",
+   "rarity": "scarce",
+   "name": "Grenade Launcher",
+   "shape": "grenade",
+   "desc": "Deals 3950 damage to every alien in the front and back rows."
+  },
+  {
+   "id": "Protected",
+   "rarity": "scarce",
+   "name": "Bulwark",
+   "shape": "wall",
+   "desc": "Deals 1500 damage to a lane and permanently raises all damage by 2.5% for the rest of the stage."
+  },
+  {
+   "id": "Hypnosis",
+   "rarity": "scarce",
+   "name": "Hypnosis",
+   "shape": "eye",
+   "desc": "Hypnotises the closest alien in every lane. They turn and attack their own side."
+  },
+  {
+   "id": "Plague",
+   "rarity": "scarce",
+   "name": "Plague",
+   "shape": "plague",
+   "desc": "Infects a lane with a plague that deals 400 damage per turn and spreads to every neighbouring alien each turn."
+  },
+  {
+   "id": "Overclock",
+   "rarity": "scarce",
+   "name": "Overclock",
+   "shape": "gear",
+   "desc": "Instantly readies your other two weapons, even if they are recharging."
+  },
+  {
+   "id": "Executioner",
+   "rarity": "scarce",
+   "name": "Executioner",
+   "shape": "guillotine",
+   "desc": "Deals 3000 damage to the closest alien in a lane. If that alien is below half health, it dies outright instead."
+  },
+  {
+   "id": "GalacticBeam",
+   "rarity": "god",
+   "name": "Galactic Beam",
+   "shape": "blade",
+   "desc": "Deals 8000 damage to every alien in a lane."
+  },
+  {
+   "id": "SolarFlare",
+   "rarity": "god",
+   "name": "Solar Flare",
+   "shape": "sun",
+   "desc": "Deals 3000 damage to every alien on the field."
+  },
+  {
+   "id": "CometStrike",
+   "rarity": "god",
+   "name": "Comet Strike",
+   "shape": "comet",
+   "desc": "Deals 8000 damage to every alien in a 3x3 block."
+  },
+  {
+   "id": "DeathVirus",
+   "rarity": "god",
+   "name": "Death Virus",
+   "shape": "skull",
+   "desc": "Wipes out every alien in a random lane."
+  },
+  {
+   "id": "VoidBurst",
+   "rarity": "god",
+   "name": "Void Burst",
+   "shape": "cannon",
+   "desc": "Deals 11000 damage to three tiles of your choice."
+  },
+  {
+   "id": "CelestialDisruption",
+   "rarity": "god",
+   "name": "Celestial Disruption",
+   "shape": "ring",
+   "desc": "Drops four non-Hevalten aliens in a lane to 1 health."
+  },
+  {
+   "id": "QuantumFlux",
+   "rarity": "god",
+   "name": "Quantum Flux",
+   "shape": "flux",
+   "desc": "Deals 3000 damage to every alien. Every alien it kills explodes for 1500 damage to its neighbours, which can chain."
+  },
+  {
+   "id": "Supernova",
+   "rarity": "god",
+   "name": "Supernova",
+   "shape": "nova",
+   "desc": "Burns away 20% of the maximum health of every alien on the field."
+  },
+  {
+   "id": "DoomsdayClock",
+   "rarity": "god",
+   "name": "Doomsday Clock",
+   "shape": "hourglass",
+   "desc": "Marks an alien for death. Two turns later it dies, no matter what protects it."
+  },
+  {
+   "id": "MeteorStorm",
+   "rarity": "god",
+   "name": "Meteor Storm",
+   "shape": "meteors",
+   "desc": "Six meteors each hunt down a different alien for 6000 damage. Spare meteors crater empty ground."
+  }
+ ],
+ "planets": [
+  {
+   "index": 1,
+   "name": "Verdanis",
+   "hue": 0.38,
+   "ringed": false
+  },
+  {
+   "index": 2,
+   "name": "Cyrene",
+   "hue": 0.55,
+   "ringed": true
+  },
+  {
+   "index": 3,
+   "name": "Ossara",
+   "hue": 0.08,
+   "ringed": false
+  },
+  {
+   "index": 4,
+   "name": "Nyx",
+   "hue": 0.72,
+   "ringed": false
+  },
+  {
+   "index": 5,
+   "name": "Solhara",
+   "hue": 0.12,
+   "ringed": true
+  },
+  {
+   "index": 6,
+   "name": "Hevalten",
+   "hue": 0.98,
+   "ringed": false
+  }
+ ],
+ "rarityColors": {
+  "common": "#5EE39A",
+  "rare": "#4FA3FF",
+  "scarce": "#C77DFF",
+  "god": "#FFB547"
+ },
+ "palette": {
+  "bg": "#0A0E1A",
+  "panel": "#161E33",
+  "accent": "#4FD1FF",
+  "text": "#EEF2FA",
+  "danger": "#FF5C6C",
+  "good": "#5EE39A",
+  "gold": "#FFD166"
+ }
+}

@@ -136,6 +136,7 @@ end
 
 function GameState:keyPressed(key)
     local s = B.state()
+    if DEBUG and key == 'f9' and not fx.busy() then B.forceEvent(B.EVENTS[math.random(#B.EVENTS)].key); animate(); return end
     if key == 'escape' and s.aim then
         if B.cancelAim() == 'wall' then refundItem('walls') end
     elseif key == 'escape' or key == 'p' then gStateMachine:change('pause') end
@@ -271,16 +272,22 @@ function GameState:render(dimmed)
     love.graphics.pop()
 
     -- sidebar
+    local tipEvent = false
     ui.panel(SIDE_X, FIELD_Y - 4, SIDE_W, 700, {radius = 12})
     local planet, lvl = data.currentLevel:match('(%d+)%-(%d+)')
     ui.text(PLANETS[tonumber(planet)].name, SIDE_X + 16, 16, SIDE_W - 32, 'left', 'display', 20)
     ui.text('Level ' .. lvl .. '   -   Turn ' .. s.turn, SIDE_X + 16, 44, SIDE_W - 32, 'left', 'body', 14, ui.c.muted)
     ui.text('Stage ' .. s.stage .. ' of 3', SIDE_X + 16, 70, 110, 'left', 'body', 15)
-    ui.text(s.kills .. ' / ' .. s.needed, SIDE_X + 16, 68, SIDE_W - 32, 'right', 'hud', 18, ui.c.accent)
-    ui.progress(SIDE_X + 16, 98, SIDE_W - 32, 6, s.needed > 0 and s.kills / s.needed or 0, ui.c.accent)
-    local mult = s.buff * (s.stellar and s.stellar.mult or 1)
+    local mult = s.buff * (s.stellar and s.stellar.mult or 1) * (s.evt and s.evt.mult or 1)
     if math.abs(mult - 1) > 0.001 then
-        ui.text(string.format('Damage x%.2f', mult), SIDE_X + 16, 108, SIDE_W - 32, 'right', 'hud', 12, mult > 1 and ui.c.good or ui.c.danger)
+        ui.text(string.format('Damage x%.2f', mult), SIDE_X + 16, 70, SIDE_W - 32, 'right', 'hud', 13, mult > 1 and ui.c.good or ui.c.danger)
+    end
+    -- the random event affecting this turn
+    if s.evt then
+        local ec = s.evt.good and ui.c.good or ui.c.danger
+        ui.panel(SIDE_X + 12, 92, SIDE_W - 24, 26, {fill = ec, border = false, radius = 8, alpha = 0.18})
+        ui.text(s.evt.name:upper() .. (s.evt.detail and ('   ' .. s.evt.detail) or ''), SIDE_X + 12, 98, SIDE_W - 24, 'center', 'hud', ui.fitSize('hud', s.evt.name:upper() .. (s.evt.detail and ('   ' .. s.evt.detail) or ''), SIDE_W - 36, 12, 9), ec)
+        if ui.hovered(SIDE_X + 12, 92, SIDE_W - 24, 26) then tipEvent = true end
     end
 
     local busy = fx.busy()
@@ -331,7 +338,7 @@ function GameState:render(dimmed)
     elseif busy then
         ui.panel(SIDE_X + 12, py, SIDE_W - 24, 64, {fill = ui.c.bg2, radius = 10})
         local spot = select(2, fx.spotlight())
-        ui.textBox(spot and 'Alien ability' or (fx.frozen() and 'Time frozen') or 'Resolving...', SIDE_X + 12, py, SIDE_W - 24, 44, 'display', 17, fx.frozen() and ui.c.accent or ui.c.muted)
+        ui.textBox(fx.eventPlaying() and 'Random event' or spot and 'Alien ability' or (fx.frozen() and 'Time frozen') or 'Resolving...', SIDE_X + 12, py, SIDE_W - 24, 44, 'display', 17, (fx.frozen() or fx.eventPlaying()) and ui.c.accent or ui.c.muted)
         ui.textBox('Hold Space to fast-forward', SIDE_X + 12, py + 36, SIDE_W - 24, 24, 'body', 12, ui.c.dim)
     else
         if ui.button('End turn', SIDE_X + 12, py, SIDE_W - 24, 64, {size = 22, id = 'endturn', disabled = dimmed}) and not dimmed then endTurn() end
@@ -340,7 +347,9 @@ function GameState:render(dimmed)
 
     -- hover cards: weapon in the sidebar, alien or wall on the field
     if dimmed then return end
-    if tipWeapon then
+    if tipEvent and s.evt then
+        ui.tooltip(SIDE_X - 312, 80, {{s.evt.name, 'display', 17, s.evt.good and ui.c.good or ui.c.danger}, {'RANDOM EVENT   -   THIS TURN', 'hud', 11, ui.c.muted, gap = 8}, {s.evt.desc, 'body', 14}}, {color = s.evt.good and ui.c.good or ui.c.danger, width = 300})
+    elseif tipWeapon then
         weaponTooltip(tipWeapon, SIDE_X - 312, tipY)
     elseif hoverLane and hoverRow then
         local best, bestD
