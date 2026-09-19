@@ -730,6 +730,36 @@ test('Events never fire before turn 3 and respect the gap', function()
     B.EVENT_CHANCE = 0.14
 end)
 
+test('Random spawns never produce a boss; Albot never builds an Albot', function()
+    local s = setup({level = '6-30'}); s.needed = 0 -- no regular wave, so anything new came from the morph
+    for _ = 1, 200 do
+        local a = put(1, 1, 'Morpher'); B.endTurn()
+        B.each(function(b) check(b.name ~= 'GodOfSpace' and b.name ~= 'TheHevalGod' and b.name ~= 'VoidTitan', 'no boss from a morph (' .. b.name .. ')') end)
+        for i = 1, B.ROWS do for j = 1, B.LANES do s.grid[i][j] = nil end end
+    end
+    s = setup({level = '6-30'}); s.needed = 0
+    for _ = 1, 60 do
+        put(4, 3, 'Albot'); B.endTurn()
+        local n = 0; B.each(function(b) if b.name == 'Albot' then n = n + 1 end; check(not b.hevalten or b.name == 'Albot', 'albot builds no hevalten (' .. b.name .. ')') end)
+        check(n == 1, 'exactly one albot (' .. n .. ')')
+        for i = 1, B.ROWS do for j = 1, B.LANES do s.grid[i][j] = nil end end
+    end
+end)
+
+test('Save sanitiser repairs a hand-edited save', function()
+    data = defaultSave()
+    data.planet = 9; data.level = -3; data.gold = -50; data.currentLevel = '7-99'; data.name = ''
+    data.weaponChoose1 = 'NotAWeapon'; data.weaponChoose2 = 'AstroidRain'; data.weapons.AstroidRain = false
+    data.upgrades.AstroidRain = 99; data.upgrades.Bogus = 3; data.brightness = 0; data.volume = 500
+    sanitizeData()
+    check(data.planet == 6 and data.level == 0 and data.gold == 0, 'numbers clamped')
+    check(data.currentLevel == '6-1', 'current level rebuilt from planet/level')
+    check(data.name == 'Player', 'empty name replaced')
+    check(data.weaponChoose1 == '' and data.weaponChoose2 == '', 'invalid or unowned weapon slots cleared')
+    check(data.upgrades.AstroidRain == MAX_UPGRADE and data.upgrades.Bogus == nil, 'upgrades clamped, unknown ids dropped')
+    check(data.brightness == 5 and data.volume == 100, 'sliders clamped')
+end)
+
 test('Discovery: aliens are marked seen when they first appear', function()
     setup({}); data.seen = {}
     put(3, 1, 'Medic'); check(data.seen.Medic == true, 'medic seen')

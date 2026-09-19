@@ -44,6 +44,7 @@ That uploads the Windows folder (`:windows`), the `.love` (`:love`) and, if pres
 ```bash
 "C:\Program Files\LOVE\lovec.exe" . --test              # headless rules tests
 "C:\Program Files\LOVE\lovec.exe" . --sim "" auto 0 20  # balance probe: greedy bot plays every planet
+"C:\Program Files\LOVE\lovec.exe" . --smoke             # drives every screen with random input, exit 1 on any error
 "C:\Program Files\LOVE\lovec.exe" . --profile dev       # play with a separate save
 ```
 

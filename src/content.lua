@@ -517,7 +517,7 @@ local ALL_WEAPONS = {'AstroidRain','PoisonArrow','TripleThreat','CosmicFire','As
 	'ThunderStrike','BattleRam','ElectroJolt','DaggerThrow','Hevalstruck','RecursiveExplosion','Dueltroid','FreshStart',
 	'SantaAxe','Respawn','Offguard','LaserBeam','MindBlast','GrenadeLauncher','Protected','Hypnosis',
 	'GalacticBeam','SolarFlare','CometStrike','DeathVirus','VoidBurst','CelestialDisruption','QuantumFlux'}
-local ITEMS = {'Wall','Retreat','Zap','Bomb','DoubleGold','Teleporter','Electricity','Protection'}
+local ITEM_KEYS = {'Wall','Retreat','Zap','Bomb','DoubleGold','Teleporter','Electricity','Protection'}
 
 function defaultSave()
 	local d = {
@@ -533,7 +533,7 @@ function defaultSave()
 		weapons = {}, items = {}, upgrades = {}, seen = {Joe = true, Gen57 = true},
 	}
 	for _, w in ipairs(ALL_WEAPONS) do d.weapons[w] = false end
-	for _, i in ipairs(ITEMS) do d.items[i] = false end
+	for _, i in ipairs(ITEM_KEYS) do d.items[i] = false end
 	return d
 end
 
@@ -589,6 +589,33 @@ function loadData()
 		createNewSave()
 	end
 	saveData()
+end
+
+-- Clamp anything a hand-edited or old save could have left out of range.
+-- Runs after the weapon/level tables exist (main.lua), so it can validate ids.
+function sanitizeData()
+	local function num(k, lo, hi) local v = tonumber(data[k]) or lo; data[k] = math.max(lo, math.min(hi or math.huge, math.floor(v))) end
+	num('planet', 1, 6); num('level', 0, 30); num('gold', 0); num('gems', 0)
+	num('brightness', 5, 100); num('volume', 0, 100); num('hours', 0); num('mins', 0, 59)
+	num('wins', 0); num('matchesPlayed', 0); num('aliensKilled', 0)
+	for _, it in ipairs(ITEMS) do num(it.stat, 0) end
+	if type(data.name) ~= 'string' or data.name:match('^%s*$') then data.name = 'Player' end
+	data.name = data.name:sub(1, 12)
+	if type(data.goldBuff) ~= 'number' or data.goldBuff < 1 then data.goldBuff = 1 end
+	if type(data.currentLevel) ~= 'string' or not Levels[data.currentLevel] then
+		data.currentLevel = data.planet .. '-' .. math.min(30, data.level + 1)
+	end
+	for k = 1, 3 do
+		local key = 'weaponChoose' .. k
+		local id = data[key]
+		if type(id) ~= 'string' or not Weapons[id] or not data.weapons[id] then data[key] = '' end
+	end
+	for id, lvl in pairs(data.upgrades) do
+		if not Weapons[id] then data.upgrades[id] = nil
+		else data.upgrades[id] = math.max(0, math.min(MAX_UPGRADE, math.floor(tonumber(lvl) or 0))) end
+	end
+	if type(data.seen) ~= 'table' then data.seen = {} end
+	data.seen.Joe, data.seen.Gen57 = true, true
 end
 
 -- Strip userdata (images etc.) so the table is JSON-safe.

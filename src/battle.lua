@@ -144,12 +144,15 @@ local function move(fi, fj, ti, tj)
     emit({type = 'move', uid = a.uid, from = {fi, fj}, to = {ti, tj}})
 end
 
--- aliens that belong at the current level (first appear at or before it)
+-- aliens that belong at the current level (first appear at or before it).
+-- The three bosses never come out of a random spawn: a Morpher turning into a
+-- God of Space (which summons three more) would be a run-ending coin flip.
+local BOSS = {TheHevalGod = true, GodOfSpace = true, VoidTitan = true}
 local function randomUnlocked(hevaltenOnly)
     local here = levelIndex(data.currentLevel)
     local pool = {}
     for _, d in ipairs(Aliensrand) do
-        if (d.intro or 0) <= here and (not hevaltenOnly or (d.hevalten and d.name ~= 'TheHevalGod' and d.name ~= 'GodOfSpace' and d.name ~= 'VoidTitan')) then pool[#pool + 1] = d end
+        if (d.intro or 0) <= here and not BOSS[d.name] and (not hevaltenOnly or d.hevalten) then pool[#pool + 1] = d end
     end
     if #pool == 0 then pool[1] = Aliensrand[1] end
     return pool[math.random(#pool)]
@@ -647,7 +650,12 @@ local function albotSpawns()
             for c = 1, B.LANES do if not s.grid[i][c] then free[#free + 1] = c end end
             if #free > 0 then
                 ability(a, i, j, 'builds an ally')
-                local def = Aliensrand[math.random(math.min(STARTER_TIERS, #Aliensrand))]
+                local pool = {}
+                for k = 1, math.min(STARTER_TIERS, #Aliensrand) do
+                    local d = Aliensrand[k]
+                    if d.name ~= 'Albot' and not d.hevalten then pool[#pool + 1] = d end -- no Albots building Albots
+                end
+                local def = pool[math.random(#pool)]
                 B.spawn(i, free[math.random(#free)], def)
             end
         end

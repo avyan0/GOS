@@ -34,7 +34,9 @@ function love.load(args)
     if args and args[1] == '--sim' then TESTING = true; SIM_ARGS = {args[2], args[3], args[4], args[5], args[6], args[7], args[8]}; require 'src/sim'; love.event.quit(); return end
     -- `lovec . --profile name` plays with a separate save (dev/testing)
     if args and args[1] == '--profile' and args[2] then love.filesystem.setIdentity('GodsOfSpace-' .. args[2]) end
-    DEBUG = os.getenv('GOS_DEBUG') ~= nil -- F9 in battle fires a random event
+    -- `lovec . --smoke` drives every screen with random input and exits non-zero on any error
+    if args and args[1] == '--smoke' then TESTING = true; SMOKE = require 'src/smoke'; love.filesystem.setIdentity('GodsOfSpace-smoke') end
+    DEBUG = os.getenv('GOS_DEBUG') ~= nil or SMOKE ~= nil -- F9 in battle fires a random event
     love.window.setTitle('Gods Of Space')
     love.graphics.setDefaultFilter('linear', 'linear')
     math.randomseed(os.time())
@@ -55,6 +57,7 @@ function love.load(args)
     weaponDictionary()
     alienDictionary()
     makeLevel(); applyNewSpawns()
+    sanitizeData()
     saveData()
     ui.initBackground()
     sessionStart = {hours = data.hours, mins = data.mins}
@@ -79,6 +82,7 @@ function love.load(args)
     }
     gStateMachine:change('loading')
     love.keyboard.keysPressed = {}
+    if SMOKE then SMOKE.begin() end
 end
 
 function love.resize(w, h) push:resize(w, h) end
@@ -93,13 +97,18 @@ function love.update(dt)
     if saveTimer >= 60 then saveData(); saveTimer = 0 end
 
     ui.update(dt)
-    gStateMachine:update(dt)
+    if SMOKE then
+        SMOKE.guarded(gStateMachine.update, gStateMachine, 1 / 12) -- fast clock so turns actually pass
+        if SMOKE.step(dt) then love.event.quit(SMOKE.errors() > 0 and 1 or 0) end
+    else
+        gStateMachine:update(dt)
+    end
     love.keyboard.keysPressed = {}
 end
 
 function love.draw()
     push:apply('start')
-    gStateMachine:render()
+    if SMOKE then SMOKE.guarded(gStateMachine.render, gStateMachine) else gStateMachine:render() end
     ui.drawToasts()
     ui.brightness()
     ui.drawFade()
