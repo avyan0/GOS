@@ -53,7 +53,8 @@ local function weaponTooltip(w, x, y)
 end
 
 local active = false      -- a battle is in progress (survives Pause round-trips)
-local pendingResult = nil -- result to apply once animations finish
+local alienTurn = false    -- the end-of-turn animation is playing
+local queuedEnd = false    -- End Turn pressed while a weapon animation was still playing
 
 local function laneAt(x) if x < FIELD_X or x > FIELD_X + LANE_W * 5 then return nil end return math.floor((x - FIELD_X) / LANE_W) + 1 end
 local function rowAt(y) if y < FIELD_Y or y > FIELD_Y + ROW_H * 10 then return nil end return math.floor((y - FIELD_Y) / ROW_H) + 1 end
@@ -77,6 +78,7 @@ local function animate(result)
 end
 
 function GameState:enter(item)
+    queuedEnd = false
     if item == 'quit' then
         active = false
         gStateMachine:change('home')
@@ -85,6 +87,7 @@ function GameState:enter(item)
     if not active then
         B.start()
         fx.reset()
+        alienTurn = false
         fx.sync(B.drain())
         active = true
     else
@@ -113,16 +116,24 @@ local function fire(n)
 end
 
 local function endTurn()
-    if fx.busy() then return end
+    if fx.busy() then
+        if not alienTurn then queuedEnd = true end -- finish the shot, then end the turn
+        return
+    end
     sfx.play('turn')
+    alienTurn = true
     local r = B.endTurn()
-    animate(r)
+    fx.play(B.drain(), function() alienTurn = false; if r then finish(r) end end)
 end
 
 function GameState:update(dt)
     -- hold Space (or the mouse button) to fast-forward animations
     local fast = fx.busy() and (love.keyboard.isDown('space') or love.mouse.isDown(1))
     fx.update(dt * (fast and 3 or 1))
+    if queuedEnd and not fx.busy() then
+        queuedEnd = false
+        if not B.state().aim then endTurn() end
+    end
     if love.keyboard.wasPressed('a') then fire(1)
     elseif love.keyboard.wasPressed('s') then fire(2)
     elseif love.keyboard.wasPressed('d') then fire(3)

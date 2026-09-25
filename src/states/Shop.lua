@@ -12,9 +12,8 @@ end
 function Shop:update(dt)
     self.t = self.t + dt
     if self.wheel and self.wheel:update(dt) then
-        self.result = wheel.apply(self.wheel.segs[self.landing])
+        self.result = self.prize -- granted when the spin started; the wheel only reveals it
         self.resultT = 0
-        saveData()
     end
     if self.result then self.resultT = self.resultT + dt end
 end
@@ -67,6 +66,7 @@ function Shop:renderWheel()
     local color = t.rarity and ui.rarity[t.rarity] or ui.c.good
     if ui.header(t.key .. ' Spin', t.price .. ' gold per spin', true) and not self.wheel.spinning then
         self.tier = nil; self.wheel = nil; self.result = nil
+        return -- the wheel is gone; draw the picker next frame
     end
     ui.wallet()
 
@@ -97,10 +97,7 @@ function Shop:renderWheel()
     end
     local canSpin = not self.wheel.spinning and data.gold >= t.price
     if ui.button(self.result and 'Spin again  -  ' .. t.price .. ' Gold' or 'Spin  -  ' .. t.price .. ' Gold', px + 40, py + 470 - 76, pw - 80, 52, {color = color, size = 22, id = 'spin', disabled = not canSpin}) then
-        data.gold = data.gold - t.price
-        self.result = nil
-        self.landing = wheel.roll(self.wheel.segs)
-        self.wheel:spin(self.landing)
+        self:spin()
     end
 end
 
@@ -111,7 +108,20 @@ function Shop:render()
     if nav and not (self.wheel and self.wheel.spinning) then gStateMachine:change(nav) end
 end
 
+function Shop:spin()
+    local t = self:tierInfo()
+    if not t or self.wheel.spinning or data.gold < t.price then return end
+    data.gold = data.gold - t.price
+    self.result = nil
+    self.landing = wheel.roll(self.wheel.segs)
+    self.prize = wheel.apply(self.wheel.segs[self.landing]) -- grant now so quitting mid-spin loses nothing
+    self.wheel:spin(self.landing)
+    saveData()
+end
+
 function Shop:keyPressed(k)
-    if k ~= 'escape' or (self.wheel and self.wheel.spinning) then return end
+    if self.wheel and self.wheel.spinning then return end
+    if (k == 'return' or k == 'kpenter' or k == 'space') and self.tier then self:spin(); return end
+    if k ~= 'escape' then return end
     if self.tier then self.tier = nil; self.wheel = nil; self.result = nil else gStateMachine:change('home') end
 end

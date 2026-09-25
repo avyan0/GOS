@@ -85,6 +85,7 @@ function ui.hovered(x, y, w, h) return inside(ui.mouse.x, ui.mouse.y, x, y, w, h
 -- returns true on the frame a click lands inside the rect (and consumes it).
 -- Every clickable thing routes through here, so this is where the click sound lives.
 function ui.hit(x, y, w, h)
+    if ui.hitLog then ui.hitLog[#ui.hitLog + 1] = {x, y, w, h} end -- smoke test: every clickable on screen
     if pendingClick and inside(pendingClick.x, pendingClick.y, x, y, w, h) then
         pendingClick = nil
         sfx.play('click')
