@@ -43,9 +43,11 @@ function drawSlots(x, y, w, selectedSlot, t)
         if w_ then
             local color = ui.rarity[w_.rarity]
             if not icons.weaponArt(id, sx + 44, y + 58, 44) then icons.weapon(w_.shape, sx + 44, y + 58, 44, color) end
-            local size = ui.fitSize('display', w_.name, sw - 90, 18, 12)
-            ui.text(w_.name, sx + 78, y + 36 + (18 - size) / 2, sw - 90, 'left', 'display', size)
-            ui.text(ui.rarityName[w_.rarity] .. '   -   Lv ' .. (data.upgrades[id] or 0), sx + 78, y + 62, sw - 90, 'left', 'body', 14, color)
+            local f = ui.font('display', 18)
+            local _, wrapped = f:getWrap(w_.name, sw - 86)
+            local top = #wrapped > 1 and y + 28 or y + 36
+            local lines, lh = ui.name(w_.name, sx + 78, top, sw - 86, 'left', 18, nil, 2)
+            ui.text(ui.rarityName[w_.rarity] .. '   -   Lv ' .. (data.upgrades[id] or 0), sx + 78, top + lines * lh + 4, sw - 90, 'left', 'body', 14, color)
         else
             local pulse = 0.5 + 0.5 * math.sin((t or 0) * 3)
             ui.color(ui.c.accent, 0.3 + 0.3 * pulse); love.graphics.setLineWidth(2)

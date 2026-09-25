@@ -32,12 +32,15 @@ ui.rarity = {
 ui.rarityName = {common = 'Common', rare = 'Rare', scarce = 'Scarce', god = 'God'}
 
 -- ---------------------------------------------------------------- fonts
-local FONT_FILES = {display = 'assets/fonts/display.ttf', body = 'assets/fonts/body.otf', hud = 'assets/fonts/hud.otf'}
+-- 'body' is Orbitron (SIL Open Font License, assets/fonts/OFL.txt); 'display' and 'hud'
+-- use our own pixel font (src/pixelfont.lua)
+local pixelfont = require 'src/pixelfont'
 local fontCache = {}
 function ui.font(kind, size)
+    if kind ~= 'body' then return pixelfont.get(size) end
     local key = kind .. size
     if not fontCache[key] then
-        fontCache[key] = love.graphics.newFont(FONT_FILES[kind], size)
+        fontCache[key] = love.graphics.newFont('assets/fonts/body.otf', size)
     end
     return fontCache[key]
 end
@@ -46,6 +49,20 @@ end
 function ui.fitSize(kind, str, w, size, min)
     while size > (min or 10) and ui.font(kind, size):getWidth(str) > w do size = size - 1 end
     return size
+end
+
+-- A name in the pixel font: one line if it fits, else wrapped onto up to maxLines at
+-- the same size, else shrunk to one line. Returns lines used and the line height.
+function ui.name(str, x, y, w, align, size, color, maxLines, alpha)
+    local f = ui.font('display', size)
+    local _, lines = f:getWrap(str, w)
+    if #lines > 1 and #lines > (maxLines or 1) then
+        size = ui.fitSize('display', str, w, size, 8)
+        f = ui.font('display', size)
+        _, lines = f:getWrap(str, w)
+    end
+    ui.text(str, x, y, w, align, 'display', size, color, alpha)
+    return #lines, f:getHeight()
 end
 
 function ui.color(c, a)

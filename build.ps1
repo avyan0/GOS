@@ -15,7 +15,7 @@ New-Item -ItemType Directory -Force $dist | Out-Null
 $loveFile = Join-Path $dist 'GodsOfSpace.love'
 $zip = Join-Path $dist 'GodsOfSpace.zip'
 Remove-Item -Force -ErrorAction SilentlyContinue $loveFile, $zip
-Compress-Archive -Path (Join-Path $root 'main.lua'), (Join-Path $root 'conf.lua'), (Join-Path $root 'src'), (Join-Path $root 'assets') -DestinationPath $zip
+Compress-Archive -Path (Join-Path $root 'main.lua'), (Join-Path $root 'conf.lua'), (Join-Path $root 'src'), (Join-Path $root 'assets'), (Join-Path $root 'CREDITS.txt') -DestinationPath $zip
 Move-Item $zip $loveFile
 Write-Host "wrote $loveFile"
 
@@ -27,6 +27,7 @@ $exe = Join-Path $win 'GodsOfSpace.exe'
 cmd /c "copy /b `"$love\love.exe`"+`"$loveFile`" `"$exe`"" | Out-Null
 Get-ChildItem $love -Filter '*.dll' | Copy-Item -Destination $win
 Copy-Item (Join-Path $love 'license.txt') $win -ErrorAction SilentlyContinue
+Copy-Item (Join-Path $root 'CREDITS.txt'), (Join-Path $root 'assets/fonts/OFL.txt') $win
 $winZip = Join-Path $dist 'GodsOfSpace-win64.zip'
 Remove-Item -Force -ErrorAction SilentlyContinue $winZip
 Compress-Archive -Path $win -DestinationPath $winZip

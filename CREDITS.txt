@@ -1,0 +1,19 @@
+GODS OF SPACE
+Made by Avyan Mahajan.
+
+Art, the pixel font and the sound effects are made for this game
+(generated from code in tools/art and src/sfx.lua).
+Colour palette: Endesga 32 by ENDESGA (free to use).
+
+Built with LOVE (https://love2d.org) - zlib license, see license.txt in the
+Windows build.
+
+Libraries (MIT license, notices kept in each file under src/lib):
+  push      - Copyright (c) 2020 Ulysse Ramage
+  hump.class - Copyright (c) 2010-2013 Matthias Richter
+  dkjson    - Copyright (C) 2010-2014 David Heiko Kolf
+
+Font: Orbitron by Matt McInerney - SIL Open Font License 1.1
+      (assets/fonts/OFL.txt)
+
+Browser build: love.js by Davidobot (MIT).

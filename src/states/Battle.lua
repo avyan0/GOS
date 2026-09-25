@@ -316,10 +316,9 @@ function GameState:render(dimmed)
             local rule = B.WEAPON_RULES[w.id]
             local lit = ready or isAiming
             if not icons.weaponArt(w.id, SIDE_X + 40, y + 34, 38, lit and 1 or 0.35) then icons.weapon(w.shape, SIDE_X + 40, y + 34, 38, lit and color or ui.c.dim) end
-            local nameSize = ui.fitSize('display', w.name, SIDE_W - 90, 15, 11)
-            ui.text(w.name, SIDE_X + 68, y + 14 + (15 - nameSize), SIDE_W - 90, 'left', 'display', nameSize, lit and ui.c.text or ui.c.dim)
+            local lines, lh = ui.name(w.name, SIDE_X + 68, y + 14, SIDE_W - 84, 'left', 15, lit and ui.c.text or ui.c.dim, 2)
             local dmg = w.damage > 0 and ('   -   ' .. math.round(w.damage * ((data.upgrades[w.id] or 0) * 0.1 + 1))) or ''
-            ui.text((TARGET_LABEL[rule.kind] or rule.kind) .. dmg, SIDE_X + 68, y + 38, SIDE_W - 90, 'left', 'body', 13, ui.c.muted)
+            ui.text((TARGET_LABEL[rule.kind] or rule.kind) .. dmg, SIDE_X + 68, y + 16 + lines * lh, SIDE_W - 90, 'left', 'body', 13, ui.c.muted)
             local status
             if isAiming then status = 'AIMING'
             elseif not slot.used then status = 'READY   -   ' .. KEYS[n]

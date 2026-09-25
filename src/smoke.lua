@@ -13,7 +13,7 @@ local MAX_CLICKS = 120 -- per screen: click every clickable ui.hit reports, incl
 local BATTLE_FRAMES = 2400
 local KEYS = {'a', 's', 'd', '1', '2', '3', '4', '5', 'return', 'return', 'return', 'space', 'f9', 'f9', 'escape', 'p'}
 
-local frame, phase, idx, clicks, done = 0, 'screens', 1, 0, {}
+local frame, phase, idx, clicks, done, settle = 0, 'screens', 1, 0, {}, 0
 local errors = 0
 local visited = {}
 
@@ -58,7 +58,13 @@ function smoke.step(dt)
         local target = SCREENS[idx]
         local rects = ui.hitLog or {}
         ui.hitLog = {}
-        if gStateMachine.currentName ~= target[1] then
+        settle = settle + 1
+        if settle == 14 and os.getenv('SMOKE_SHOTS') then -- SMOKE_SHOTS=1: one screenshot per screen (after the fade-in) in the save folder
+            love.graphics.captureScreenshot(string.format('smoke_%02d_%s.png', idx, target[1]))
+        end
+        if settle < 16 then
+            -- let the screen settle before clicking
+        elseif gStateMachine.currentName ~= target[1] then
             gStateMachine:change(target[1], target[2]) -- a click navigated away: go back
         elseif frame % 3 == 0 then
             -- next clickable on this view we have not pressed yet
@@ -74,6 +80,7 @@ function smoke.step(dt)
                 guarded(function() gStateMachine:mousePressed(ui.mouse.x, ui.mouse.y, 1) end)
             else
                 clicks = 0
+                settle = 0
                 idx = idx + 1
                 if idx > #SCREENS then
                     phase = 'battle'; frame = 0

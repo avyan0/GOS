@@ -25,15 +25,16 @@ function drawWeaponCard(w, x, y, cw, ch, selected, opts)
     if owned then
         ui.color(color, 0.12); ui.rrect('fill', x + 12, y + 12, cw - 24, ch * 0.5, 10)
         if not icons.weaponArt(w.id, x + cw / 2, y + 12 + ch * 0.25, ch * 0.36) then icons.weapon(w.shape, x + cw / 2, y + 12 + ch * 0.25, ch * 0.36, color) end
-        ui.text(w.name, x + 6, y + ch * 0.5 + 16, cw - 12, 'center', 'display', ui.fitSize('display', w.name, cw - 12, 14, 10))
-        ui.pips(x + cw / 2 - 26, y + ch - 16, 5, data.upgrades[w.id] or 0, color, 6, 4)
+        local roomy = ch >= 140
+        local lines = ui.name(w.name, x + 6, y + ch * 0.5 + (roomy and 16 or 12), cw - 12, 'center', 14, nil, roomy and 2 or 1)
+        if roomy or lines == 1 then ui.pips(x + cw / 2 - 26, y + ch - 16, 5, data.upgrades[w.id] or 0, color, 6, 4) end
         if opts.equipped then
             ui.color(color); love.graphics.circle('fill', x + cw - 14, y + 14, 6)
         end
     else
         ui.color(ui.c.bg2, 0.6); ui.rrect('fill', x + 12, y + 12, cw - 24, ch * 0.5, 10)
         icons.lock(x + cw / 2, y + 12 + ch * 0.25, 30, ui.c.dim)
-        ui.text(w.name, x + 6, y + ch * 0.5 + 16, cw - 12, 'center', 'display', ui.fitSize('display', w.name, cw - 12, 14, 10), ui.c.dim)
+        ui.name(w.name, x + 6, y + ch * 0.5 + (ch >= 140 and 16 or 12), cw - 12, 'center', 14, ui.c.dim, ch >= 140 and 2 or 1)
     end
     return ui.hit(x, y, cw, ch)
 end
