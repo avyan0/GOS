@@ -47,13 +47,13 @@ function love.load(args)
     if data.fullscreen then love.window.setFullscreen(true); push:resize(love.graphics.getDimensions()) end
     pcall(sfx.init) -- no audio device is not fatal
     -- window icon: a Hevalten-red planet drawn with our own icon code
-    pcall(function() -- not every platform (web) can set an icon
+    if love.system.getOS() ~= 'Web' then pcall(function() -- the browser build has no window icon (and its pcall cannot catch that)
         local c = love.graphics.newCanvas(64, 64)
         love.graphics.setCanvas(c); love.graphics.clear(0, 0, 0, 0)
         if not icons.planetArt(6, 32, 32, 24) then icons.planet(32, 32, 24, PLANETS[6].hue, false) end
         love.graphics.setCanvas()
         love.window.setIcon(c:newImageData())
-    end)
+    end) end
     weaponDictionary()
     alienDictionary()
     makeLevel(); applyNewSpawns()

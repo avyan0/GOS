@@ -50,7 +50,6 @@ function Result:render()
     ui.background(self.t)
     local a = math.min(1, self.t * 2)
     local color = self.won and ui.c.good or ui.c.danger
-    ui.glow(VIRTUAL_WIDTH / 2, 120, 80, color, 0.05 * a)
     ui.text(self.won and 'VICTORY' or 'DEFEAT', 0, 70, VIRTUAL_WIDTH, 'center', 'display', 64, color, a)
     ui.text(PLANETS[self.planet].name .. '   -   Level ' .. self.levelNum, 0, 150, VIRTUAL_WIDTH, 'center', 'body', 20, ui.c.muted, a)
 

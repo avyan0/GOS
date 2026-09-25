@@ -37,7 +37,6 @@ function Shop:renderPicker()
         ui.panel(x, y - (hover and 4 or 0), cw, ch, {border = hover and color or ui.c.line, radius = 16})
         local cy = y + 150 - (hover and 4 or 0)
         if unlocked then
-            ui.glow(x + cw / 2, cy, 60, color, 0.05)
             -- mini wheel
             for k = 0, 7 do
                 ui.color(k % 2 == 0 and color or ui.mix(color, ui.c.bg, 0.4))
@@ -78,7 +77,6 @@ function Shop:renderWheel()
     if self.result then
         local r = self.result
         local a = math.min(1, self.resultT * 3)
-        ui.glow(px + pw / 2, py + 130, 60, r.color, 0.08 * a)
         r.icon(px + pw / 2, py + 130, 110)
         ui.text('You won', px, py + 210, pw, 'center', 'body', 18, ui.c.muted, a)
         ui.text(r.title, px, py + 236, pw, 'center', 'display', 32, r.color, a)

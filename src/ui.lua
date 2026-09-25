@@ -154,12 +154,6 @@ function ui.pips(x, y, n, filled, color, size, gap)
     end
 end
 
-function ui.glow(x, y, r, color, strength)
-    for i = 4, 1, -1 do
-        ui.color(color, (strength or 0.12) * (5 - i) / 4)
-        love.graphics.circle('fill', x, y, r + i * r * 0.35)
-    end
-end
 
 -- ---------------------------------------------------------------- widgets
 -- opts: color, textColor, kind, size, disabled, outline, id, icon(fn(x,y,size)), badge
@@ -325,26 +319,34 @@ end
 -- ---------------------------------------------------------------- background
 local stars = {}
 local nebula
+local PX = 4 -- backdrop pixel size (nebula.png is 320x180, drawn at 4x)
 function ui.initBackground()
     nebula = love.graphics.newImage('assets/img/nebula.png')
+    nebula:setFilter('nearest', 'nearest')
     math.randomseed(7)
-    for i = 1, 220 do
-        stars[i] = {x = math.random() * VIRTUAL_WIDTH, y = math.random() * VIRTUAL_HEIGHT,
-                    r = 0.6 + math.random() * 1.6, p = math.random() * 6.28, s = 0.3 + math.random() * 0.7}
+    for i = 1, 160 do
+        stars[i] = {x = math.random(0, VIRTUAL_WIDTH / PX - 1) * PX, y = math.random(0, VIRTUAL_HEIGHT / PX - 1) * PX,
+                    big = math.random() < 0.08, p = math.random() * 6.28, s = 0.3 + math.random() * 0.7,
+                    warm = math.random() < 0.2}
     end
     math.randomseed(os.time())
 end
-
 function ui.background(t, withNebula)
     ui.color(ui.c.bg); love.graphics.rectangle('fill', 0, 0, VIRTUAL_WIDTH, VIRTUAL_HEIGHT)
     if withNebula ~= false and nebula then
-        ui.color(ui.c.white, 0.18)
+        ui.color(ui.c.white, 0.85)
         love.graphics.draw(nebula, 0, 0, 0, VIRTUAL_WIDTH / nebula:getWidth(), VIRTUAL_HEIGHT / nebula:getHeight())
     end
+    -- stars are single grid pixels that twinkle in steps; a few bright ones get a cross
     for _, s in ipairs(stars) do
-        local a = 0.35 + 0.45 * (0.5 + 0.5 * math.sin(t * s.s + s.p))
-        ui.color(ui.c.white, a)
-        love.graphics.circle('fill', s.x, s.y, s.r)
+        local a = 0.3 + 0.6 * math.floor((0.5 + 0.5 * math.sin(t * s.s + s.p)) * 3 + 0.5) / 3
+        ui.color(s.warm and ui.c.gold or ui.c.white, a)
+        love.graphics.rectangle('fill', s.x, s.y, PX / 2, PX / 2)
+        if s.big then
+            ui.color(s.warm and ui.c.gold or ui.c.white, a * 0.5)
+            love.graphics.rectangle('fill', s.x - PX / 2, s.y, PX / 2, PX / 2); love.graphics.rectangle('fill', s.x + PX / 2, s.y, PX / 2, PX / 2)
+            love.graphics.rectangle('fill', s.x, s.y - PX / 2, PX / 2, PX / 2); love.graphics.rectangle('fill', s.x, s.y + PX / 2, PX / 2, PX / 2)
+        end
     end
 end
 

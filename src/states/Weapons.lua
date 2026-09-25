@@ -47,7 +47,6 @@ function drawWeaponDetail(w, px, py, pw, ph)
     end
     local color = ui.rarity[w.rarity]
     local owned = data.weapons[w.id]
-    ui.glow(px + pw / 2, py + 90, 50, color, owned and 0.08 or 0.02)
     if owned then if not icons.weaponArt(w.id, px + pw / 2, py + 90, 110) then icons.weapon(w.shape, px + pw / 2, py + 90, 110, color) end else icons.lock(px + pw / 2, py + 90, 60, ui.c.dim) end
     ui.text(w.name, px, py + 165, pw, 'center', 'display', 28)
     ui.text(ui.rarityName[w.rarity]:upper(), px, py + 202, pw, 'center', 'hud', 16, color)

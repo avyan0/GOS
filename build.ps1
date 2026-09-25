@@ -37,12 +37,12 @@ if (-not $SkipWeb) {
     if (Get-Command node -ErrorAction SilentlyContinue) {
         $web = Join-Path $dist 'web'
         Remove-Item -Recurse -Force -ErrorAction SilentlyContinue $web
-        & npx --yes love.js -c -t "Gods of Space" $loveFile $web 2>$null
+        & npx --yes love.js -c -m 134217728 -t "Gods of Space" $loveFile $web 2>$null
         if (Test-Path (Join-Path $web 'index.html')) {
             $webZip = Join-Path $dist 'GodsOfSpace-web.zip'
             Remove-Item -Force -ErrorAction SilentlyContinue $webZip
             Compress-Archive -Path (Join-Path $web '*') -DestinationPath $webZip
-            Write-Host "wrote $web and $webZip (experimental)"
+            Write-Host "wrote $web and $webZip "
         } else { Write-Host "web build skipped: love.js did not produce output" }
     } else { Write-Host "web build skipped: node not found" }
 }

@@ -11,7 +11,7 @@ from PIL import Image, ImageDraw, ImageFilter, ImageChops, ImageFont
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 DATA = json.load(open(os.path.join(ROOT, "tools", "art", "data.json")))
-OUT = os.path.join(ROOT, "assets", "img", "weapons")
+OUT = os.path.join(ROOT, "tools", "art", "src", "weapons")  # high-res source; pixelize.py makes the game assets
 SIZE, S = 256, 3
 N = SIZE * S
 WHITE, BLACK = (255, 255, 255), (0, 0, 0)

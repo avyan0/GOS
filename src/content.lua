@@ -574,7 +574,8 @@ end
 function loadData()
 	local loaded = readSave(SAVE_FILE) or readSave(SAVE_BACKUP)
 	-- one-time import of a save left next to the game by the old system
-	if not loaded then
+	-- (desktop only: in the browser build a failed io.open is reported as a fatal startup error)
+	if not loaded and love.system.getOS() ~= 'Web' then
 		local f = io.open('data.txt', 'r')
 		if f then
 			local ok, decoded = pcall(json.decode, f:read('*a'))
@@ -633,7 +634,7 @@ function saveData()
 	local ok, text = pcall(json.encode, serializable(data))
 	if not ok or not text then return end
 	-- keep the last good save as backup, then overwrite the main file
-	local previous = love.filesystem.read(SAVE_FILE)
+	local previous = love.filesystem.getInfo(SAVE_FILE) and love.filesystem.read(SAVE_FILE)
 	if previous and previous ~= '' and previous ~= text then
 		love.filesystem.write(SAVE_BACKUP, previous)
 	end

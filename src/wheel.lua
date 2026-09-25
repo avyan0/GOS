@@ -136,7 +136,6 @@ end
 
 function Wheel:draw(x, y, r)
     local g = love.graphics
-    ui.glow(x, y, r, ui.c.accent, 0.05)
     local a = self.angle
     for i, s in ipairs(self.segs) do
         local sweep = s.w / self.total * math.pi * 2

@@ -23,7 +23,7 @@ powershell -ExecutionPolicy Bypass -File build.ps1
 ```
 
 Produces `dist/GodsOfSpace.love` (cross-platform, needs LÖVE installed), `dist/GodsOfSpace-win64/` +
-`.zip` (self-contained Windows build) and, when Node is installed, an experimental browser build in
+`.zip` (self-contained Windows build) and, when Node is installed, a browser build in
 `dist/web/`.
 
 ## Publish to itch.io

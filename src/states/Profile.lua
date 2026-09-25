@@ -29,7 +29,6 @@ function Profile:render()
     -- name card
     local px, py, pw, ph = 40, 110, 380, 200
     ui.panel(px, py, pw, ph, {radius = 16})
-    ui.glow(px + 70, py + 70, 34, ui.c.accent, 0.06)
     ui.color(ui.c.accent); love.graphics.circle('fill', px + 70, py + 70, 40)
     ui.color(ui.c.bg); love.graphics.circle('fill', px + 70, py + 56, 14); love.graphics.arc('fill', px + 70, py + 104, 28, math.pi, math.pi * 2)
     ui.text('Commander', px + 130, py + 42, 220, 'left', 'body', 15, ui.c.muted)

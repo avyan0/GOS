@@ -16,7 +16,7 @@ from PIL import Image, ImageChops, ImageDraw, ImageFilter, ImageFont
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))
-OUT = os.path.join(ROOT, "assets", "img", "aliens")
+OUT = os.path.join(ROOT, "tools", "art", "src", "aliens")  # high-res source; pixelize.py makes the game assets
 S = 512            # working canvas
 C = S // 2         # centre
 LIGHT = (-0.55, -0.75)  # upper-left

@@ -10,7 +10,7 @@ import numpy as np
 from PIL import Image, ImageDraw
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-OUT = os.path.join(ROOT, 'assets', 'img', 'planets')
+OUT = os.path.join(ROOT, 'tools', 'art', 'src', 'planets')  # high-res source; pixelize.py makes the game assets
 SIZE = 512
 SS = 2                     # supersample factor
 N = SIZE * SS

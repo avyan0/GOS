@@ -33,7 +33,6 @@ function Reward:render()
     if self.result then
         local r = self.result
         local a = math.min(1, self.resultT * 3)
-        ui.glow(px + pw / 2, py + 120, 60, r.color, 0.08 * a)
         r.icon(px + pw / 2, py + 120, 110)
         ui.text('You won', px, py + 200, pw, 'center', 'body', 18, ui.c.muted, a)
         ui.text(r.title, px, py + 226, pw, 'center', 'display', 32, r.color, a)

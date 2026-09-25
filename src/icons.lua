@@ -328,23 +328,30 @@ local imgCache = {}
 local function image(path)
     if imgCache[path] == nil then
         local ok, img = pcall(g.newImage, path)
+        if ok then img:setFilter('nearest', 'nearest') end -- pixel art: never blur
         imgCache[path] = ok and img or false
     end
     return imgCache[path] or nil
 end
 icons.image = image
 
--- planet `index` drawn so its sphere has radius r (the PNG sphere spans `sphere` of the image width)
+-- draw a pixel sprite centred at x,y with its height close to `h`, at a whole-number
+-- scale (so every art pixel is the same size) and snapped to the screen pixel grid
+local function sprite(img, x, y, h, alpha, tint)
+    local sc = h / img:getHeight()
+    sc = sc >= 1 and math.max(1, math.floor(sc + 0.5)) or sc
+    local c = tint or 1
+    g.setColor(c, c, c, alpha or 1)
+    g.draw(img, math.floor(x - img:getWidth() * sc / 2 + 0.5), math.floor(y - img:getHeight() * sc / 2 + 0.5), 0, sc, sc)
+    g.setColor(1, 1, 1, 1)
+end
+
+-- planet `index` drawn so its sphere has radius ~r (the sphere spans `PLANET_SPHERE` of the image width)
 local PLANET_SPHERE = {0.745, 0.495, 0.745, 0.745, 0.487, 0.73}
 function icons.planetArt(index, x, y, r, locked)
     local img = image('assets/img/planets/' .. index .. '.png')
     if not img then return false end
-    local w = img:getWidth()
-    local scale = (r * 2) / (w * (PLANET_SPHERE[index] or 0.745))
-    local a = locked and 0.3 or 1
-    g.setColor(a, a, a, 1)
-    g.draw(img, x, y, 0, scale, scale, w / 2, img:getHeight() / 2)
-    g.setColor(1, 1, 1, 1)
+    sprite(img, x, y, (r * 2) / (PLANET_SPHERE[index] or 0.745), 1, locked and 0.3 or 1)
     return true
 end
 
@@ -352,10 +359,7 @@ end
 function icons.weaponArt(id, x, y, s, alpha)
     local img = image('assets/img/weapons/' .. id .. '.png')
     if not img then return false end
-    local sc = s * 1.45 / img:getHeight()
-    g.setColor(1, 1, 1, alpha or 1)
-    g.draw(img, x, y, 0, sc, sc, img:getWidth() / 2, img:getHeight() / 2)
-    g.setColor(1, 1, 1, 1)
+    sprite(img, x, y, s * 1.45, alpha)
     return true
 end
 
@@ -363,10 +367,7 @@ end
 function icons.alienArt(key, x, y, s, alpha)
     local img = image('assets/img/aliens/' .. key .. '.png')
     if not img then return false end
-    local sc = s * 1.3 / img:getHeight()
-    g.setColor(1, 1, 1, alpha or 1)
-    g.draw(img, x, y, 0, sc, sc, img:getWidth() / 2, img:getHeight() / 2)
-    g.setColor(1, 1, 1, 1)
+    sprite(img, x, y, s * 1.3, alpha)
     return true
 end
 

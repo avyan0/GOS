@@ -35,8 +35,6 @@ function AliensScreen:render()
     local a = Aliensrand[self.selected]
     local px, py, pw, ph = 830, 118, 410, 420
     ui.panel(px, py, pw, ph, {radius = 16})
-    local hcol = {icons.hsl(a.spec.hue, a.spec.sat or 0.7, 0.55)}
-    ui.glow(px + pw / 2, py + 110, 60, hcol, 0.06)
     if not icons.alienArt(a.name, px + pw / 2, py + 108, 132) then icons.alien(a.spec, px + pw / 2, py + 110, 150) end
     ui.text(a.title, px, py + 205, pw, 'center', 'display', 30)
     local tag = a.hevalten and 'HEVALTEN' or 'STANDARD'
