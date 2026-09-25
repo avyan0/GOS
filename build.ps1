@@ -38,7 +38,10 @@ if (-not $SkipWeb) {
     if (Get-Command node -ErrorAction SilentlyContinue) {
         $web = Join-Path $dist 'web'
         Remove-Item -Recurse -Force -ErrorAction SilentlyContinue $web
-        & npx --yes love.js -c -m 134217728 -t "Gods of Space" $loveFile $web 2>$null
+        # love.js is installed locally once (npx hangs launching it on Windows)
+        $lovejs = Join-Path $root 'tools/web/node_modules/love.js/index.js'
+        if (-not (Test-Path $lovejs)) { & npm install --silent --prefix (Join-Path $root 'tools/web') love.js@11.4.1 | Out-Null }
+        & node $lovejs -c -m 134217728 -t "Gods of Space" $loveFile $web
         if (Test-Path (Join-Path $web 'index.html')) {
             $webZip = Join-Path $dist 'GodsOfSpace-web.zip'
             Remove-Item -Force -ErrorAction SilentlyContinue $webZip

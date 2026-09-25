@@ -397,9 +397,10 @@ function ui.drawToasts()
         tt.t = tt.t - dt_
         if tt.t <= 0 then table.remove(toasts, i) else
             local a = math.min(1, tt.t * 2)
-            local w = 420
+            local size = ui.fitSize('body', tt.msg, 860, 18, 12) -- one line, the box grows to fit
+            local w = math.max(420, ui.font('body', size):getWidth(tt.msg) + 48)
             ui.panel(VIRTUAL_WIDTH / 2 - w / 2, 90 + (#toasts - i) * 50, w, 40, {alpha = a, border = tt.color})
-            ui.text(tt.msg, VIRTUAL_WIDTH / 2 - w / 2, 99 + (#toasts - i) * 50, w, 'center', 'body', 18, tt.color, a)
+            ui.textBox(tt.msg, VIRTUAL_WIDTH / 2 - w / 2, 90 + (#toasts - i) * 50, w, 40, 'body', size, {tt.color[1], tt.color[2], tt.color[3], a})
         end
     end
 end

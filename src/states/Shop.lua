@@ -79,7 +79,7 @@ function Shop:renderWheel()
         local a = math.min(1, self.resultT * 3)
         r.icon(px + pw / 2, py + 130, 110)
         ui.text('You won', px, py + 210, pw, 'center', 'body', 18, ui.c.muted, a)
-        ui.text(r.title, px, py + 236, pw, 'center', 'display', 32, r.color, a)
+        ui.text(r.title, px, py + 236, pw, 'center', 'display', ui.fitSize('display', r.title, pw - 30, 32, 12), r.color, a)
         if r.subtitle then ui.text(r.subtitle, px, py + 280, pw, 'center', 'body', 17, ui.c.text, a) end
     elseif self.wheel.spinning then
         ui.textBox('Spinning...', px, py, pw, 320, 'display', 30, ui.c.muted)

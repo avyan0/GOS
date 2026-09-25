@@ -33,7 +33,7 @@ function Profile:render()
     ui.color(ui.c.bg); love.graphics.circle('fill', px + 70, py + 56, 14); love.graphics.arc('fill', px + 70, py + 104, 28, math.pi, math.pi * 2)
     ui.text('Commander', px + 130, py + 42, 220, 'left', 'body', 15, ui.c.muted)
     local shown = data.name .. ((self.editing and math.floor(self.t * 2) % 2 == 0) and '_' or '')
-    ui.text(shown, px + 130, py + 62, 230, 'left', 'display', 28)
+    ui.text(shown, px + 130, py + 62, 240, 'left', 'display', ui.fitSize('display', data.name .. '_', 236, 28, 12))
     if ui.button(self.editing and 'Done' or 'Rename', px + 30, py + 136, pw - 60, 42, {outline = true, size = 18}) then
         if self.editing then self:stopEditing() else self.editing = true end
     end

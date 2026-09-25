@@ -1,3 +1,4 @@
 *.love
 data.txt
 dist/
+tools/web/

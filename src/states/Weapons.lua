@@ -49,14 +49,14 @@ function drawWeaponDetail(w, px, py, pw, ph)
     local color = ui.rarity[w.rarity]
     local owned = data.weapons[w.id]
     if owned then if not icons.weaponArt(w.id, px + pw / 2, py + 90, 110) then icons.weapon(w.shape, px + pw / 2, py + 90, 110, color) end else icons.lock(px + pw / 2, py + 90, 60, ui.c.dim) end
-    ui.text(w.name, px, py + 165, pw, 'center', 'display', 28)
+    ui.text(w.name, px, py + 165, pw, 'center', 'display', ui.fitSize('display', w.name, pw - 30, 28, 12))
     ui.text(ui.rarityName[w.rarity]:upper(), px, py + 202, pw, 'center', 'hud', 16, color)
 
     local mult = upgradeMultiplier(w)
     local statY = py + 240
     local function stat(label, value, x)
         ui.text(label, x, statY, 120, 'left', 'body', 14, ui.c.muted)
-        ui.text(value, x, statY + 18, 130, 'left', 'hud', 26)
+        ui.text(value, x, statY + 18, 124, 'left', 'hud', ui.fitSize('hud', value, 124, 26, 12))
     end
     stat('Damage', w.damage > 0 and tostring(math.round(w.damage * mult)) or '-', px + 30)
     stat('Cooldown', w.cooldown > 0 and (w.cooldown .. ' turns') or 'None', px + 160)

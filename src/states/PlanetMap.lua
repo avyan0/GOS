@@ -88,4 +88,11 @@ function PlanetMap:render()
     end
 end
 
-function PlanetMap:keyPressed(k) if k == 'escape' then gStateMachine:change('home') end end
+function PlanetMap:keyPressed(k)
+    if k == 'escape' then gStateMachine:change('home')
+    elseif (k == 'return' or k == 'kpenter') and self:done() < 30 then
+        data.currentLevel = self.planet .. '-' .. (self:done() + 1)
+        saveData()
+        gStateMachine:change('loadout')
+    end
+end

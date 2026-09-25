@@ -29,12 +29,14 @@ function Settings:render()
     ui.text('Help', px + 30, py + 24, 200, 'left', 'body', 15, ui.c.muted)
     if ui.button('How to play', px + 30, py + 52, pw - 60, 48, {outline = true, size = 20}) then gStateMachine:change('howToPlay') end
     ui.text('Controls', px + 30, py + 118, 200, 'left', 'body', 15, ui.c.muted)
-    ui.text('A / S / D fire   -   1-5 pick a lane   -   Enter ends the turn   -   Space fast-forwards   -   P pauses   -   F11 fullscreen', px + 30, py + 140, pw - 60, 'left', 'body', 15)
+    ui.text('A / S / D fire   -   1-5 pick a lane   -   Enter ends the turn   -   Space fast-forwards   -   P pauses   -   F11 fullscreen   -   F12 screenshot', px + 30, py + 140, pw - 60, 'left', 'body', 15)
     ui.panel(40, 320, 1200, 110, {radius = 16})
     ui.text('Gods of Space   -   made by Avyan Mahajan', 70, 345, 800, 'left', 'body', 16, ui.c.muted)
     ui.text('Built with LÖVE   -   progress is saved automatically', 70, 370, 800, 'left', 'body', 14, ui.c.dim)
-    if ui.button(love.window.getFullscreen() and 'Windowed' or 'Fullscreen', 770, 345, 210, 50, {outline = true, size = 20, id = 'fs'}) then toggleFullscreen() end
-    if ui.button('Quit game', 1000, 345, 210, 50, {outline = true, color = ui.c.danger, size = 20}) then love.event.quit() end
+    if not IS_WEB then
+        if ui.button(love.window.getFullscreen() and 'Windowed' or 'Fullscreen', 770, 345, 210, 50, {outline = true, size = 20, id = 'fs'}) then toggleFullscreen() end
+        if ui.button('Quit game', 1000, 345, 210, 50, {outline = true, color = ui.c.danger, size = 20}) then love.event.quit() end
+    end
 end
 
 function Settings:keyPressed(k) if k == 'escape' then saveData(); gStateMachine:change('home') end end

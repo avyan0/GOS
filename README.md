@@ -14,7 +14,7 @@ Install LÖVE 11.5, then from this folder:
 or drag the folder onto `love.exe`. Saves live in `%APPDATA%\LOVE\GodsOfSpace\`.
 
 **Controls:** click a weapon or press `A` `S` `D` · click a lane/tile to aim (`1`-`5` picks a lane) ·
-`Enter` ends the turn · hold `Space` to fast-forward · `P` pauses · `F11` fullscreen · `Esc` goes back.
+`Enter` ends the turn (and confirms on every menu) · hold `Space` to fast-forward · `P` pauses · `F11` fullscreen · `F12` screenshot · `Esc` goes back.
 
 ## Build a release
 
@@ -44,11 +44,15 @@ That uploads the Windows folder (`:windows`), the `.love` (`:love`) and, if pres
 ```bash
 "C:\Program Files\LOVE\lovec.exe" . --test              # headless rules tests
 "C:\Program Files\LOVE\lovec.exe" . --sim "" auto 0 20  # balance probe: greedy bot plays every planet
-"C:\Program Files\LOVE\lovec.exe" . --smoke             # drives every screen with random input, exit 1 on any error
+"C:\Program Files\LOVE\lovec.exe" . --smoke             # presses every button on every screen + fuzzes battles; exit 1 on any error
 "C:\Program Files\LOVE\lovec.exe" . --profile dev       # play with a separate save
 ```
 
 Layout: `main.lua` boots everything · `src/content.lua` weapons, aliens, levels, save system ·
 `src/battle.lua` pure battle rules (tested) · `src/fx.lua` battle animation · `src/ui.lua` design system ·
-`src/icons.lua` code-drawn art · `src/sfx.lua` synthesised sound · `src/states/` one file per screen.
-`unused/` holds the old art and save backups and is not shipped.
+`src/pixelfont.lua` the game's own pixel font · `src/icons.lua` sprite drawing · `src/sfx.lua` synthesised sound ·
+`src/states/` one file per screen. `unused/` holds old art, fonts and save backups and is not shipped.
+
+Art pipeline: `tools/art/gen_{aliens,weapons,planets}.py` render high-res sources into `tools/art/src/`,
+`python tools/art/pixelize.py` turns them into the pixel sprites in `assets/img/` (one shared 32-colour
+palette), `python tools/art/gen_nebula.py` makes the backdrop. `press/` has the store cover and screenshots.

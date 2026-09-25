@@ -34,7 +34,7 @@ function Reward:render()
         local a = math.min(1, self.resultT * 3)
         r.icon(px + pw / 2, py + 120, 110)
         ui.text('You won', px, py + 200, pw, 'center', 'body', 18, ui.c.muted, a)
-        ui.text(r.title, px, py + 226, pw, 'center', 'display', 32, r.color, a)
+        ui.text(r.title, px, py + 226, pw, 'center', 'display', ui.fitSize('display', r.title, pw - 30, 32, 12), r.color, a)
         if r.subtitle then ui.text(r.subtitle, px, py + 270, pw, 'center', 'body', 17, ui.c.text, a) end
         if ui.button('Continue', px + 40, py + ph - 76, pw - 80, 52, {size = 22, id = 'cont'}) then self:continue() end
     elseif self.wheel.spinning then

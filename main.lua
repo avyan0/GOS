@@ -44,7 +44,8 @@ function love.load(args)
     push:setupScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, {vsync = true, fullscreen = false, resizable = true})
 
     loadData()
-    if data.fullscreen then love.window.setFullscreen(true); push:resize(love.graphics.getDimensions()) end
+    IS_WEB = love.system.getOS() == 'Web' -- browser build: no quitting, fullscreen is the page's button
+    if data.fullscreen and not IS_WEB then love.window.setFullscreen(true); push:resize(love.graphics.getDimensions()) end
     pcall(sfx.init) -- no audio device is not fatal
     -- window icon: a Hevalten-red planet drawn with our own icon code
     if love.system.getOS() ~= 'Web' then pcall(function() -- the browser build has no window icon (and its pcall cannot catch that)
@@ -125,6 +126,7 @@ function love.mousepressed(x, y, button)
 end
 
 function toggleFullscreen()
+    if IS_WEB then return end
     data.fullscreen = not love.window.getFullscreen()
     love.window.setFullscreen(data.fullscreen)
     push:resize(love.graphics.getDimensions())
@@ -132,6 +134,14 @@ end
 
 function love.keypressed(key)
     if key == 'f11' then toggleFullscreen(); return end
+    if key == 'f12' and not IS_WEB then -- screenshot into the save folder
+        local name = os.date('screenshot_%Y%m%d_%H%M%S.png')
+        love.graphics.captureScreenshot(function(img) -- toast afterwards so it is not in the picture
+            img:encode('png', name)
+            ui.toast('Screenshot saved: ' .. name, ui.c.accent)
+        end)
+        return
+    end
     love.keyboard.keysPressed[key] = true
     gStateMachine:keyPressed(key)
 end
